@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICT - Python DSE 操練與工具</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --chassis-void: #070b12;
+      --chassis-base: #0d1522;
+      --chassis-elevated: #121e30;
+      --chassis-well: #05080f;
+      --hairline: #1d2b40;
+      --hairline-strong: #2c405e;
+      --ink-primary: #f1f5f9;
+      --ink-secondary: #a8b6c8;
+      --ink-muted: #76889f;
+      --signal-primary: #38bdf8;
+      --signal-primary-deep: #0284c7;
+      --signal-pink: #10b981;
+      --signal-cyan: #38bdf8;
+      --signal-amber: #f59e0b;
+      --signal-green: #10b981;
+      --paper-cream: #f4f1e6;
+      --paper-green: #dce8dc;
+      --paper-ink: #181c20;
+      --paper-cobalt: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif;
+      background-color: var(--chassis-void);
+      color: var(--ink-primary);
+      background-image:
+        linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .font-display { font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif; letter-spacing: -0.025em; }
+    .font-mono-code { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+    .chassis-surface {
+      background: var(--chassis-base);
+      border: 1px solid var(--hairline);
+    }
+    .chassis-well {
+      background: var(--chassis-well);
+      border: 1px solid var(--hairline);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+    .hw-btn {
+      transition: transform 0.1s ease, box-shadow 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+    .hw-btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--signal-primary);
+      outline-offset: 2px;
+    }
+    .hw-btn:active:not(:disabled) {
+      transform: translateY(1px);
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0.7);
+    }
+    .hw-btn-primary {
+      background: #10b981;
+      color: #03150e;
+      font-weight: 700;
+      border: 1px solid #34d399;
+      box-shadow: 0 2px 0 #047857, 0 4px 14px rgba(16, 185, 129, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+    .hw-btn-primary:hover:not(:disabled) {
+      background: #34d399;
+      border-color: #6ee7b7;
+    }
+    .hw-btn-cyan {
+      background: #0c2236;
+      color: var(--signal-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.42);
+      box-shadow: 0 2px 0 #05111d, inset 0 1px 0 rgba(56, 189, 248, 0.16);
+    }
+    .hw-btn-cyan:hover:not(:disabled) {
+      background: #12314d;
+      border-color: var(--signal-cyan);
+      color: #e0f2fe;
+    }
+    .studio-launch-card {
+      background: #0c1422;
+      border: 1px solid #1e2d44;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: transform 0.14s ease, border-color 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .studio-launch-card:hover {
+      background: #111d30;
+      border-color: rgba(56, 189, 248, 0.65);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.12), inset 0 1px 0 rgba(56, 189, 248, 0.16);
+      transform: translateY(-1px);
+    }
+    .studio-launch-card:active {
+      transform: translateY(0);
+    }
+    .hero-panel {
+      background:
+        radial-gradient(640px 280px at 14% 0%, rgba(56, 189, 248, 0.09), transparent 72%),
+        linear-gradient(180deg, #0c1524 0%, #09101b 100%);
+    }
+    .greenbar-paper {
+      background-color: var(--paper-cream);
+      background-image: repeating-linear-gradient(to bottom, var(--paper-cream) 0px, var(--paper-cream) 36px, var(--paper-green) 36px, var(--paper-green) 72px);
+      color: var(--paper-ink);
+      border: 2px solid #263242;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+    }
+    .tractor-strip {
+      background-image: radial-gradient(circle, #101b2d 3.5px, transparent 4px);
+      background-size: 16px 24px;
+      background-repeat: repeat-y;
+      background-position: center;
+      border-color: rgba(24, 28, 32, 0.14);
+    }
+    .no-copy { user-select: none; -webkit-user-select: none; }
+    .code-editor-wrap { display: flex; background: #05080f; border: 1px solid #1d2b40; border-radius: 4px; overflow: hidden; }
+    .code-editor-wrap:focus-within { border-color: #38bdf8; box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25); }
+    .line-gutter {
+      min-width: 40px;
+      padding: 14px 8px;
+      text-align: right;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #526580;
+      background: #09101b;
+      border-right: 1px solid #1a2638;
+      user-select: none;
+      overflow: hidden;
+    }
+    .py-editor {
+      flex: 1;
+      background: transparent;
+      padding: 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #e2f3ff;
+      outline: none;
+      resize: vertical;
+      tab-size: 4;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .next-unlocked-pulse {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+      color: #03150e !important;
+      border-color: #34d399 !important;
+      box-shadow: 0 2px 0 #047857, 0 0 16px rgba(16, 185, 129, 0.35) !important;
+    }
+    .block-well {
+      background: repeating-linear-gradient(0deg, rgba(56,189,248,0.03) 0px, rgba(56,189,248,0.03) 1px, transparent 1px, transparent 28px),
+                  linear-gradient(180deg, #05080f 0%, #0a111c 100%);
+      border: 1px solid #263852;
+      position: relative;
+      overflow: hidden;
+    }
+    .block-card {
+      position: absolute;
+      width: calc(33.333% - 10px);
+      border: 1.5px solid #2c405e;
+      background: #101a2a;
+      box-shadow: 0 4px 0 #04070c;
+      cursor: pointer;
+      user-select: none;
+    }
+    .block-card.targeted {
+      border-color: #38bdf8;
+      background: #0d2236;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.32), 0 4px 0 #04070c;
+      z-index: 15;
+    }
+    .block-card.landed { border-color: #f59e0b; background: #1c1810; }
+    .block-card.landed.targeted { border-color: #10b981; box-shadow: 0 0 18px rgba(16, 185, 129, 0.4), 0 4px 0 #04070c; }
+    @keyframes penaltyShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    .animate-shake { animation: penaltyShake 0.35s ease-in-out; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #05080f; }
+    ::-webkit-scrollbar-thumb { background: #26364e; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #364d6e; }
+
+    /* === iPadOS / Touch Optimization === */
+    button, select, a { touch-action: manipulation; }
+    .touch-scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .touch-scroll-x::-webkit-scrollbar { display: none; }
+    @media (pointer: coarse), (max-width: 1024px) {
+      .py-editor, input[type="text"], input[type="number"], textarea, select {
+        font-size: 16px !important;
+      }
+      .hw-btn, nav button { min-height: 38px; }
+    }
+    .ipad-key-bar {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 6px;
+      padding: 6px 8px;
+      background: #09101b;
+      border: 1px solid #1d2b40;
+      border-bottom: 0;
+      border-radius: 4px 4px 0 0;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .ipad-key-bar::-webkit-scrollbar { display: none; }
+    .ipad-key-btn {
+      flex-shrink: 0;
+      padding: 5px 10px;
+      min-height: 32px;
+      border-radius: 4px;
+      background: #121e30;
+      border: 1px solid #263a59;
+      color: #bae6fd;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .ipad-key-btn:active { background: #38bdf8; color: #04131e; transform: scale(0.96); }
+
+    /* === Algorithm Visualizer Stage === */
+    .viz-stage {
+      background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12), rgba(7, 11, 18, 0.98) 72%);
+      border: 1px solid #1d2e47;
+      border-radius: 6px;
+      min-height: 330px;
+      position: relative;
+      overflow: hidden;
+    }
+    .viz-code-line {
+      padding: 2px 10px;
+      border-left: 3px solid transparent;
+      transition: background 0.18s ease, border-color 0.18s ease;
+    }
+    .viz-code-line.active {
+      background: rgba(56, 189, 248, 0.16);
+      border-left-color: #38bdf8;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .viz-bar {
+      transition: height 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, transform 0.25s ease;
+    }
+    .viz-cell {
+      transition: all 0.22s ease;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-[#38bdf8] selection:text-[#04131e]">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 border-b border-[#1d2b40] bg-[#070b12]/95 backdrop-blur-md">
+    <div class="max-w-[1440px] mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2.5">
+        
+        <button id="brandHomeBtn" class="flex items-center gap-2 text-left group">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#101c2e] border border-[#2c405e] group-hover:border-[#38bdf8] transition">
+            <span class="w-2 h-2 rounded-full bg-[#38bdf8] shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
+            <span class="font-display font-bold text-xs sm:text-sm tracking-wider text-white">ICT</span>
+            <span class="text-[#38bdf8] font-mono-code font-bold text-xs sm:text-sm">PYTHON</span>
+          </span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-1.5 order-3 sm:order-2 w-full sm:w-auto overflow-x-auto touch-scroll-x pb-0.5 sm:pb-0">
+        <div class="flex items-center gap-0.5 rounded bg-[#0a111d] border border-[#1d2b40] p-1 text-[11px] sm:text-xs font-bold shrink-0">
+          
+          
+          
+          <button id="modeDseBtn" class="px-3 py-1.5 rounded-[3px] text-[#9aa7b8] hover:text-white hover:bg-[#132035] transition whitespace-nowrap">DSE 試題</button>
+          <button id="modeVizBtn" class="px-3 py-1.5 rounded-[3px] text-[#9aa7b8] hover:text-white hover:bg-[#132035] transition whitespace-nowrap">動畫圖解</button>
+          <button id="modeSprintBtn" class="px-3 py-1.5 rounded-[3px] text-[#9aa7b8] hover:text-white hover:bg-[#132035] transition whitespace-nowrap">遊戲快打</button>
+          <button id="modeSandboxBtn" class="px-3 py-1.5 rounded-[3px] text-[#9aa7b8] hover:text-white hover:bg-[#132035] transition whitespace-nowrap">自由編程</button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 order-2 sm:order-3">
+        <span id="headerEngineDot" class="hidden sm:inline-flex items-center gap-1.5 h-[34px] font-mono-code text-[11px] text-[#9aa7b8] px-2.5 rounded bg-[#0c1422] border border-[#1d2b40]">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+          載入 Python...
+        </span>
+        <button id="studentProfileBtn" class="hw-btn h-[34px] px-3 rounded bg-[#0f1d30] hover:bg-[#162943] text-[#bae6fd] border border-[#2c405e] hover:border-[#38bdf8]/70 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#38bdf8]"></i>
+          <span id="headerStudentLabel" class="max-w-[110px] truncate">登入</span>
+        </button>
+        <button id="soundToggleBtn" class="hw-btn h-[34px] w-[34px] rounded bg-[#0f1d30] hover:bg-[#162943] text-[#34d399] border border-[#2c405e] flex items-center justify-center" title="開關音效">
+          <i data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <div class="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-[calc(100dvh-3.5rem)]">
+
+    <!-- Left Telemetry & Syllabus Rail -->
+    
+
+    <!-- Right Main Workbench -->
+    <main id="mainWorkbench" class="lg:col-span-12 flex flex-col divide-y divide-[#1e2d44]">
+
+      <!-- ===================================================================== -->
+      <!-- MODE 0: HOME DASHBOARD + INTERACTIVE DRY-RUN TRACE VISUALIZER         -->
+      <!-- ===================================================================== -->
+      
+
+      <!-- MODE 1: QUEST WORKBENCH (44 PYTHON LEVELS + 11 HKDSE DEBUG QUIZZES)   -->
+      <!-- ===================================================================== -->
+      
+
+      <!-- ===================================================================== -->
+      <!-- MODE 2: HKDSE TRACE & DEBUG SPRINT GAME (3-LANE FALLING ARCADE)       -->
+      <!-- ===================================================================== -->
+      <section id="sprintContainer" class="hidden p-4 sm:p-6 bg-[#0a0e14]/95 space-y-4">
+        <div class="flex flex-wrap items-start justify-between gap-3 pb-3 border-b border-[#212a36]">
+          <div>
+            <h2 class="font-display text-xl sm:text-2xl font-bold text-white mt-0.5">遊戲快打</h2>
+            <p class="text-xs text-[#9aa7b8] mt-1">
+              題目卡片從 3 條軌道掉落，快速心算輸出或找出錯處行號，按 <span class="font-mono-code text-white">Enter</span> 發射消除卡片，按 <span class="font-mono-code text-white">Tab</span> 切換鎖定卡片！
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="spStartBtn" class="hw-btn hw-btn-primary px-4 py-1.5 rounded-sm text-xs font-bold flex items-center gap-1.5">
+              <i data-lucide="play" class="w-3.5 h-3.5"></i> 開始遊戲
+            </button>
+            <select id="spDifficulty" class="rounded-sm bg-[#070b13] border border-[#243754] px-2 py-1 text-xs font-bold text-[#fbbf24] outline-none">
+              <option value="easy">難度：初級（慢）</option>
+              <option value="normal" selected>難度：中級（標準）</option>
+              <option value="hard">難度：高級（快）</option>
+            </select>
+            <select id="spTopic" class="rounded-sm bg-[#070b13] border border-[#243754] px-2 py-1 text-xs font-bold text-[#38bdf8] outline-none">
+              <option value="ALL">課題：全部</option>
+              <option value="basic">基礎運算與選擇</option>
+              <option value="loop_arr">循環與一維陣列</option>
+              <option value="2d_sub">二維陣列與子程式</option>
+              <option value="ds_sort">數據結構、檢索與排序</option>
+              <option value="debug_io">除錯、誤差與字串檔案</option>
+            </select>
+            <button id="spPauseBtn" class="hidden hw-btn px-3 py-1.5 rounded-sm bg-[#141b25] border border-[#2a3647] text-xs font-bold text-[#f5a623]">暫停</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div class="chassis-well p-2.5 rounded-sm"><div class="font-mono-code text-[10px] text-[#64748b]">SCORE</div><div id="spScore" class="font-mono-code text-xl font-bold text-[#f5a623]">0</div></div>
+          <div class="chassis-well p-2.5 rounded-sm"><div class="font-mono-code text-[10px] text-[#64748b]">STREAK</div><div id="spStreak" class="font-mono-code text-xl font-bold text-[#10d981]">0x</div></div>
+          <div class="chassis-well p-2.5 rounded-sm"><div class="font-mono-code text-[10px] text-[#64748b]">CLEARED</div><div id="spCleared" class="font-mono-code text-xl font-bold text-white">0</div></div>
+          <div class="chassis-well p-2.5 rounded-sm"><div class="font-mono-code text-[10px] text-[#64748b]">BEST</div><div id="spBest" class="font-mono-code text-xl font-bold text-[#34d399]">0</div></div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+          <div class="xl:col-span-8 space-y-3">
+            <div id="spWell" class="block-well rounded-sm h-[400px] w-full">
+              <div class="absolute top-12 left-0 right-0 border-t-2 border-dashed border-[#10b981]/70 z-10 pointer-events-none flex justify-end pr-2">
+                <span class="font-mono-code text-[9px] text-[#10b981] bg-[#06090e] px-1.5 -mt-2.5 font-bold">DANGER LINE</span>
+              </div>
+              <div class="absolute inset-0 grid grid-cols-3 pointer-events-none">
+                <div class="border-r border-[#18202b]"></div>
+                <div class="border-r border-[#18202b]"></div>
+                <div></div>
+              </div>
+              <div id="spCardsLayer" class="absolute inset-0"></div>
+              <div id="spOverlay" class="absolute inset-0 z-20 bg-[#070a0e]/88 flex flex-col items-center justify-center p-6 text-center space-y-3">
+                <h3 id="spOverlayTitle" class="font-display text-2xl font-bold text-white">快打挑戰</h3>
+                <p id="spOverlayDesc" class="text-xs text-[#9aa7b8] mb-4"></p>
+                <button id="spOverlayStartBtn" class="hw-btn hw-btn-primary px-6 py-2.5 rounded-sm text-sm font-bold">立即開始</button>
+              </div>
+            </div>
+
+            <div class="chassis-surface rounded-sm p-3.5 space-y-2.5 border-l-2 border-l-[#38bdf8]">
+              <div id="spTargetInfo" class="text-xs font-bold text-white">按「開始遊戲」生成掉落題目卡片</div>
+              <pre id="spTargetCode" class="hidden chassis-well p-2.5 rounded-sm font-mono-code text-xs text-[#a5f3fc]"></pre>
+              <div class="flex gap-2">
+                <input id="spInput" type="text" autocomplete="off" spellcheck="false" placeholder="輸入答案（如 3、True、2）按 Enter 發射..."
+                  class="flex-1 bg-[#06080c] border border-[#2a3647] focus:border-[#38bdf8] rounded-sm px-3 py-2 text-sm font-mono-code text-[#e0f7ff] outline-none" />
+                <button id="spFireBtn" class="hw-btn hw-btn-cyan px-4 py-2 rounded-sm text-xs sm:text-sm font-bold shrink-0">發射</button>
+                <button id="spTabBtn" class="hw-btn px-3 py-2 rounded-sm bg-[#141b25] border border-[#2a3647] text-xs font-bold text-slate-200 shrink-0">換卡</button>
+              </div>
+              <div id="spStatus" class="font-mono-code text-xs text-[#9aa7b8] min-h-[18px]"></div>
+            </div>
+          </div>
+
+          <div class="xl:col-span-4 space-y-3">
+            <div class="chassis-surface rounded-sm p-3.5 space-y-2">
+              <div class="font-mono-code text-[11px] font-bold text-[#38bdf8] border-b border-[#212a36] pb-1.5">HKDSE 常考速記卡</div>
+              <ul class="text-xs text-[#cbd5e1] space-y-1.5 leading-relaxed">
+                <li>• <code class="text-[#f5a623]">//</code> 取整數商數；<code class="text-[#f5a623]">%</code> 取餘數</li>
+                <li>• <code class="text-[#f5a623]">range(1, 5)</code> 只包含 1, 2, 3, 4（不含 5）</li>
+                <li>• 陣列最後一格索引係 <code class="text-[#f5a623]">len(A) - 1</code></li>
+                <li>• 找最大／最小值初值必須設為 <code class="text-[#f5a623]">A[0]</code>，不可設為 0</li>
+                <li>• 刪除前移用正序；插入後移用逆序</li>
+              </ul>
+            </div>
+            <div class="chassis-surface rounded-sm p-3.5 space-y-2">
+              <div class="font-mono-code text-[11px] font-bold text-[#f5a623] border-b border-[#212a36] pb-1.5">本機最高分</div>
+              <div id="spLeaderboard" class="space-y-1.5 text-xs font-mono-code text-[#cbd5e1]">
+                <div class="text-[#64748b]">暫未有紀錄，快玩一局！</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- MODE 3: FREE PYTHON SANDBOX + VIRTUAL TEXT FILE VIEWER (READY FOR L71)-->
+      <!-- ===================================================================== -->
+      <section id="sandboxContainer" class="hidden p-4 sm:p-6 bg-[#0e1726]/90 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#1b2430]">
+          <div>
+            <h2 class="font-display text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="flask-conical" class="w-5 h-5 text-[#38bdf8]"></i>
+              自由編程
+            </h2>
+            
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-7 space-y-3">
+            <div class="ipad-key-bar rounded-t-sm" data-target-editor="sbInput"></div>
+            <div class="code-editor-wrap rounded-b-sm">
+              <div id="sbLineGutter" class="line-gutter">1</div>
+              <textarea id="sbInput" rows="11" spellcheck="false" class="py-editor" placeholder="# 在此自由編寫 Python 3 程式，亦支援 open(&quot;notes.txt&quot;, &quot;w&quot;) 寫入檔案..."></textarea>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <input id="sbStdin" type="text" placeholder="選填：input() 測試輸入（以 \n 分隔多行）" class="flex-1 bg-[#070a0e] border border-[#2a3647] rounded-sm px-3 py-2 text-xs font-mono-code text-white outline-none" />
+              <button id="sbRunBtn" class="hw-btn hw-btn-cyan px-4 py-2 rounded-sm font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i> 執行 Python
+              </button>
+            </div>
+            <div class="chassis-well rounded-sm p-3">
+              <div class="font-mono-code text-[10px] text-[#64748b] mb-1">SANDBOX OUTPUT</div>
+              <pre id="sbOutput" class="text-xs font-mono-code text-[#a7f3d0] whitespace-pre-wrap">// 點擊「執行 Python」睇輸出...</pre>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-3">
+            <div class="chassis-surface rounded-sm p-3.5 space-y-2.5">
+              <div class="flex items-center justify-between border-b border-[#212a36] pb-2">
+                <span class="font-mono-code text-[11px] font-bold text-[#f5a623]">虛擬檔案</span>
+                <button id="sbResetFilesBtn" class="text-[11px] text-[#9aa7b8] hover:text-white">重設檔案</button>
+              </div>
+              <div id="virtualFileList" class="space-y-2.5 text-xs font-mono-code"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- MODE 4: MING TAK TEXTBOOK CODE BANK (D1 + D2 + ELECTIVE C)            -->
+      <!-- ===================================================================== -->
+      
+
+      <!-- ===================================================================== -->
+      <!-- MODE 5: HKDSE PAST PAPER WORKBENCH (2012-2024 PAPER 1B & PAPER 2C)    -->
+      <!-- ===================================================================== -->
+      <section id="dseContainer" class="hidden p-4 sm:p-6 bg-[#0e1726]/90 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e2d44] pb-3">
+          <div>
+            <h2 class="font-display text-lg sm:text-xl font-bold text-white">DSE 試題（2012–2026）</h2>
+          </div>
+          <div class="font-mono-code text-xs px-3 py-1.5 rounded-sm bg-[#080d16] border border-[#38bdf8]/40 text-[#38bdf8] font-bold">
+            完成進度：<span id="dseDoneCount">0 / 25</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+          <!-- Left Selector -->
+          <div class="lg:col-span-4 space-y-2.5 chassis-surface rounded-sm p-3 border-[#1e2d44]">
+            <div id="dsePaperFilters" class="grid grid-cols-3 gap-1 text-[11px] font-bold">
+              <button data-paper="ALL" class="py-1.5 rounded-sm bg-[#2563eb] text-white">全部</button>
+              <button data-paper="卷一乙部 必修D" class="py-1.5 rounded-sm bg-[#132035] text-[#cbd5e1] border border-[#243754]">卷一乙部 D</button>
+              <button data-paper="卷二C 選修C" class="py-1.5 rounded-sm bg-[#132035] text-[#cbd5e1] border border-[#243754]">卷二C 選修</button>
+            </div>
+            <div id="dseQuestionList" class="space-y-1.5 max-h-[680px] overflow-y-auto pr-1"></div>
+          </div>
+
+          <!-- Right Practice Frame -->
+          <div class="lg:col-span-8 space-y-4">
+            <div class="chassis-surface rounded-sm p-4 space-y-3.5 border-[#1e2d44]">
+              <div class="flex flex-wrap items-start justify-between gap-2 border-b border-[#1b283d] pb-3">
+                <div class="space-y-1">
+                  <div class="flex flex-wrap items-center gap-1.5 font-mono-code text-[10px]">
+                    <span id="dsePaperBadge" class="px-2 py-0.5 rounded-[2px] bg-[#2563eb]/20 text-[#93c5fd] border border-[#2563eb]/40 font-bold">卷一乙部 必修D</span>
+                    <span id="dseYearBadge" class="px-2 py-0.5 rounded-[2px] bg-[#132035] text-[#fbbf24] border border-[#243754] font-bold">2012</span>
+                    <span id="dseTopicBadge" class="px-2 py-0.5 rounded-[2px] bg-[#132035] text-[#34d399] border border-[#243754]">循環與追蹤</span>
+                    <span id="dseStatusBadge" class="hidden px-2 py-0.5 rounded-[2px] bg-[#10b981]/20 text-[#34d399] font-bold">✓ 已通關</span>
+                  </div>
+                  <h3 id="dseTitle" class="font-display text-base sm:text-lg font-bold text-white"></h3>
+                </div>
+                <button id="dseJumpVizBtn" class="hidden hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1e3252] border border-[#38bdf8]/45 text-[#38bdf8] text-xs font-bold flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 觀看動畫圖解
+                </button>
+              </div>
+
+              <div class="no-copy border-l-2 border-[#38bdf8] bg-[#080d16] px-3.5 py-2.5 text-xs sm:text-sm text-[#e2e8f0] leading-relaxed" id="dsePrompt"></div>
+
+              <!-- Mode A: DSE Dry-Run (No Run Button) -->
+              <div id="dseDryrunPanel" class="hidden space-y-3">
+                <div class="no-copy rounded-sm overflow-hidden border border-[#243754] bg-[#070b13]">
+                  <div class="px-3 py-1.5 bg-[#0c1320] border-b border-[#243754] flex items-center justify-between font-mono-code text-[10px] text-[#9aa7b8]">
+                    <span>HKDSE 空運行追蹤（不設執行掣）</span>
+                    <span>請逐行追蹤並輸入準確輸出</span>
+                  </div>
+                  <pre id="dseDryrunCode" class="p-3.5 text-xs sm:text-sm font-mono-code text-[#e2e8f0] overflow-x-auto leading-relaxed"></pre>
+                </div>
+                <textarea id="dseDryrunInput" rows="3" spellcheck="false" autocomplete="off"
+                  class="w-full rounded-sm bg-[#070b13] border border-[#2a3b55] focus:border-[#38bdf8] p-3 text-sm font-mono-code text-white outline-none"
+                  placeholder="輸入程式輸出（如有多行請按 Enter 換行）..."></textarea>
+                <button id="dseDryrunCheckBtn" class="hw-btn hw-btn-primary px-5 py-2 rounded-sm font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> 提交核對
+                </button>
+              </div>
+
+              <!-- Mode B: DSE Python Fill-in-the-Blank Coding -->
+              <div id="dseCodePanel" class="hidden space-y-3">
+                <div class="rounded-sm overflow-hidden">
+                  <div class="ipad-key-bar" data-target-editor="dseCodeInput"></div>
+                  <div class="code-editor-wrap">
+                    <div id="dseLineGutter" class="line-gutter">1</div>
+                    <textarea id="dseCodeInput" rows="11" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" class="py-editor"></textarea>
+                  </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button id="dseRunBtn" class="hw-btn hw-btn-cyan px-4 py-2 rounded-sm text-xs font-bold flex items-center gap-1.5">
+                    <i data-lucide="play" class="w-3.5 h-3.5"></i> 執行測試
+                  </button>
+                  <button id="dseCheckBtn" class="hw-btn hw-btn-primary px-5 py-2 rounded-sm text-xs font-bold flex items-center gap-1.5">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> 核對試題輸出
+                  </button>
+                  <button id="dseResetBtn" class="hw-btn px-3 py-2 rounded-sm bg-[#132035] border border-[#243754] text-xs font-bold text-[#9aa7b8]">重設挖空</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="chassis-well rounded-sm p-3">
+                    <div class="font-mono-code text-[10px] text-[#38bdf8] mb-1">預期輸出</div>
+                    <pre id="dseExpectedPre" class="text-xs font-mono-code text-[#bae6fd] whitespace-pre-wrap"></pre>
+                  </div>
+                  <div class="chassis-well rounded-sm p-3">
+                    <div class="font-mono-code text-[10px] text-[#34d399] mb-1">你的輸出</div>
+                    <pre id="dseOutputPre" class="text-xs font-mono-code text-[#a7f3d0] whitespace-pre-wrap">按「執行測試」或「核對試題輸出」...</pre>
+                  </div>
+                </div>
+              </div>
+
+              <div id="dseFeedback" class="hidden px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm"></div>
+              <div id="dseExplainBox" class="hidden border-l-2 border-[#10b981] bg-[#10b981]/10 p-3.5 text-xs text-[#d1fae5] leading-relaxed">
+                <div class="font-bold text-[#34d399] mb-1">評卷參考解說：</div>
+                <div id="dseExplainText"></div>
+              </div>
+
+              <!-- Live DSE Dry-Run Trace Panel -->
+              <div class="pt-2 space-y-2.5 border-t border-[#1e2d44]">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="git-commit-horizontal" class="w-4 h-4 text-[#fbbf24]"></i>
+                    <span class="text-xs font-bold text-white">逐步空運行追蹤（Dry-Run Trace）</span>
+                  </div>
+                  <button id="dseTraceBtn" class="hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1b2e4b] text-[#fbbf24] border border-[#f59e0b]/45 text-xs font-bold flex items-center gap-1.5">
+                    <i data-lucide="step-forward" class="w-3.5 h-3.5"></i> 逐步追蹤此題
+                  </button>
+                </div>
+                <div id="dseTraceWrap" class="hidden greenbar-paper rounded-sm overflow-hidden flex">
+                  <div class="hidden sm:block w-5 shrink-0 tractor-strip border-r"></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="bg-[#f4f1e6] border-b-2 border-[#181c20] px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+                      <div class="font-display font-black text-xs text-[#181c20]">Dry-Run 追蹤表</div>
+                      <div class="flex items-center gap-1.5">
+                        <button id="dseTracePrevBtn" class="px-2 py-1 text-xs font-bold border-2 border-[#181c20] bg-[#f4f1e6] hover:bg-[#e5e0cf] text-[#181c20]">← 上一步</button>
+                        <button id="dseTraceNextBtn" class="px-2.5 py-1 text-xs font-bold border-2 border-[#181c20] bg-[#1d4ed8] hover:bg-[#1e40af] text-white">下一步 →</button>
+                        <button id="dseTraceAutoBtn" class="px-2.5 py-1 text-xs font-bold border-2 border-[#181c20] bg-[#181c20] text-[#f4f1e6]">▶ 自動</button>
+                      </div>
+                    </div>
+                    <div id="dseTraceCanvas" class="p-3.5 min-h-[170px]"></div>
+                    <div class="bg-[#181c20] text-[#f4f1e6] px-3.5 py-1.5 flex items-center justify-between text-xs font-mono-code">
+                      <span id="dseTraceNote" class="truncate"></span>
+                      <span id="dseTraceCounter" class="text-[#4ade80] font-bold shrink-0 ml-2"></span>
+                    </div>
+                  </div>
+                  <div class="hidden sm:block w-5 shrink-0 tractor-strip border-l"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ===================================================================== -->
+      <!-- MODE 6: HKDSE ALGORITHM ANIMATION STUDIO (SVG + OPERATION STREAM)     -->
+      <!-- ===================================================================== -->
+      <section id="vizContainer" class="hidden p-4 sm:p-6 bg-[#0e1726]/90 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e2d44] pb-3">
+          <div>
+            <h2 class="font-display text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-5 h-5 text-[#38bdf8]"></i> HKDSE 算法動畫圖解室
+            </h2>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="vizSpeedSelect" class="rounded-sm bg-[#070b13] border border-[#243754] px-2.5 py-1.5 text-xs font-bold text-[#fbbf24] outline-none">
+              <option value="1200">速度：0.5× 慢速講解</option>
+              <option value="700" selected>速度：1× 標準</option>
+              <option value="320">速度：2× 快速</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 8 HKDSE Algorithm Selector Pills (Horizontally scrollable on iPad) -->
+        <div id="vizAlgoTabs" class="touch-scroll-x flex items-center gap-1.5 pb-1">
+          <button data-viz="binary_search" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#2563eb] text-white">對分檢索</button>
+          <button data-viz="search_race" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">線性 vs 對分賽跑</button>
+          <button data-viz="bubble_sort" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">冒泡排序</button>
+          <button data-viz="selection_sort" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">選擇排序</button>
+          <button data-viz="insertion_sort" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">插入排序</button>
+          <button data-viz="merge_lists" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">合併已排序列表</button>
+          <button data-viz="stack_queue" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">堆疊 &amp; 循環隊列</button>
+          <button data-viz="linked_list" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">陣列線性鏈表</button>
+          <button data-viz="array_2d" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">二維陣列掃描</button>
+        </div>
+
+        <!-- Custom Input / Interactive Controls Bar -->
+        <div id="vizControlsBar" class="chassis-surface rounded-sm p-3 border-[#1e2d44] flex flex-wrap items-center justify-between gap-2.5 text-xs">
+          <div id="vizInputsWrap" class="flex flex-wrap items-center gap-2"></div>
+          <div class="flex flex-wrap items-center gap-3 font-mono-code text-[11px]">
+            <span class="px-2 py-1 rounded-sm bg-[#080d16] border border-[#1e2d44] text-[#38bdf8]">比較：<b id="vizCmpCount">0</b></span>
+            <span class="px-2 py-1 rounded-sm bg-[#080d16] border border-[#1e2d44] text-[#fbbf24]">交換／移動：<b id="vizSwapCount">0</b></span>
+            <span class="px-2 py-1 rounded-sm bg-[#080d16] border border-[#1e2d44] text-[#34d399]">步驟：<b id="vizStepLabel">0 / 0</b></span>
+          </div>
+        </div>
+
+        <!-- Main Stage (Left 8 cols Visual Stage + Right 4 cols Synchronized Python Code) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          <div class="lg:col-span-8 flex flex-col gap-3">
+            <div id="vizStage" class="viz-stage p-4 sm:p-5 flex flex-col justify-center"></div>
+
+            <!-- Narration + Operation Stream Scrubber -->
+            <div class="chassis-surface rounded-sm p-3.5 border-[#1e2d44] space-y-3">
+              <div id="vizNarration" class="text-xs sm:text-sm font-bold text-[#e2e8f0] min-h-[22px] leading-relaxed"></div>
+              <div class="flex items-center gap-2.5">
+                <input id="vizScrubber" type="range" min="0" max="0" value="0" class="flex-1 accent-[#38bdf8] cursor-pointer h-2" />
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <button id="vizResetBtn" class="hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1e3252] border border-[#243754] text-xs font-bold text-[#cbd5e1]">↺ 重播</button>
+                  <button id="vizPrevBtn" class="hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1e3252] border border-[#243754] text-xs font-bold text-white">◀ 上一步</button>
+                  <button id="vizPlayBtn" class="hw-btn hw-btn-primary px-4 py-1.5 rounded-sm text-xs font-bold flex items-center gap-1.5">▶ 自動播放</button>
+                  <button id="vizNextBtn" class="hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1e3252] border border-[#243754] text-xs font-bold text-white">下一步 ▶</button>
+                </div>
+                <div id="vizLegend" class="flex flex-wrap items-center gap-3 text-[11px] text-[#9aa7b8]"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Synchronized Python Code Panel -->
+          <div class="lg:col-span-4 chassis-surface rounded-sm border-[#1e2d44] flex flex-col overflow-hidden">
+            <div class="px-3.5 py-2 bg-[#0c1320] border-b border-[#1e2d44] flex items-center justify-between font-mono-code text-[11px]">
+              <span id="vizCodeTitle" class="text-[#38bdf8] font-bold">標準 Python 對照</span>
+              <span class="text-[#64748b]">同步高亮</span>
+            </div>
+            <div id="vizCodeBox" class="p-3 font-mono-code text-xs text-[#94a3b8] overflow-x-auto flex-1 leading-6 bg-[#070b13]"></div>
+            <div id="vizVarsBox" class="p-3 bg-[#0c1320] border-t border-[#1e2d44] font-mono-code text-xs text-[#e2e8f0] space-y-1"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Mobile Drawer -->
+  
+
+  <!-- Student Gmail Login Modal -->
+  <div id="loginModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="w-full max-w-md chassis-surface rounded-sm p-5 shadow-2xl space-y-4 border-[#243754]">
+      <div class="flex items-center justify-between border-b border-[#1e2d44] pb-3">
+        <div>
+          <h3 class="font-display text-lg font-bold text-white">登入學校 Gmail</h3>
+          <p class="text-[11px] text-[#9aa7b8] mt-0.5">登入後自動記錄進度</p>
+        </div>
+        <button id="closeLoginModalBtn" class="hw-btn p-1.5 rounded-sm bg-[#132035] text-slate-300 border border-[#243754]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
+      <!-- Verified Gmail Account Card (shown after Google Sign-In) -->
+      <div id="gmailSignedInBox" class="hidden flex items-center justify-between gap-3 bg-[#080d16] border border-[#10b981]/45 rounded-sm p-3">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <img id="gmailAvatarImg" src="" alt="" class="w-9 h-9 rounded-full border border-[#38bdf8]/50 hidden" />
+          <div class="min-w-0">
+            <div id="gmailNameText" class="text-xs font-bold text-white truncate"></div>
+            <div id="gmailEmailText" class="font-mono-code text-[11px] text-[#34d399] truncate"></div>
+          </div>
+        </div>
+        <button id="gmailSignOutBtn" class="px-2.5 py-1 rounded-sm bg-[#132035] hover:bg-[#1e2d44] text-[11px] text-[#fda4af] font-bold border border-[#f43f5e]/35 shrink-0">登出</button>
+      </div>
+
+      <!-- Official Google Sign-In Button Container -->
+      <div id="gmailSignInSection" class="space-y-2.5">
+        <div id="googleBtnWrap" class="flex justify-center py-1"></div>
+        <div id="gmailFallbackNote" class="hidden bg-[#080d16] border border-[#f59e0b]/40 rounded-sm p-3 space-y-2">
+          <div class="text-[11px] text-[#fde68a] font-bold">目前為預覽模式（請輸入學校 Gmail 登入並同步雲端進度）</div>
+          <input id="loginEmailInput" type="email" placeholder="例如：s240101@frcss.edu.hk" class="w-full rounded-sm bg-[#060a12] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">班別（Class）</label>
+          <input id="loginClassInput" type="text" placeholder="例如：4A" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">學號（Class No.）</label>
+          <input id="loginNoInput" type="text" placeholder="例如：01" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">學生姓名（Name）</label>
+        <input id="loginNameInput" type="text" placeholder="例如：Chan Tai Man" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs text-white outline-none focus:border-[#38bdf8]" />
+      </div>
+      <label class="hidden flex items-center gap-2 text-xs text-[#cbd5e1]">
+        <input id="loginTeacherToggle" type="checkbox" />
+        <span>Teacher</span>
+      </label>
+      <div id="loginCloudStatus" class="hidden text-xs font-bold text-[#38bdf8]"></div>
+      <div id="loginErrorMsg" class="hidden text-xs font-bold text-[#fda4af]"></div>
+      <div class="flex justify-end gap-2 pt-1">
+        <button id="saveProfileBtn" class="hw-btn px-4 py-2 rounded-sm bg-gradient-to-r from-[#2563eb] to-[#10b981] text-white text-xs font-bold">確認登入並載入雲端進度</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher Google Sheet Sync Modal -->
+  <div id="teacherSyncModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="w-full max-w-lg chassis-surface rounded-sm p-5 shadow-2xl space-y-4 border-[#324052]">
+      <div class="flex items-center justify-between border-b border-[#212a36] pb-3">
+        <div>
+          <div class="font-mono-code text-[10px] text-[#10d981] font-bold uppercase">GOOGLE SHEET SYNC // 教師即時追蹤設定</div>
+          <h3 class="font-display text-lg font-bold text-white">連接學校 Google Sheet 進度總表</h3>
+        </div>
+        <button id="closeSyncModalBtn" class="hw-btn p-1.5 rounded-sm bg-[#141b25] text-slate-300 border border-[#2a3647]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <p class="text-xs text-[#cbd5e1] leading-relaxed">
+        將 <code>google_apps_script_sync.txt</code> 貼上學校 Google Sheet 的 Apps Script 並部署為 Web App 後，把獲得的網址貼入下方（或直接寫死於本 HTML 程式碼頂部的 <code>GAS_WEBAPP_URL</code> 變數再上載 GitHub Pages）。每次學生提交即自動記錄：班別、學號、題號、得分、切頁次數、離開秒數、疑似超綱語法及程式碼。
+      </p>
+      <div>
+        <label class="block text-[11px] font-bold text-[#10d981] mb-1">Google Apps Script Web App URL</label>
+        <div class="space-y-2.5">
+        <div>
+          <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">Google Apps Script 同步網址（/exec）</label>
+          <input id="gasUrlInput" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">Google OAuth Client ID（啟用官方 Gmail 登入按鈕）</label>
+          <input id="googleClientIdInput" type="text" placeholder="1234567890-xxxx.apps.googleusercontent.com" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">限制電郵網域（選填，例如 frcss.edu.hk；留空則接受所有 Google 帳戶）</label>
+          <input id="allowedDomainInput" type="text" placeholder="frcss.edu.hk" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none" />
+        </div>
+      </div>
+      </div>
+      <div id="gasSaveMsg" class="hidden text-xs font-bold text-[#10d981]"></div>
+      <div class="flex justify-end gap-2">
+        <button id="saveGasUrlBtn" class="hw-btn hw-btn-primary px-5 py-2 rounded-sm text-xs font-bold">儲存同步網址</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // [老師上載 GitHub Pages 前只需在此貼上您的 Google Apps Script Web App 網址]
+    // 例如：const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyCAlyNostT78pme5JyrPP2LO7fk1w7ng43gNyk_ah1oWv9fL25IC8VKQ9i5hJGGeTH/exec";
+    // =========================================================================
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzezFIv2KTabhEzSCCQD6TqaRYf-xnVQZjfdTRxuTbz2xKPzk-pAmE6l7Kfi1wnZM-7/exec";
+    // 教師設定：貼上 Google Cloud Console 取得的 OAuth 2.0 Web Client ID 即可啟用官方「使用 Google 帳戶登入」按鈕
+    const GOOGLE_CLIENT_ID = "13333491283-9l610elv8e5vqglneb26nq9risf8i11a.apps.googleusercontent.com";
+    // 選填：如只限本校電郵登入可填 "frcss.edu.hk"，留空則接受任何 Google / Gmail 帳戶
+    const ALLOWED_DOMAIN = "";
+
+    const LESSONS = [];
+    const LEVELS = [];
+    const SPRINT_CARDS = [{"id": "S01", "tier": "運算", "code": "x = 17 // 5\nprint(x)", "q": "輸出？", "h": "70f1cf759ce1d9ef"}, {"id": "S02", "tier": "運算", "code": "y = 17 % 5\nprint(y)", "q": "輸出？", "h": "ca0b2147af9a5fad"}, {"id": "S03", "tier": "運算", "code": "a = 27\nb = 4\nprint(a // b + a % b)", "q": "輸出？", "h": "56875425ee83f7ab"}, {"id": "S04", "tier": "運算", "code": "print(135 % 60)", "q": "輸出？", "h": "60fddce7f974a7e6"}, {"id": "S05", "tier": "運算", "code": "n = 479\nprint((n // 10) % 10)", "q": "輸出？", "h": "218ec255ca9c432f"}, {"id": "S06", "tier": "交換", "code": "a = 8\nb = 12\nt = a\na = b\nb = t\nprint(a)", "q": "輸出？", "h": "d19fae548a97a467"}, {"id": "S07", "tier": "布爾", "code": "A = 5\nB = 8\nprint(B > A and A == 5)", "q": "True / False？", "h": "05ef9d26238603df"}, {"id": "S08", "tier": "布爾", "code": "A = 5\nB = 8\nprint(not (A < B))", "q": "True / False？", "h": "1eb635b8c544c190"}, {"id": "S09", "tier": "選擇", "code": "x = 15\nif x > 20:\n    y = 1\nelif x > 10:\n    y = 2\nelse:\n    y = 3\nprint(y)", "q": "輸出？", "h": "692b0fea799ae9b6"}, {"id": "S10", "tier": "循環", "code": "s = 0\nfor i in range(1, 5):\n    s = s + i\nprint(s)", "q": "輸出？", "h": "a5ca604b695cd25a"}, {"id": "S11", "tier": "循環", "code": "for i in range(2, 9, 2):\n    k = i\nprint(k)", "q": "最終 k？", "h": "cd5409a1d72ce0ef"}, {"id": "S12", "tier": "循環", "code": "c = 0\nfor i in range(9, 2, -2):\n    c = c + 1\nprint(c)", "q": "循環次數？", "h": "8db5450406cc3d44"}, {"id": "S13", "tier": "循環", "code": "x = 15\nwhile x > 3:\n    x = x - 4\nprint(x)", "q": "輸出？", "h": "e94c7416abd6925e"}, {"id": "S14", "tier": "循環", "code": "p = 1\nwhile p < 20:\n    p = p * 3\nprint(p)", "q": "輸出？", "h": "ea6dffe1ab2bfab0"}, {"id": "S15", "tier": "陣列", "code": "A = [10, 20, 30, 40]\nprint(A[len(A) - 2])", "q": "輸出？", "h": "a1da78647b66b46f"}, {"id": "S16", "tier": "陣列", "code": "A = [5, 2, 8, 1]\nm = A[0]\nfor i in range(1, 4):\n    if A[i] < m:\n        m = A[i]\nprint(m)", "q": "輸出？", "h": "de1853b72a2a006d"}, {"id": "S17", "tier": "陣列", "code": "A = [1, 2, 3, 4]\nA[1] = A[3]\nprint(A[1] + A[2])", "q": "輸出？", "h": "b8b04ab6a8441a46"}, {"id": "S18", "tier": "檢索", "code": "A = [79, 50, 85, 64]\n# while 檢索 85 (找到即停)", "q": "比較次數？", "h": "7f118f8bab2a7181"}, {"id": "S19", "tier": "除錯", "code": "01 s = 0\n02 for i in range(1, 5):\n03     s = i\n04 print(s)", "q": "求總和出錯行號？", "h": "eb9551a8f7b8c188"}, {"id": "S20", "tier": "除錯", "code": "01 A = [-5, -2, -9]\n02 hi = 0\n03 for i in range(0, 3):\n04     if A[i] > hi: hi = A[i]", "q": "找最大出錯行號？", "h": "ce485fff1efad191"}, {"id": "S21", "tier": "除錯", "code": "01 n = 10\n02 if n >= 50: print('A')\n03 elif n >= 80: print('B')\n04 else: print('C')", "q": "條件順序出錯行號？", "h": "5fc49abcc12cca08"}, {"id": "S22", "tier": "誤差", "code": "import math\nprint(math.trunc(-3.8))", "q": "輸出？", "h": "93446861b50d0c3c"}, {"id": "S23", "tier": "誤差", "code": "print(round(3.146, 2))", "q": "輸出？", "h": "01e894378492b990"}, {"id": "S24", "tier": "字串", "code": "s = \"HKDSE\"\nprint(len(s))", "q": "輸出？", "h": "ffe48af2bc2cfc06"}, {"id": "S25", "tier": "嵌套", "code": "c = 0\nfor i in range(3):\n    for j in range(4):\n        c = c + 1\nprint(c)", "q": "輸出？", "h": "718fc0e1ba831614"}, {"id": "S26", "tier": "二維", "code": "M = [[1, 2, 3], [4, 5, 6]]\nprint(M[1][2])", "q": "輸出？", "h": "a36365a5d12a1467"}, {"id": "S27", "tier": "二維", "code": "M = [[2, 4], [6, 8]]\nprint(M[0][1] + M[1][0])", "q": "輸出？", "h": "3965ca91bf4f3dcc"}, {"id": "S28", "tier": "子程式", "code": "def f(x):\n    return x * 2 + 1\nprint(f(4))", "q": "輸出？", "h": "f089ae52a80e39f6"}, {"id": "S29", "tier": "範圍", "code": "x = 5\ndef g():\n    x = 99\ng()\nprint(x)", "q": "輸出？", "h": "8805f2811e1c8b47"}, {"id": "S30", "tier": "堆疊", "code": "Push(4), Push(9), Pop(), Push(2), Pop()", "q": "第2次 Pop 傳回？", "h": "bf1a372a07d58472"}, {"id": "S31", "tier": "隊列", "code": "Enq(4), Enq(9), Deq(), Enq(2), Deq()", "q": "第2次 Deq 傳回？", "h": "22b172d46aefdb4c"}, {"id": "S32", "tier": "循環隊列", "code": "size = 4\nrear = 3\nrear = (rear + 1) % size\nprint(rear)", "q": "輸出？", "h": "8a352d120b71269e"}, {"id": "S33", "tier": "對分檢索", "code": "s = [10, 20, 30, 40, 50]\nstart = 0\nend = 4\nmid = (start + end) // 2\nprint(s[mid])", "q": "首個檢查值？", "h": "64d170c470bad3fb"}, {"id": "S34", "tier": "排序", "code": "A = [9, 4, 7]\n# 冒泡遞升第1輪後 A[2]=?", "q": "尾項值？", "h": "e2b64c134a4649f1"}, {"id": "S35", "tier": "編碼", "code": "print(chr(ord(\"A\") + 2))", "q": "輸出？", "h": "794dd8060c8b0082"}, {"id": "S36", "tier": "檔案", "code": "s = \"A,B,C\"\np = s.split(\",\")\nprint(p[1])", "q": "輸出？", "h": "04d1caf01415f1c4"}, {"id": "S37", "tier": "運算", "code": "print(-5 ** 2)", "q": "輸出？", "h": "2bdc3f270f301b7f"}, {"id": "S38", "tier": "運算", "code": "print(2 ** 3 ** 2)", "q": "輸出？", "h": "0e8c7a0c5395a38e"}, {"id": "S39", "tier": "二維", "code": "A = [[0, 1, 2], [3, 4, 5]]\nA[0][2] = 8\nprint(A[0][2] + A[1][0])", "q": "輸出？", "h": "9c23b0bfed4371fa"}, {"id": "S40", "tier": "字串", "code": "s = \"This is a string\"\nprint(s.find(\"is\", 3))", "q": "輸出？", "h": "c202921c224f5330"}, {"id": "S41", "tier": "字串", "code": "s = \"cat#dog#bird\"\nw = s.split(\"#\")\nprint(w[1])", "q": "輸出？", "h": "1704daf2145679d0"}, {"id": "S42", "tier": "字串", "code": "s = \"one two two\"\nprint(s.replace(\"two\", \"2\", 1))", "q": "輸出？", "h": "a97d59ad7dce4a59"}, {"id": "S43", "tier": "子程式", "code": "def f(x):\n    x = x + 5\nn = 10\nf(n)\nprint(n)", "q": "不可變參數輸出？", "h": "453915abfb5e8292"}, {"id": "S44", "tier": "子程式", "code": "def f(a):\n    a[0] = a[0] + 5\nL = [10]\nf(L)\nprint(L[0])", "q": "可變列表輸出？", "h": "6bf95b2b124a84ba"}, {"id": "S45", "tier": "結構", "code": "st = []\nst.append(3)\nst.append(7)\nst.append(9)\nprint(st.pop())", "q": "堆疊彈出輸出？", "h": "acce61ff328f1bd9"}, {"id": "S46", "tier": "結構", "code": "q = ['A', 'B', 'C']\nq.pop(0)\nq.append('D')\nprint(q[0])", "q": "隊列首位輸出？", "h": "9fe7133f0fa5b985"}, {"id": "S47", "tier": "檢索", "code": "A = [10, 20, 30, 40, 50]\n# 對分檢索找 30\nprint((0 + 4) // 2)", "q": "首次 mid 索引？", "h": "7ee962eca5bb5f78"}, {"id": "S48", "tier": "排序", "code": "A = [73, 85, 62, 96, 61]\n# 升序冒泡首輪後 A[4]？", "q": "A[4] 的值？", "h": "1dce0d521c2e1429"}];
+    const TEXTBOOK_EXAMPLES = [];
+    const DSE_PAPERS = [{"id": "DSE-2012-1B-Q3", "year": "2012", "paper": "卷一乙部 必修D", "topic": "循環與追蹤", "mode": "dryrun", "title": "2012 Q3：費氏數列循環與計數器 N", "prompt": "空運行以下 HKDSE 2012 Q3 算法（已轉為標準 Python），寫出程式的完整輸出（每行一個數值，最後一行為輸出次數 N）：", "code": "A = 1\nB = 1\nN = 0\nwhile B < 20:\n    A = A + B\n    B = A - B\n    print(B)\n    N = N + 1\nprint(N)", "stdin": "", "vizLink": ""}, {"id": "DSE-2013-1B-Q5", "year": "2013", "paper": "卷一乙部 必修D", "topic": "陣列與極值", "mode": "code", "title": "2013 Q5：優惠卡 10 項交易免最低價（ALG1 + ALG2 + ALG3）", "prompt": "百貨公司優惠卡記錄了小芬 10 項交易金額 T。補全程式計算總金額 TOTAL、找出最低交易金額的索引 M，並輸出實際應付金額 PAYMENT = TOTAL - T[M]。", "blankLines": [4, 7, 8, 9], "stdin": "", "vizLink": "", "starter": "T = [120, 85, 240, 60, 150, 95, 310, 75, 180, 110]\nTOTAL = 0\nfor i in range(0, len(T)):\n    # ___ 請補全此行 ___\nM = 0\nfor j in range(1, len(T)):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n# ___ 請補全此行 ___\nprint(TOTAL, T[M], PAYMENT)"}, {"id": "DSE-2014-1B-Q3", "year": "2014", "paper": "卷一乙部 必修D", "topic": "循環與追蹤", "mode": "dryrun", "title": "2014 Q3：數字序列比較（ALG1 while vs ALG2 for）", "prompt": "空運行以下 HKDSE 2014 Q3 算法 ALG1（P = 10），寫出程式的完整輸出（每行一個數值）：", "code": "A = 0\nB = 1\nP = 10\nwhile A <= P:\n    print(A)\n    temp = A + B\n    A = B\n    B = temp", "stdin": "", "vizLink": ""}, {"id": "DSE-2015-1B-Q4", "year": "2015", "paper": "卷一乙部 必修D", "topic": "陣列與旗標", "mode": "code", "title": "2015 Q4：自動販賣機售罄檢查（ALG2 提早停止）", "prompt": "陣列 P 儲存自動販賣機各產品餘下數量。補全 ALG2 的 while 循環，只要發現任何產品 P[i] > 0 便把 FLAG 設為 True 並立即停止循環，最後輸出 FLAG 與比較次數 steps。", "blankLines": [5, 7, 8], "stdin": "", "vizLink": "search_race", "starter": "P = [0, 0, 3, 0, 5, 0, 0, 2]\nFLAG = False\ni = 0\nsteps = 0\n# ___ 請補全此行 ___\n    steps = steps + 1\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n    i = i + 1\nprint(FLAG, steps)"}, {"id": "DSE-2016-1B-Q2", "year": "2016", "paper": "卷一乙部 必修D", "topic": "線性檢索", "mode": "code", "title": "2016 Q2：電郵濫發字串檢索（ALG2 提早停止）", "prompt": "陣列 ST 儲存濫發郵件關鍵詞（1-based，索引 0 留空）。補全 ALG2 的 while 循環，當找到 check_ST 時把索引存入 FOUND 並立即停止檢索，最後輸出 FOUND 及比較次數 steps。", "blankLines": [6, 8, 9], "stdin": "", "vizLink": "search_race", "starter": "ST = [\"\", \"恭喜\", \"中獎\", \"免費\", \"得獎者\"]\ncheck_ST = \"中獎\"\nFOUND = -1\ni = 1\nsteps = 0\n# ___ 請補全此行 ___\n    steps = steps + 1\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n    i = i + 1\nprint(FOUND, steps)"}, {"id": "DSE-2017-1B-Q3", "year": "2017", "paper": "卷一乙部 必修D", "topic": "陣列區間累加", "mode": "code", "title": "2017 Q3：鐵路車站相鄰行車時間區間計算", "prompt": "陣列 W 儲存 9 段相鄰車站行車時間（W[0] 為 A→B，W[1] 為 B→C，如此類推）。讀入起始段索引 X 與結束段索引 Y（包含 Y），計算並輸出總行車時間 T。", "blankLines": [5, 6], "stdin": "3\n5\n", "vizLink": "", "starter": "W = [2, 5, 3, 4, 6, 2, 3, 5, 4]\nX = int(input())\nY = int(input())\nT = 0\n# ___ 請補全此行 ___\n    # ___ 請補全此行 ___\nprint(T)"}, {"id": "DSE-2018-1B-Q5", "year": "2018", "paper": "卷一乙部 必修D", "topic": "循環與驗證", "mode": "code", "title": "2018 Q5：猜數字遊戲（太小／太大與最多猜 5 次）", "prompt": "秘密答案 ANSWER = 19，玩家最多可猜 5 次。補全條件分支：超出 1–100 輸出 Out of range，小於答案輸出 Too small，大於答案輸出 Too large；若猜中則結束循環並輸出 Bingo。", "blankLines": [4, 7, 9, 13], "stdin": "120\n10\n25\n19\n", "vizLink": "", "starter": "ANSWER = 19\nK = 0\nGUESS = -1\n# ___ 請補全此行 ___\n    GUESS = int(input())\n    K = K + 1\n    # ___ 請補全此行 ___\n        print(\"Out of range\")\n    # ___ 請補全此行 ___\n        print(\"Too small\")\n    elif GUESS > ANSWER:\n        print(\"Too large\")\n# ___ 請補全此行 ___\n    print(\"Bingo\")\nelse:\n    print(\"Game over\")"}, {"id": "DSE-2019-1B-Q5", "year": "2019", "paper": "卷一乙部 必修D", "topic": "二進制與旗標", "mode": "dryrun", "title": "2019 Q5：二進制陣列旗標反轉（首個 1 之後取反）", "prompt": "空運行以下 HKDSE 2019 Q5(b) 算法，寫出執行一次後陣列 A 的內容（以 Python 列表格式輸出，例如 [0, 1, 0, 0, 1, 0]）：", "code": "A = [0, 0, 1, 0, 1, 1]\nK = 2\nfor i in range(0, len(A)):\n    if K == 1:\n        A[i] = 1 - A[i]\n    if A[i] == 1:\n        K = 1\nprint(A)", "stdin": "", "vizLink": ""}, {"id": "DSE-2020-1B-Q2", "year": "2020", "paper": "卷一乙部 必修D", "topic": "交換與循環", "mode": "dryrun", "title": "2020 Q2：輾轉相減法求最大公因數（A=9, B=15）", "prompt": "空運行以下 HKDSE 2020 Q2 算法（輸入 A=9, B=15），寫出每次執行減法後輸出的 A 和 B（每行一對，最後一行是離開循環時的最終結果）：", "code": "A = 9\nB = 15\nwhile A != B:\n    if A < B:\n        T = A\n        A = B\n        B = T\n    A = A - B\n    print(A, B)", "stdin": "", "vizLink": ""}, {"id": "DSE-2021-1B-Q3", "year": "2021", "paper": "卷一乙部 必修D", "topic": "二進制陣列", "mode": "dryrun", "title": "2021 Q3：二進制陣列由右至左加一（Flag 版本）", "prompt": "空運行以下 HKDSE 2021 Q3(b) 算法，寫出執行後陣列 A 的內容（以 Python 列表格式輸出）：", "code": "A = [0, 1, 0, 1, 1]\nFlag = 1\nfor i in range(4, -1, -1):\n    if Flag == 1:\n        A[i] = 1 - A[i]\n        if A[i] == 1:\n            Flag = 0\nprint(A)", "stdin": "", "vizLink": ""}, {"id": "DSE-2022-1B-Q5", "year": "2022", "paper": "卷一乙部 必修D", "topic": "陣列點算與效率", "mode": "dryrun", "title": "2022 Q5：二進制陣列過半點算（ALG1）", "prompt": "空運行以下 HKDSE 2022 Q5(a) 算法 ALG1（N = 6，A = [1, 0, 1, 0, 0, 0]），寫出最終輸出的 B 及 ch（以單一空格分隔）：", "code": "A = [1, 0, 1, 0, 0, 0]\nN = 6\nB = 0\nfor i in range(0, N):\n    if A[i] == 1:\n        B = B + 1\nif B >= N / 2:\n    ch = 'X'\nelse:\n    ch = 'Y'\nprint(B, ch)", "stdin": "", "vizLink": ""}, {"id": "DSE-2023-1B-Q3", "year": "2023", "paper": "卷一乙部 必修D", "topic": "排序追蹤", "mode": "code", "title": "2023 Q3：陣列排序子程式（標準交換與追蹤）", "prompt": "HKDSE 2023 Q3 排序算法以暫存變量 TEMP 交換 A[i] 與 A[i-1]。補全交換語句及迴圈控制，並輸出排序後的陣列 A 及總交換次數 swaps。", "blankLines": [10, 11, 12, 15], "stdin": "", "vizLink": "insertion_sort", "starter": "A = [4, 3, 1, 8, 6]\ni = 1\nj = 2\nswaps = 0\nwhile i < 5:\n    if A[i] >= A[i - 1]:\n        i = j\n        j = j + 1\n    else:\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        swaps = swaps + 1\n        i = i - 1\n        # ___ 請補全此行 ___\n            i = 1\nprint(A, swaps)"}, {"id": "DSE-2024-1B-Q5", "year": "2024", "paper": "卷一乙部 必修D", "topic": "陣列驗證", "mode": "code", "title": "2024 Q5：驗證全正數（ALG1）與升序排列（ALG2）", "prompt": "陣列 A 儲存 6 個整數。補全 ALG1 檢查是否全部為正數（P），再補全 ALG2 檢查是否以升序排列（S，即每對相鄰元素滿足 A[i] <= A[i+1]），最後輸出 P 及 S。", "blankLines": [4, 7, 8], "stdin": "", "vizLink": "bubble_sort", "starter": "A = [2, 5, 5, 9, 12, 18]\nP = True\nfor i in range(0, len(A)):\n    # ___ 請補全此行 ___\n        P = False\nS = True\n# ___ 請補全此行 ___\n    # ___ 請補全此行 ___\n        S = False\nprint(P, S)"}, {"id": "DSE-2C-SEARCH", "year": "2023", "paper": "卷二C 選修C", "topic": "對分檢索", "mode": "code", "title": "選修 C 經典題：遞降陣列對分檢索子程式", "prompt": "陣列 age 已由大至小（遞降）排序。補全對分檢索子程式 SearchByBinary(target)，找到時傳回索引，找不到時傳回 -1。（注意遞降排序時左右收窄方向與遞升相反！）", "blankLines": [6, 9, 10, 12], "stdin": "", "vizLink": "binary_search", "starter": "age = [50, 48, 43, 38, 38, 29, 25, 19]\ndef SearchByBinary(target):\n    start = 0\n    end = len(age) - 1\n    while start <= end:\n        # ___ 請補全此行 ___\n        if age[mid] == target:\n            return mid\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n        else:\n            # ___ 請補全此行 ___\n    return -1\nprint(SearchByBinary(25), SearchByBinary(40))"}, {"id": "DSE-2C-SORT", "year": "2023", "paper": "卷二C 選修C", "topic": "排序與平行陣列", "mode": "code", "title": "選修 C 經典題：平行陣列選擇排序（姓名與分數同步）", "prompt": "陣列 name 與 score 平行對應。補全選擇排序程式，將分數由高至低排序，同時確保 name 與 score 同步交換，最後輸出最高分的三名學生姓名。", "blankLines": [6, 7, 11, 12], "stdin": "", "vizLink": "selection_sort", "starter": "name = [\"Amy\", \"Ben\", \"Cathy\", \"David\", \"Eva\"]\nscore = [72, 91, 84, 65, 88]\nfor i in range(0, len(score) - 1):\n    max_idx = i\n    for j in range(i + 1, len(score)):\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n    t1 = score[i]\n    score[i] = score[max_idx]\n    score[max_idx] = t1\n    # ___ 請補全此行 ___\n    # ___ 請補全此行 ___\n    name[max_idx] = t2\nprint(name[0], name[1], name[2])"}, {"id": "DSE-2C-LINKED", "year": "2024", "paper": "卷二C 選修C", "topic": "線性鏈表", "mode": "dryrun", "title": "選修 C 經典題：陣列模擬鏈表順序追蹤", "prompt": "以下程式以陣列 D 儲存節點內容、陣列 NP 儲存下一個節點的索引（-1 代表空指示標）。空運行程式並寫出完整輸出（每行一個名稱）：", "code": "D = [\"Start\", \"Kowloon\", \"YauMaTei\", \"Whampoa\", \"HoManTin\", \"MongKok\"]\nNP = [3, -1, 5, 4, 2, 1]\ncur = 0\nwhile cur != -1:\n    print(D[cur])\n    cur = NP[cur]", "stdin": "", "vizLink": "linked_list"}, {"id": "DSE-2025-1B-Q6", "year": "2025", "paper": "卷一乙部 必修D", "topic": "陣列反轉與移位", "mode": "dryrun", "title": "2025 Q6：陣列 STEAM 反轉與左移一格", "prompt": "空運行 HKDSE 2025 1B Q6(a) 與 (b) 的 Python 程式段，寫出兩行輸出（第一行為反轉後的 s2，第二行為左移一格後的 s2）：", "code": "s1 = [\"S\", \"T\", \"E\", \"A\", \"M\"]\ns2 = [\"\", \"\", \"\", \"\", \"\"]\nfor i in range(0, 5):\n    s2[4 - i] = s1[i]\nprint(s2)\nch = s1[0]\nfor i in range(0, 4):\n    s2[i] = s1[i + 1]\ns2[4] = ch\nprint(s2)", "stdin": "", "vizLink": ""}, {"id": "DSE-2025-1B-Q8c", "year": "2025", "paper": "卷一乙部 必修D", "topic": "極值與輸入驗證", "mode": "code", "title": "2025 Q8(c)：五評判分數去極值求平均 FS 與驗證", "prompt": "五名評判給予的分數儲存在 JS[1..5]（索引 0 留空）。補全程式找出最高分 Smax、最低分 Smin，並計算扣去最高及最低分後其餘 3 個分數的平均值 FS（(總和 - Smax - Smin) / 3）。", "blankLines": [7, 9, 11], "stdin": "", "vizLink": "", "starter": "JS = [0, 82, 95, 76, 88, 91]\nSmax = JS[1]\nSmin = JS[1]\ntotal = 0\nfor i in range(1, 6):\n    total = total + JS[i]\n    # ___ 請補全此行 ___\n        Smax = JS[i]\n    # ___ 請補全此行 ___\n        Smin = JS[i]\n# ___ 請補全此行 ___\nprint(Smax, Smin, round(FS, 1))"}, {"id": "DSE-2025-2C-Q10", "year": "2025", "paper": "卷二C 選修C", "topic": "選擇排序", "mode": "dryrun", "title": "2025 2C Q10：選擇排序每輪追蹤（X=[12,6,15,9]）", "prompt": "空運行 HKDSE 2025 2C Q10 選擇排序算法（N=4），程式在每次交換後輸出 i、s 與陣列 X，寫出完整的 3 行輸出：", "code": "X = [12, 6, 15, 9]\nN = 4\nfor i in range(0, N - 1):\n    s = i\n    for j in range(i + 1, N):\n        if X[j] < X[s]:\n            s = j\n    t = X[i]\n    X[i] = X[s]\n    X[s] = t\n    print(i, s, X)", "stdin": "", "vizLink": "selection_sort"}, {"id": "DSE-2025-2C-Q12", "year": "2025", "paper": "卷二C 選修C", "topic": "二維陣列", "mode": "code", "title": "2025 2C Q12：猜數字遊戲核對子程式 check(t)", "prompt": "ANS 儲存 3 位答案數字，二維陣列 trial[t][k] 儲存第 t 次嘗試的第 k 位數字。補全子程式 check(t)，逐位比較並把 'T' 或 'F' 填入二維陣列 result[t][k]。", "blankLines": [7, 8, 9], "stdin": "", "vizLink": "array_2d", "starter": "N = 3\nANS = [3, 7, 8]\ntrial = [[7, 7, 9], [8, 8, 4], [3, 8, 4], [3, 7, 8]]\nresult = [[\"\", \"\", \"\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"]]\ndef check(t):\n    k = 0\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n        else:\n            result[t][k] = \"F\"\n        k = k + 1\nfor r in range(0, 4):\n    check(r)\nprint(result[0], result[3])"}, {"id": "DSE-2026-1B-Q4", "year": "2026", "paper": "卷一乙部 必修D", "topic": "頻數陣列與極值", "mode": "code", "title": "2026 Q4：十首歌曲投票頻數點算與最高票歌曲 m", "prompt": "陣列 ch[0..9] 初始值為 0，記錄十首歌曲（編號 0–9）的票數。補全程式讀入 8 筆測試投票紀錄累加至 ch[vote]，再找出最多票數的歌曲編號存入 m 並輸出。", "blankLines": [4, 7, 8], "stdin": "3\n7\n3\n2\n7\n3\n0\n3\n", "vizLink": "", "starter": "ch = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\nfor j in range(0, 8):\n    vote = int(input())\n    # ___ 請補全此行 ___\nm = 0\nfor j in range(1, 10):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\nprint(m, ch[m])"}, {"id": "DSE-2026-1B-Q5", "year": "2026", "paper": "卷一乙部 必修D", "topic": "陣列雙重索引", "mode": "dryrun", "title": "2026 Q5：陣列相鄰求和與雙重索引 A[A[i]+A[i+1]-1]", "prompt": "空運行 HKDSE 2026 1B Q5(a) 與 (b) 的 Python 程式段（A = [2, 0, 2, 6, 0, 4, 2, 4]），寫出兩行陣列 B 的輸出：", "code": "A = [2, 0, 2, 6, 0, 4, 2, 4]\nB = [0, 0, 0, 0]\nfor i in range(0, 4):\n    B[i] = A[i] + A[i + 1]\nprint(B)\nfor i in range(0, 4):\n    B[i] = A[A[i] + A[i + 1] - 1]\nprint(B)", "stdin": "", "vizLink": ""}, {"id": "DSE-2026-1B-Q7c", "year": "2026", "paper": "卷一乙部 必修D", "topic": "平行陣列條件平均", "mode": "code", "title": "2026 Q7(c)：平行陣列求科目 ICT 平均耗時", "prompt": "三個平行陣列 SID、SJ、TS 儲存 N 筆測驗紀錄（學號、科目、耗時）。補全程式只累加科目為 'ICT' 的耗時 total 與筆數 cnt，並輸出平均耗時。", "blankLines": [8, 9, 10], "stdin": "", "vizLink": "", "starter": "SID = [2510, 2511, 2512, 2513, 2514]\nSJ = [\"ICT\", \"ENG\", \"ICT\", \"MATH\", \"ICT\"]\nTS = [20, 35, 30, 40, 25]\nN = len(SID)\ntotal = 0\ncnt = 0\nfor i in range(0, N):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\nprint(total / cnt)"}, {"id": "DSE-2026-2C-Q8", "year": "2026", "paper": "卷二C 選修C", "topic": "線性鏈表插入", "mode": "code", "title": "2026 2C Q8：陣列鏈表插入節點子程式 ap(st, new)", "prompt": "陣列 n 與 nxt 模擬單向鏈表（head = 5，-1 為空指示標）。補全子程式 ap(st, new) 於節點 st（'Mia'）之後插入新節點 n[8] = 'Fan'，並順序輸出插入後的鏈表內容。", "blankLines": [9, 10], "stdin": "", "vizLink": "linked_list", "starter": "n = [\"Ben\", \"Ava\", \"Mia\", \"Pam\", \"Max\", \"Sam\", \"Ian\", \"Sue\", \"Fan\"]\nnxt = [3, 0, 6, 5, 2, 7, -1, 4, -1]\nhead = 5\ndef ap(st, new):\n    ptr = head\n    found = False\n    while ptr != -1 and found == False:\n        if n[ptr] == st:\n            # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n            found = True\n        ptr = nxt[ptr]\nap(\"Mia\", 8)\np = head\nout = []\nwhile p != -1:\n    out.append(n[p])\n    p = nxt[p]\nprint(nxt[2], nxt[8], out)"}, {"id": "DSE-2026-2C-Q9", "year": "2026", "paper": "卷二C 選修C", "topic": "二維陣列視覺點", "mode": "code", "title": "2026 2C Q9：海岸線大廈高度二維陣列計算 sv[i]", "prompt": "二維陣列 ht[j][i]（4 列 × 5 欄）儲存各位置大廈高度。補全雙層嵌套循環，對每一個海岸線視覺點（欄 i = 0..4）找出該欄最高大廈高度存入 sv[i]，再輸出 sv 及最高值。", "blankLines": [8, 11, 13], "stdin": "", "vizLink": "array_2d", "starter": "ht = [\n    [5, 1, 0, 7, 7],\n    [5, 1, 6, 0, 0],\n    [4, 8, 6, 5, 4],\n    [9, 1, 2, 5, 4]\n]\nsv = [0, 0, 0, 0, 0]\n# ___ 請補全此行 ___\n    hi = ht[0][i]\n    for j in range(1, 4):\n        # ___ 請補全此行 ___\n            hi = ht[j][i]\n    # ___ 請補全此行 ___\nprint(sv, max(sv))"}];
+    const DRY_RUN_DEMOS = {"swap": {"title": "L01 變量交換（temp 暫存原則）", "code": ["A = 10", "B = 25", "temp = A", "A = B", "B = temp", "print(A, B)"], "steps": [{"line": 0, "vars": {"A": 10, "B": "-", "temp": "-"}, "arr": null, "note": "初始化變量 A = 10。"}, {"line": 1, "vars": {"A": 10, "B": 25, "temp": "-"}, "arr": null, "note": "初始化變量 B = 25。"}, {"line": 2, "vars": {"A": 10, "B": 25, "temp": 10}, "arr": null, "note": "先用暫存變量 temp 備份 A 原值 10，避免被覆蓋！"}, {"line": 3, "vars": {"A": 25, "B": 25, "temp": 10}, "arr": null, "note": "將 B 的值（25）賦值予 A；此時 A 與 B 暫時皆為 25，但 10 已安全存于 temp。"}, {"line": 4, "vars": {"A": 25, "B": 10, "temp": 10}, "arr": null, "note": "將 temp（10）賦值予 B，完成交換！"}, {"line": 5, "vars": {"A": 25, "B": 10, "temp": 10}, "arr": null, "note": "最終輸出：25 10。"}]}, "while_end": {"title": "L08 while 結束值（-1）累加", "code": ["total = 0", "n = int(input())", "while n != -1:", "    total = total + n", "    n = int(input())", "print(total)"], "steps": [{"line": 0, "vars": {"total": 0, "n": "-"}, "arr": null, "note": "循環前先將累加器 total 設為 0。"}, {"line": 1, "vars": {"total": 0, "n": 10}, "arr": null, "note": "進入循環前先讀取首個輸入（假設輸入 10）。"}, {"line": 2, "vars": {"total": 0, "n": 10}, "arr": null, "note": "檢查 n != -1（10 != -1 為 True），進入循環體。"}, {"line": 3, "vars": {"total": 10, "n": 10}, "arr": null, "note": "累加：total = 0 + 10 = 10。"}, {"line": 4, "vars": {"total": 10, "n": 20}, "arr": null, "note": "讀取下一個輸入（假設輸入 20）。"}, {"line": 3, "vars": {"total": 30, "n": 20}, "arr": null, "note": "20 != -1 成立，再累加：total = 10 + 20 = 30。"}, {"line": 4, "vars": {"total": 30, "n": -1}, "arr": null, "note": "讀取結束值 -1。"}, {"line": 2, "vars": {"total": 30, "n": -1}, "arr": null, "note": "檢查 -1 != -1 為 False，立即離開循環，不會把 -1 計入 total！"}, {"line": 5, "vars": {"total": 30, "n": -1}, "arr": null, "note": "最終輸出：30。"}]}, "reverse": {"title": "L14 陣列原地反轉（只需走前半部）", "code": ["A = [2, 4, 6, 8, 10, 12]", "for i in range(0, 3):", "    temp = A[i]", "    A[i] = A[5 - i]", "    A[5 - i] = temp"], "steps": [{"line": 0, "vars": {"i": "-", "temp": "-"}, "arr": [2, 4, 6, 8, 10, 12], "hl": [], "note": "初始 6 個元素陣列（索引 0 至 5）。"}, {"line": 1, "vars": {"i": 0, "temp": 2}, "arr": [2, 4, 6, 8, 10, 12], "hl": [0, 5], "note": "i = 0：準備對調首尾兩項 A[0] 與 A[5]。"}, {"line": 4, "vars": {"i": 0, "temp": 2}, "arr": [12, 4, 6, 8, 10, 2], "hl": [0, 5], "note": "完成對調 A[0] ↔ A[5]（12 與 2 互換）。"}, {"line": 4, "vars": {"i": 1, "temp": 4}, "arr": [12, 10, 6, 8, 4, 2], "hl": [1, 4], "note": "i = 1：完成對調 A[1] ↔ A[4]（10 與 4 互換）。"}, {"line": 4, "vars": {"i": 2, "temp": 6}, "arr": [12, 10, 8, 6, 4, 2], "hl": [2, 3], "note": "i = 2：完成對調 A[2] ↔ A[3]（8 與 6 互換），循環結束！若再跑 i = 3..5 會調回原樣。"}]}, "insert": {"title": "L26 陣列插入（必須逆序後移！）", "code": ["A = [10, 20, 30, 40, 0]", "pos = 1", "for i in range(4, pos, -1):", "    A[i] = A[i - 1]", "A[pos] = 99"], "steps": [{"line": 0, "vars": {"pos": 1, "i": "-"}, "arr": [10, 20, 30, 40, 0], "hl": [1], "note": "目標：在索引 pos = 1 插入 99，尾格 0 為預留空位。"}, {"line": 3, "vars": {"pos": 1, "i": 4}, "arr": [10, 20, 30, 40, 40], "hl": [3, 4], "note": "i = 4（逆序開始）：A[4] = A[3]，把 40 向右移入空位。"}, {"line": 3, "vars": {"pos": 1, "i": 3}, "arr": [10, 20, 30, 30, 40], "hl": [2, 3], "note": "i = 3：A[3] = A[2]，把 30 向右移一格。"}, {"line": 3, "vars": {"pos": 1, "i": 2}, "arr": [10, 20, 20, 30, 40], "hl": [1, 2], "note": "i = 2：A[2] = A[1]，把 20 向右移一格，成功騰出索引 1！"}, {"line": 6, "vars": {"pos": 2, "val": 30, "i": 2}, "arr": [10, 20, 30, 40, 50], "hl": [2], "note": "循環結束，寫入 A[2] = 30，無任何原值遺失！"}]}, "stack": {"title": "L52 堆疊 Push / Pop（後進先出 LIFO）", "code": ["S = [\"\", \"\", \"\", \"\"]", "top = -1", "top = top + 1; S[top] = 'A'  # Push A", "top = top + 1; S[top] = 'B'  # Push B", "val = S[top]; top = top - 1  # Pop", "top = top + 1; S[top] = 'C'  # Push C"], "steps": [{"line": 0, "vars": {"top": -1, "val": "-"}, "arr": ["_", "_", "_", "_"], "hl": [], "note": "建立容量 4 的空堆疊，頂端指示標 top = -1。"}, {"line": 2, "vars": {"top": 0, "val": "-"}, "arr": ["A", "_", "_", "_"], "hl": [0], "note": "Push('A')：先將 top 加 1 變為 0，再寫入 S[0] = 'A'。"}, {"line": 3, "vars": {"top": 1, "val": "-"}, "arr": ["A", "B", "_", "_"], "hl": [1], "note": "Push('B')：top 加 1 變為 1，寫入 S[1] = 'B'。"}, {"line": 4, "vars": {"top": 0, "val": "B"}, "arr": ["A", "B", "_", "_"], "hl": [0], "note": "Pop()：取出頂端 'B' 後只須 top = top - 1，陣列舊值無須清除。"}, {"line": 5, "vars": {"top": 1, "val": "B"}, "arr": ["A", "C", "_", "_"], "hl": [1], "note": "Push('C')：top 加 1 至 1，新項目 'C' 自動覆寫舊值 'B'。"}]}, "bsearch": {"title": "L62 對分檢索 Binary Search（目標 79）", "code": ["s = [50, 64, 75, 79, 85, 97]", "start = 0; end = 5; target = 79", "mid = (start + end) // 2", "if s[mid] == target: found = True", "elif target < s[mid]: end = mid - 1", "else: start = mid + 1"], "steps": [{"line": 1, "vars": {"start": 0, "mid": "-", "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [0, 5], "note": "初始化搜尋範圍 start = 0，end = 5。"}, {"line": 2, "vars": {"start": 0, "mid": 2, "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [2], "note": "第 1 步：mid = (0 + 5) // 2 = 2，s[2] = 75 < 79。"}, {"line": 5, "vars": {"start": 3, "mid": 2, "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [3, 4, 5], "note": "目標較大，排除左半邊，更新 start = mid + 1 = 3。"}, {"line": 2, "vars": {"start": 3, "mid": 4, "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [4], "note": "第 2 步：mid = (3 + 5) // 2 = 4，s[4] = 85 > 79。"}, {"line": 4, "vars": {"start": 3, "mid": 4, "end": 3, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [3], "note": "目標較小，排除右半邊，更新 end = mid - 1 = 3。"}, {"line": 3, "vars": {"start": 3, "mid": 3, "end": 3, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [3], "note": "第 3 步：mid = 3，s[3] == 79，成功找到！僅比較 3 次。"}]}, "bubble": {"title": "L65 冒泡排序第 1 輪（遞升）", "code": ["A = [70, 55, 82, 60]", "for j in range(0, 3):", "    if A[j] > A[j + 1]:", "        temp = A[j]", "        A[j] = A[j + 1]", "        A[j + 1] = temp"], "steps": [{"line": 0, "vars": {"j": "-", "比較": "-"}, "arr": [70, 55, 82, 60], "hl": [], "note": "初始未排序陣列 [70, 55, 82, 60]。"}, {"line": 2, "vars": {"j": 0, "比較": "70 > 55 (交換)"}, "arr": [55, 70, 82, 60], "hl": [0, 1], "note": "j = 0：70 > 55，交換索引 0 與 1。"}, {"line": 2, "vars": {"j": 1, "比較": "70 > 82 (不換)"}, "arr": [55, 70, 82, 60], "hl": [1, 2], "note": "j = 1：70 < 82，次序正確不交換。"}, {"line": 2, "vars": {"j": 2, "比較": "82 > 60 (交換)"}, "arr": [55, 70, 60, 82], "hl": [2, 3], "note": "j = 2：82 > 60，交換！最大值 82 已浮到最右端。"}]}};
+
+    const ACTIVE_USER_KEY = 'hkdse_py_practice_v1_user';
+    const GAS_URL_KEY = 'hkdse_py_practice_v1_gas_url';
+    const GOOGLE_CID_KEY = 'hkdse_py_practice_v1_google_cid';
+    const ALLOWED_DOM_KEY = 'hkdse_py_practice_v1_allowed_dom';
+    function getGoogleClientId() { try { return localStorage.getItem(GOOGLE_CID_KEY) || GOOGLE_CLIENT_ID; } catch (e) { return GOOGLE_CLIENT_ID; } }
+    function getAllowedDomain() { try { return localStorage.getItem(ALLOWED_DOM_KEY) || ALLOWED_DOMAIN; } catch (e) { return ALLOWED_DOMAIN; } }
+    const SPRINT_LB_KEY = 'hkdse_py_practice_v1_sprint_lb';
+
+    const state = {
+      pyodide: null,
+      mode: 'home',
+      currentLevelIdx: 0,
+      student: null,
+      completed: {},
+      usedSolution: {},
+      attempts: {},
+      xp: 0,
+      penalty: 0,
+      tabSwitches: 0,
+      awaySeconds: 0,
+      hiddenAt: null,
+      sprintBest: 0,
+      soundOn: true,
+      openChapters: { 1: true },
+      demoKey: 'swap',
+      demoStep: 0,
+      demoTimer: null,
+      selectedMcq: null,
+      lastPasteBlocked: false
+    };
+
+    function getGasUrl() {
+      try { return localStorage.getItem(GAS_URL_KEY) || GAS_WEBAPP_URL; } catch (e) { return GAS_WEBAPP_URL; }
+    }
+
+    function updateSyncTag() {}
+
+    async function syncToGoogleSheet(payload) {
+      const url = getGasUrl();
+      if (!url) return;
+      const enriched = {
+        ...payload,
+        email: (state.student && state.student.email) ? state.student.email : (payload.email || ''),
+        progressSnapshot: {
+          xp: state.xp,
+          penalty: state.penalty,
+          completed: state.completed,
+          tbDone: (typeof tbState !== 'undefined' && tbState.done) ? tbState.done : {}
+        }
+      };
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(enriched)
+        });
+      } catch (e) {}
+    }
+
+    function sprintHash(cardId, ans) {
+      const norm = String(ans || '').trim().replace(/\s+/g, '').toLowerCase();
+      const s = `HKDSE_ICT_2026|${cardId}|${norm}`;
+      let h1 = 0x811c9dc5;
+      let h2 = 0x01000193;
+      for (let i = 0; i < s.length; i++) {
+        const c = s.charCodeAt(i);
+        h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+        h2 = Math.imul(h2 ^ (c + 17), 0x85ebca6b) >>> 0;
+      }
+      return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
+    }
+
+    async function callCloudGrader(payload) {
+      const url = getGasUrl();
+      if (!url) {
+        return {
+          status: 'no_gas',
+          message: '尚未設定雲端核對伺服器（Google Apps Script 網址）。請老師按左上角標誌 5 下（或 Ctrl+Shift+T）貼上已更新的 GAS 網址。'
+        };
+      }
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        if (!resp.ok) {
+          return { status: 'error', message: `雲端核對連線失敗（HTTP ${resp.status}），請稍後再試。` };
+        }
+        const data = await resp.json();
+        return data || { status: 'error', message: '雲端核對回應格式異常。' };
+      } catch (e) {
+        return { status: 'error', message: '未能連線至雲端核對伺服器，請檢查網絡或確認 GAS 已重新部署為最新版本。' };
+      }
+    }
+
+    async function loadCloudProgressByEmail(email) {
+      const url = getGasUrl();
+      if (!url || !email) return null;
+      try {
+        const resp = await fetch(`${url}?action=load&email=${encodeURIComponent(email)}`, { method: 'GET' });
+        if (!resp.ok) return null;
+        const data = await resp.json();
+        if (data && data.status === 'ok' && data.found && data.progress) {
+          return data.progress;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function decodeJwtPayload(token) {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+      } catch (e) { return null; }
+    }
+
+    let pendingGoogleUser = null;
+
+    function updateGmailModalUI() {
+      const signedBox = document.getElementById('gmailSignedInBox');
+      const signInSec = document.getElementById('gmailSignInSection');
+      const fallbackNote = document.getElementById('gmailFallbackNote');
+      const user = pendingGoogleUser || (state.student && state.student.email ? state.student : null);
+
+      if (user && user.email && user.verifiedGoogle) {
+        signedBox.classList.remove('hidden');
+        signInSec.classList.add('hidden');
+        document.getElementById('gmailNameText').textContent = user.name || user.email;
+        document.getElementById('gmailEmailText').textContent = user.email;
+        const img = document.getElementById('gmailAvatarImg');
+        if (user.picture) { img.src = user.picture; img.classList.remove('hidden'); }
+        else img.classList.add('hidden');
+      } else {
+        signedBox.classList.add('hidden');
+        signInSec.classList.remove('hidden');
+        const cid = getGoogleClientId();
+        if (cid && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+          fallbackNote.classList.add('hidden');
+          const wrap = document.getElementById('googleBtnWrap');
+          wrap.innerHTML = '';
+          google.accounts.id.initialize({
+            client_id: cid,
+            callback: handleGoogleCredentialResponse
+          });
+          google.accounts.id.renderButton(wrap, { theme: 'filled_blue', size: 'large', width: 320, text: 'signin_with', locale: 'zh_HK' });
+        } else {
+          document.getElementById('googleBtnWrap').innerHTML = '';
+          fallbackNote.classList.remove('hidden');
+          if (user && user.email) document.getElementById('loginEmailInput').value = user.email;
+        }
+      }
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+      const errEl = document.getElementById('loginErrorMsg');
+      const stEl = document.getElementById('loginCloudStatus');
+      errEl.classList.add('hidden');
+      const info = decodeJwtPayload(response.credential);
+      if (!info || !info.email) {
+        errEl.textContent = 'Google 驗證失敗，請重試。';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      const email = String(info.email).trim().toLowerCase();
+      const dom = getAllowedDomain().trim().toLowerCase();
+      if (dom && !email.endsWith('@' + dom)) {
+        errEl.textContent = `請使用學校帳戶（@${dom}）登入。`;
+        errEl.classList.remove('hidden');
+        return;
+      }
+      pendingGoogleUser = { email, name: info.name || '', picture: info.picture || '', verifiedGoogle: true };
+      document.getElementById('loginNameInput').value = info.name || document.getElementById('loginNameInput').value;
+      updateGmailModalUI();
+
+      // Auto-load cloud progress from Google Sheet!
+      stEl.textContent = '正在從雲端載入你的學習進度...';
+      stEl.classList.remove('hidden');
+      const cloud = await loadCloudProgressByEmail(email);
+      if (cloud) {
+        if (cloud.cls) document.getElementById('loginClassInput').value = cloud.cls;
+        if (cloud.no) document.getElementById('loginNoInput').value = cloud.no;
+        if (cloud.name) document.getElementById('loginNameInput').value = cloud.name;
+        stEl.textContent = `已找到雲端紀錄（已完成 ${Object.keys(cloud.completed || {}).length} 題），按下方按鈕繼續！`;
+      } else {
+        stEl.textContent = '已驗證 Google 帳戶！請填寫班別及學號完成首次登入。';
+      }
+    }
+
+    // Anti-AI Telemetry: Track Tab-Switch & Away Seconds (No fullscreen lock)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        state.hiddenAt = Date.now();
+      } else if (state.hiddenAt) {
+        const secs = Math.max(1, Math.round((Date.now() - state.hiddenAt) / 1000));
+        state.hiddenAt = null;
+        state.tabSwitches += 1;
+        state.awaySeconds += secs;
+        saveProgress();
+        renderProgressWidgets();
+      }
+    });
+
+    function profileKey(id) { return `hkdse_py_practice_v1_prof_${id}`; }
+    function saveProgress() {
+      if (!state.student) return;
+      try {
+        localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(state.student));
+        localStorage.setItem(profileKey(state.student.id), JSON.stringify({
+          completed: state.completed, usedSolution: state.usedSolution, attempts: state.attempts,
+          xp: state.xp, penalty: state.penalty, tabSwitches: state.tabSwitches,
+          awaySeconds: state.awaySeconds, currentLevelIdx: state.currentLevelIdx, sprintBest: state.sprintBest
+        }));
+      } catch (e) {}
+    }
+
+    function loadProfile(stu) {
+      state.student = stu;
+      state.completed = {}; state.usedSolution = {}; state.attempts = {};
+      state.xp = 0; state.penalty = 0; state.tabSwitches = 0; state.awaySeconds = 0; state.currentLevelIdx = 0; state.sprintBest = 0;
+      try {
+        const raw = localStorage.getItem(profileKey(stu.id));
+        if (raw) {
+          const p = JSON.parse(raw);
+          state.completed = p.completed || {}; state.usedSolution = p.usedSolution || {}; state.attempts = p.attempts || {};
+          state.xp = Number(p.xp) || 0; state.penalty = Number(p.penalty) || 0;
+          state.tabSwitches = Number(p.tabSwitches) || 0; state.awaySeconds = Number(p.awaySeconds) || 0;
+          state.currentLevelIdx = Math.min(LEVELS.length - 1, Math.max(0, Number(p.currentLevelIdx) || 0));
+          state.sprintBest = Number(p.sprintBest) || 0;
+        }
+      } catch (e) {}
+      state.currentLevelIdx = 0; state.openChapters = {};
+      document.getElementById('headerStudentLabel').textContent = `${stu.cls}-${stu.no} ${stu.name}`;
+      
+      renderProgressWidgets();
+      renderSidebars();
+      renderHomeRoadmap();
+      loadLevel(state.currentLevelIdx);
+    }
+
+    function getChapterStats(ch) {
+      const items = LEVELS.filter((l) => l.ch === ch);
+      const done = items.filter((l) => state.completed[l.id]).length;
+      return { total: items.length, done, cleared: done === items.length && items.length > 0 };
+    }
+    function isChapterUnlocked(ch) {
+      if (ch <= 1) return true;
+      if (state.student && state.student.teacherMode) return true;
+      return getChapterStats(ch - 1).cleared;
+    }
+
+    // Sound Synth
+    let audioCtx = null;
+    function playTone(freq, dur = 0.06, type = 'sine', vol = 0.04) {
+      if (!state.soundOn) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+    function playSuccess() { playTone(523, 0.08, 'triangle', 0.07); setTimeout(() => playTone(659, 0.08, 'triangle', 0.07), 80); setTimeout(() => playTone(784, 0.14, 'triangle', 0.08), 160); }
+    function playError() { playTone(180, 0.12, 'sawtooth', 0.05); setTimeout(() => playTone(140, 0.14, 'sawtooth', 0.05), 100); }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // =========================================================================
+    // PYODIDE WASM ENGINE + AST STANDARD-PYTHON CHECKER + VIRTUAL FILES
+    // =========================================================================
+    const PY_AST_CHECKER = `
+import ast, json
+
+def _hkdse_check_code(code_str, forbidden_calls):
+    issues = []
+    ai_flags = []
+    # Check raw semicolons outside strings
+    try:
+        tree = ast.parse(code_str)
+    except SyntaxError as e:
+        return json.dumps({"syntax_error": f"第 {e.lineno} 行語法錯誤：{e.msg}", "issues": [], "ai_flags": []})
+
+    for line_no, raw_line in enumerate(code_str.splitlines(), start=1):
+        stripped = raw_line.split("#")[0]
+        if ";" in stripped and ('";"' not in stripped and "';'" not in stripped):
+            issues.append(f"第 {line_no} 行不可使用分號 ; 合併語句，請拆成獨立行。")
+
+    for node in ast.walk(tree):
+        ln = getattr(node, "lineno", "?")
+        if isinstance(node, ast.AugAssign):
+            issues.append(f"第 {ln} 行不可使用簡寫運算符（如 +=、-=），請改用標準寫法（例如 x = x + 1）。")
+        elif isinstance(node, ast.Assign):
+            for t in node.targets:
+                if isinstance(t, (ast.Tuple, ast.List)):
+                    issues.append(f"第 {ln} 行不可使用單行多重賦值或元組交換，請拆成獨立行或使用 temp 變量。")
+        elif isinstance(node, ast.ListComp) or isinstance(node, ast.DictComp) or isinstance(node, ast.SetComp):
+            ai_flags.append(f"超綱語法(ListComp L{ln})")
+        elif isinstance(node, ast.Lambda):
+            ai_flags.append(f"超綱語法(lambda L{ln})")
+        elif isinstance(node, ast.JoinedStr):
+            ai_flags.append(f"超綱語法(f-string L{ln})")
+        elif isinstance(node, ast.Call):
+            fn = ""
+            if isinstance(node.func, ast.Name):
+                fn = node.func.id
+            elif isinstance(node.func, ast.Attribute):
+                fn = node.func.attr
+            if fn in ("enumerate", "zip", "map", "filter"):
+                ai_flags.append(f"超綱函數({fn} L{ln})")
+            if fn in forbidden_calls:
+                issues.append(f"第 {ln} 行本題禁止使用內置函數 {fn}()，請自行以循環編寫算法。")
+
+    return json.dumps({"syntax_error": "", "issues": issues, "ai_flags": ai_flags})
+`;
+
+    async function initPyodideEngine() {
+      const statusEl = { textContent: '', className: '' };
+      try {
+        if (typeof loadPyodide !== 'function') throw new Error('Pyodide CDN unavailable');
+        state.pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' });
+        state.pyodide.runPython(PY_AST_CHECKER);
+        resetVirtualFiles();
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#10d981] shadow-[0_0_8px_#10d981]"></span> PYTHON 3 WASM READY';
+        statusEl.className = 'flex items-center gap-1.5 text-[#10d981] font-mono-code text-[10px]';
+      } catch (err) {
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#f5a623]"></span> OFFLINE PREVIEW';
+        statusEl.className = 'flex items-center gap-1.5 text-[#f5a623] font-mono-code text-[10px]';
+      }
+    }
+
+    async function runPythonCode(code, stdinStr, checkFile = '') {
+      if (!state.pyodide) return { ok: false, error: 'Python 3 引擎正在載入中，請稍候數秒再試。', output: '' };
+      state.pyodide.globals.set('_user_code', code);
+      state.pyodide.globals.set('_user_stdin', stdinStr || '');
+      state.pyodide.globals.set('_check_file', checkFile || '');
+      const runner = `
+import io, os as _os, contextlib, traceback
+_lines = _user_stdin.splitlines()
+_it = iter(_lines)
+def _fake_input(prompt=""):
+    try:
+        return next(_it)
+    except StopIteration:
+        return ""
+_buf = io.StringIO()
+_err = ""
+try:
+    _ns = {"input": _fake_input}
+    with contextlib.redirect_stdout(_buf):
+        exec(compile(_user_code, "<student.py>", "exec"), _ns)
+except Exception as e:
+    _err = f"{type(e).__name__}: {e}"
+_final_out = _buf.getvalue()
+if _check_file and not _err:
+    if _os.path.exists(_check_file):
+        with open(_check_file, "r", encoding="utf-8") as _cf:
+            _final_out = _cf.read()
+    else:
+        _err = "找不到指定輸出檔案：" + _check_file
+(_final_out, _err)
+`;
+      const res = state.pyodide.runPython(runner).toJs();
+      return { ok: !res[1], output: String(res[0] || '').trim(), error: String(res[1] || '') };
+    }
+
+    function checkCodeAst(code, forbiddenCalls) {
+      if (!state.pyodide) {
+        // Basic JS regex fallback if Pyodide still loading
+        const issues = [];
+        if (/;/.test(code)) issues.push('不可使用分號 ; 合併語句，請拆成獨立行。');
+        if (/(\+=|-=|\*=|\/=)/.test(code)) issues.push('不可使用 +=／-= 簡寫，請改用標準寫法（如 x = x + 1）。');
+        return { syntax_error: '', issues, ai_flags: [] };
+      }
+      state.pyodide.globals.set('_chk_code', code);
+      state.pyodide.globals.set('_chk_forb', forbiddenCalls || []);
+      const raw = state.pyodide.runPython('_hkdse_check_code(_chk_code, list(_chk_forb))');
+      return JSON.parse(raw);
+    }
+
+    // Virtual Text Files for Sandbox (L71 preview)
+    function resetVirtualFiles() {
+      if (!state.pyodide) return;
+      state.pyodide.FS.writeFile('data.txt', '10/06#Rainy\n11/06#Cloudy\n12/06#Sunny\n');
+      state.pyodide.FS.writeFile('out.txt', 'Today is Monday.\n');
+      renderVirtualFiles();
+    }
+
+    function renderVirtualFiles() {
+      const box = document.getElementById('virtualFileList');
+      if (!state.pyodide) { box.innerHTML = '<div class="text-[#64748b] text-xs">等待 Python 引擎載入...</div>'; return; }
+      let files = [];
+      try {
+        files = state.pyodide.runPython(`
+import os
+sorted([fn for fn in os.listdir(".") if fn.endswith(".txt")])
+`).toJs();
+      } catch (e) { files = ['data.txt', 'out.txt']; }
+      if (!files.length) {
+        box.innerHTML = '<div class="text-[#64748b] text-xs">暫無 .txt 檔案。使用 open("test.txt", "w") 即可建立。</div>';
+        return;
+      }
+      box.innerHTML = files.map((fn) => {
+        let content = '';
+        try {
+          state.pyodide.globals.set('_vf_name', fn);
+          content = state.pyodide.runPython('open(_vf_name, "r", encoding="utf-8").read()');
+        } catch (e) {}
+        return `<div class="rounded-sm bg-[#060a12] border border-[#1e2d44] p-2.5">
+          <div class="text-[#38bdf8] font-bold mb-1 flex items-center justify-between"><span>${escapeHtml(fn)}</span><span class="text-[10px] text-[#64748b]">${content.length} chars</span></div>
+          <pre class="text-[#e2e8f0] whitespace-pre-wrap text-[11px]">${escapeHtml(content || '（空白檔案）')}</pre>
+        </div>`;
+      }).join('');
+    }
+
+    // =========================================================================
+    // INTERACTIVE STEP-BY-STEP DRY-RUN TRACE VISUALIZER (GREEN-BAR PAPER)
+    // =========================================================================
+    function renderProgressWidgets() {}
+    function renderSidebars() {}
+    function renderHomeRoadmap() {}
+    function loadLevel() {}
+
+    // =========================================================================
+    // SPRINT GAME ENGINE (3-LANE FALLING PYTHON TRACE/DEBUG)
+    // =========================================================================
+    const sp = { running: false, paused: false, score: 0, streak: 0, cleared: 0, cards: [], targetUid: null, nextUid: 1, raf: null, lastTs: 0, acc: 0 };
+    function spSpawn() {
+      const clearLanes = [0, 1, 2].filter((ln) => sp.cards.filter((c) => c.lane === ln).every((c) => c.y >= 96));
+      if (!clearLanes.length) return;
+      const lane = clearLanes[Math.floor(Math.random() * clearLanes.length)];
+      const topicVal = document.getElementById('spTopic') ? document.getElementById('spTopic').value : 'ALL';
+      const topicMap = {
+        basic: ['運算', '交換', '布爾', '選擇'],
+        loop_arr: ['循環', '陣列', '檢索'],
+        '2d_sub': ['嵌套', '二維', '子程式', '範圍'],
+        ds_sort: ['堆疊', '隊列', '循環隊列', '對分檢索', '排序'],
+        debug_io: ['除錯', '誤差', '字串', '編碼', '檔案']
+      };
+      const pool = topicVal === 'ALL' ? SPRINT_CARDS : SPRINT_CARDS.filter((c) => (topicMap[topicVal] || []).includes(c.tier));
+      const srcPool = pool.length ? pool : SPRINT_CARDS;
+      const card = srcPool[Math.floor(Math.random() * srcPool.length)];
+      const item = { uid: sp.nextUid++, card, lane, y: 8, landed: false, el: null };
+      const div = document.createElement('div');
+      div.className = 'block-card rounded-sm p-2';
+      div.style.left = `calc(${lane * 33.333}% + 5px)`;
+      div.style.top = '8px'; div.style.height = '78px';
+      div.innerHTML = `<div class="flex justify-between font-mono-code text-[9px]"><span class="text-[#38bdf8] font-bold">${card.tier}</span><span class="text-[#f5a623]">${card.q}</span></div>
+        <pre class="font-mono-code text-[10px] text-white mt-1 leading-tight overflow-hidden">${escapeHtml(card.code.split('\n').slice(0, 3).join('\n'))}</pre>`;
+      div.addEventListener('pointerdown', (e) => { e.preventDefault(); sp.targetUid = item.uid; spSyncUI(); document.getElementById('spInput').focus(); });
+      item.el = div;
+      document.getElementById('spCardsLayer').appendChild(div);
+      sp.cards.push(item);
+      if (!sp.targetUid) sp.targetUid = item.uid;
+      spSyncUI();
+    }
+    function spSyncUI() {
+      sp.cards.forEach((c) => {
+        c.el.className = `block-card rounded-sm p-2 ${c.landed ? 'landed' : ''} ${c.uid === sp.targetUid ? 'targeted' : ''}`;
+        c.el.style.top = `${Math.round(c.y)}px`;
+      });
+      const t = sp.cards.find((c) => c.uid === sp.targetUid) || sp.cards[0];
+      if (t) {
+        sp.targetUid = t.uid;
+        document.getElementById('spTargetInfo').textContent = `目標題目（${t.card.tier}）：${t.card.q}`;
+        const pre = document.getElementById('spTargetCode');
+        pre.textContent = t.card.code; pre.classList.remove('hidden');
+      } else {
+        document.getElementById('spTargetCode').classList.add('hidden');
+      }
+      document.getElementById('spScore').textContent = sp.score;
+      document.getElementById('spStreak').textContent = `${sp.streak}x`;
+      document.getElementById('spCleared').textContent = sp.cleared;
+      document.getElementById('spBest').textContent = state.sprintBest;
+    }
+    function spStart() {
+      if (sp.raf) cancelAnimationFrame(sp.raf);
+      sp.running = true; sp.paused = false; sp.score = 0; sp.streak = 0; sp.cleared = 0; sp.cards = []; sp.targetUid = null; sp.acc = 0; sp.lastTs = performance.now();
+      document.getElementById('spCardsLayer').innerHTML = '';
+      document.getElementById('spOverlay').classList.add('hidden');
+      document.getElementById('spPauseBtn').classList.remove('hidden');
+      spSpawn();
+      document.getElementById('spInput').focus();
+      sp.raf = requestAnimationFrame(spLoop);
+    }
+    function spLoop(ts) {
+      if (!sp.running || sp.paused) return;
+      const dt = Math.min(0.1, Math.max(0, (ts - sp.lastTs) / 1000));
+      sp.lastTs = ts;
+      sp.acc += dt;
+      if (sp.acc >= 5.2 && sp.cards.length < 10) { sp.acc = 0; spSpawn(); }
+      let over = false;
+      sp.cards.filter((c) => !c.landed).sort((a, b) => b.y - a.y).forEach((item) => {
+        const landedCount = sp.cards.filter((c) => c.lane === item.lane && c.landed).length;
+        const floorY = 392 - (landedCount + 1) * 82;
+        item.y += (16 + Math.floor(sp.cleared / 4) * 3) * dt;
+        if (item.y >= floorY) { item.y = floorY; item.landed = true; if (item.y <= 48) over = true; }
+      });
+      spSyncUI();
+      if (over) {
+        sp.running = false; playError();
+        if (sp.score > state.sprintBest) { state.sprintBest = sp.score; saveProgress(); }
+        try {
+          const lb = JSON.parse(localStorage.getItem(SPRINT_LB_KEY) || '[]');
+          const pName = state.student ? `${state.student.cls}-${state.student.no} ${state.student.name}` : '訪客';
+          if (sp.score > 0) { lb.push({ pName, score: sp.score }); lb.sort((a, b) => b.score - a.score); localStorage.setItem(SPRINT_LB_KEY, JSON.stringify(lb.slice(0, 5))); }
+        } catch (e) {}
+        renderSprintLb();
+        document.getElementById('spOverlay').classList.remove('hidden');
+        document.getElementById('spOverlayTitle').textContent = 'GAME OVER';
+        document.getElementById('spOverlayDesc').textContent = `得分：${sp.score} 分｜共消除 ${sp.cleared} 張卡片！`;
+        return;
+      }
+      sp.raf = requestAnimationFrame(spLoop);
+    }
+    function spFire() {
+      if (!sp.running || sp.paused) return;
+      const inp = document.getElementById('spInput');
+      const val = inp.value.trim().replace(/\s+/g, '').toLowerCase();
+      const t = sp.cards.find((c) => c.uid === sp.targetUid);
+      if (!val || !t) return;
+      if (sprintHash(t.card.id, val) === t.card.h) {
+        sp.streak += 1; sp.cleared += 1; sp.score += 100 + sp.streak * 20;
+        if (t.el.parentNode) t.el.parentNode.removeChild(t.el);
+        sp.cards = sp.cards.filter((c) => c.uid !== t.uid);
+        sp.targetUid = sp.cards[0] ? sp.cards[0].uid : null;
+        inp.value = '';
+        document.getElementById('spStatus').innerHTML = `<span class="text-[#10d981]">✓ 消除成功！連擊 ${sp.streak}x</span>`;
+        playSuccess();
+        if (!sp.cards.length) spSpawn();
+        spSyncUI();
+      } else {
+        sp.streak = 0;
+        document.getElementById('spStatus').innerHTML = '<span class="text-[#34d399]">✗ 未啱，再試！</span>';
+        playError(); spSyncUI();
+      }
+    }
+    function renderSprintLb() {
+      const el = document.getElementById('spLeaderboard');
+      let lb = []; try { lb = JSON.parse(localStorage.getItem(SPRINT_LB_KEY) || '[]'); } catch (e) {}
+      el.innerHTML = lb.length ? lb.map((r, i) => `<div class="flex justify-between bg-[#070a0e] px-2 py-1 border border-[#1b2430]"><span>#${i+1} ${escapeHtml(r.pName)}</span><span class="text-[#38bdf8] font-bold">${r.score}</span></div>`).join('') : '<div class="text-[#64748b]">暫未有紀錄，快玩一局！</div>';
+    }
+
+    function switchMode(mode) {
+      if (state.mode === 'sprint' && mode !== 'sprint') { sp.paused = true; if (sp.raf) cancelAnimationFrame(sp.raf); }
+      state.mode = mode;
+      document.getElementById('sprintContainer').classList.toggle('hidden', mode !== 'sprint');
+      document.getElementById('sandboxContainer').classList.toggle('hidden', mode !== 'sandbox');
+      document.getElementById('dseContainer').classList.toggle('hidden', mode !== 'dse');
+      document.getElementById('vizContainer').classList.toggle('hidden', mode !== 'viz');
+      if (mode !== 'viz' && typeof stopVizTimer === 'function') stopVizTimer();
+      const mw = document.getElementById('mainWorkbench');
+      if (mw) { mw.classList.remove('lg:col-span-9'); mw.classList.add('lg:col-span-12'); }
+      const activeTabCls = 'bg-[#38bdf8] text-[#04131e] font-bold shadow-[0_0_12px_rgba(56,189,248,0.22)]';
+      const setBtn = (id, on) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.className = on
+          ? `px-3 py-1.5 rounded-[3px] transition whitespace-nowrap ${activeTabCls}`
+          : 'px-3 py-1.5 rounded-[3px] text-[#9aa7b8] hover:text-white hover:bg-[#132035] transition whitespace-nowrap';
+      };
+      setBtn('modeDseBtn', mode === 'dse');
+      setBtn('modeVizBtn', mode === 'viz');
+      setBtn('modeSprintBtn', mode === 'sprint');
+      setBtn('modeSandboxBtn', mode === 'sandbox');
+      if (mode === 'sprint') renderSprintLb();
+      if (mode === 'sandbox') renderVirtualFiles();
+      if (mode === 'dse') { renderDseList(); loadDseQuestion(dseState.activeId); }
+      if (mode === 'viz') { loadVisualizer(vizState.algo); }
+    }
+
+
+    
+    // =========================================================================
+    // LIVE PYODIDE sys.settrace DRY-RUN ENGINE (WORKS FOR ANY PYTHON CODE!)
+    // =========================================================================
+    const liveTraces = {
+      quest: { codeLines: [], steps: [], idx: 0, timer: null },
+      tb: { codeLines: [], steps: [], idx: 0, timer: null },
+      dse: { codeLines: [], steps: [], idx: 0, timer: null },
+      dr: { codeLines: [], steps: [], idx: 0, timer: null }
+    };
+
+    async function runLiveTrace(code, stdinStr) {
+      if (!state.pyodide) return { ok: false, error: 'Python 3 引擎正在載入中，請稍候數秒再試。' };
+      state.pyodide.globals.set('_tr_code', code);
+      state.pyodide.globals.set('_tr_stdin', stdinStr || '');
+      const pyTracer = `
+import sys, io, json, contextlib
+_lines = _tr_stdin.splitlines()
+_it = iter(_lines)
+def _tr_input(prompt=""):
+    try:
+        return next(_it)
+    except StopIteration:
+        return ""
+_steps = []
+_buf = io.StringIO()
+_err = ""
+def _safe_val(v):
+    if isinstance(v, (int, float, bool, str)):
+        return v
+    if isinstance(v, list):
+        return [_safe_val(x) for x in v[:16]]
+    return str(v)[:30]
+def _tracer(frame, event, arg):
+    if frame.f_code.co_filename != "<trace.py>":
+        return None
+    if event in ("line", "return"):
+        if len(_steps) >= 85:
+            raise RuntimeError("追蹤步數已達上限 85 步（請檢查是否有無限循環）")
+        snap = {}
+        for k, v in frame.f_locals.items():
+            if k.startswith("_") or callable(v) or type(v).__name__ == "module":
+                continue
+            snap[k] = _safe_val(v)
+        _steps.append({"line": frame.f_lineno - 1, "vars": snap, "out": _buf.getvalue().strip()})
+    return _tracer
+try:
+    _ns = {"input": _tr_input}
+    sys.settrace(_tracer)
+    with contextlib.redirect_stdout(_buf):
+        exec(compile(_tr_code, "<trace.py>", "exec"), _ns)
+except Exception as e:
+    _err = f"{type(e).__name__}: {e}"
+finally:
+    sys.settrace(None)
+json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}, ensure_ascii=False)
+`;
+      const raw = state.pyodide.runPython(pyTracer);
+      return JSON.parse(raw);
+    }
+
+    function renderLiveTracePanel(slot) {
+      const tr = liveTraces[slot];
+      const pfxMap = { quest: 'q', tb: 'tb', dse: 'dse', dr: 'dr' };
+      const pfx = pfxMap[slot] || 'q';
+      const canvasEl = document.getElementById(`${pfx}TraceCanvas`);
+      const noteEl = document.getElementById(`${pfx}TraceNote`);
+      const cntEl = document.getElementById(`${pfx}TraceCounter`);
+      const prevBtn = document.getElementById(`${pfx}TracePrevBtn`);
+      const nextBtn = document.getElementById(`${pfx}TraceNextBtn`);
+      if (!tr.steps.length) {
+        canvasEl.innerHTML = '<div class="text-xs font-mono-code text-[#475569]">未有追蹤步驟，請檢查程式碼是否可正常執行。</div>';
+        noteEl.textContent = '無步驟';
+        cntEl.textContent = 'STEP 0 / 0';
+        return;
+      }
+      const st = tr.steps[tr.idx] || tr.steps[0];
+      prevBtn.disabled = tr.idx === 0;
+      nextBtn.disabled = tr.idx >= tr.steps.length - 1;
+      cntEl.textContent = `STEP ${tr.idx + 1} / ${tr.steps.length}`;
+      noteEl.textContent = st.out ? `目前輸出：${st.out.replace(/\n/g, ' | ')}` : `執行第 ${st.line + 1} 行`;
+
+      const codeHtml = tr.codeLines.map((line, i) => {
+        const active = i === st.line;
+        return `<div class="px-2 py-0.5 font-mono-code text-xs flex items-center gap-2 ${active ? 'bg-[#1d4ed8] text-white font-bold' : 'text-[#181c20]'}">
+          <span class="w-5 text-right opacity-65 shrink-0">${i + 1}</span>
+          <span class="whitespace-pre overflow-x-auto">${active ? '▶ ' : '  '}${escapeHtml(line)}</span>
+        </div>`;
+      }).join('');
+
+      const entries = Object.entries(st.vars || {});
+      const scalars = entries.filter(([, v]) => !Array.isArray(v));
+      const arrays = entries.filter(([, v]) => Array.isArray(v));
+
+      const scalarHtml = scalars.length
+        ? scalars.map(([k, v]) => `<div class="bg-[#f8f6ee] border-2 border-[#181c20] px-2.5 py-1 flex items-center justify-between font-mono-code text-xs">
+            <span class="font-bold text-[#475569]">${escapeHtml(k)}</span>
+            <span class="font-black text-[#1d4ed8]">${escapeHtml(String(v))}</span>
+          </div>`).join('')
+        : '<div class="text-xs text-[#475569] font-mono-code">（尚未建立純量變量）</div>';
+
+      const arrHtml = arrays.map(([k, arr]) => `
+        <div class="mt-2">
+          <div class="font-mono-code text-[11px] font-bold text-[#181c20] mb-1">陣列 ${escapeHtml(k)}（0-based）：</div>
+          <div class="flex flex-wrap gap-1 font-mono-code">
+            ${arr.map((val, idx) => `<div class="border-2 border-[#181c20] bg-[#f8f6ee] px-2 py-1 text-center min-w-[38px]">
+              <div class="text-[9px] text-[#475569]">[${idx}]</div>
+              <div class="text-xs font-black text-[#181c20]">${escapeHtml(typeof val === 'object' ? JSON.stringify(val) : String(val))}</div>
+            </div>`).join('')}
+          </div>
+        </div>`).join('');
+
+      canvasEl.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+        <div class="lg:col-span-6 bg-[#f8f6ee] border-2 border-[#181c20] py-1 max-h-[260px] overflow-y-auto">${codeHtml}</div>
+        <div class="lg:col-span-6 space-y-2">
+          <div class="font-mono-code text-[11px] font-bold text-[#181c20]">即時變量追蹤表：</div>
+          <div class="grid grid-cols-2 gap-1.5">${scalarHtml}</div>
+          ${arrHtml}
+        </div>
+      </div>`;
+    }
+
+    const tbState = { book: 'ALL', query: '', activeId: '', done: {} };
+
+    // =========================================================================
+    // INIT & EVENT LISTENERS
+    // =========================================================================
+
+    // =========================================================================
+    // IPAD TOUCH CODING TOOLBAR & HIDDEN 5-TAP TEACHER GESTURE
+    // =========================================================================
+    function initIpadTouchToolbars() {
+      const keys = [
+        { label: '⇥ 縮排', act: 'indent' },
+        { label: '⇤ 退格', act: 'dedent' },
+        { label: '( )', ins: '()', back: 1 },
+        { label: '[ ]', ins: '[]', back: 1 },
+        { label: '" "', ins: '""', back: 1 },
+        { label: ':', ins: ':', back: 0 },
+        { label: '=', ins: ' = ', back: 0 },
+        { label: '==', ins: ' == ', back: 0 },
+        { label: '!=', ins: ' != ', back: 0 },
+        { label: '<=', ins: ' <= ', back: 0 },
+        { label: '>=', ins: ' >= ', back: 0 },
+        { label: '//', ins: ' // ', back: 0 },
+        { label: '%', ins: ' % ', back: 0 },
+        { label: '_', ins: '_', back: 0 }
+      ];
+      document.querySelectorAll('.ipad-key-bar[data-target-editor]').forEach((bar) => {
+        const targetId = bar.getAttribute('data-target-editor');
+        bar.innerHTML = keys.map((k, idx) => `<button type="button" class="ipad-key-btn" data-kidx="${idx}">${escapeHtml(k.label)}</button>`).join('');
+        bar.querySelectorAll('.ipad-key-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const ed = document.getElementById(targetId);
+            if (!ed) return;
+            const k = keys[Number(btn.getAttribute('data-kidx'))];
+            const s = ed.selectionStart || 0;
+            const en = ed.selectionEnd || 0;
+            if (k.act === 'indent') {
+              ed.value = ed.value.slice(0, s) + '    ' + ed.value.slice(en);
+              ed.selectionStart = ed.selectionEnd = s + 4;
+            } else if (k.act === 'dedent') {
+              const lineStart = ed.value.lastIndexOf('\n', s - 1) + 1;
+              if (ed.value.slice(lineStart, lineStart + 4) === '    ') {
+                ed.value = ed.value.slice(0, lineStart) + ed.value.slice(lineStart + 4);
+                const np = Math.max(lineStart, s - 4);
+                ed.selectionStart = ed.selectionEnd = np;
+              }
+            } else {
+              ed.value = ed.value.slice(0, s) + k.ins + ed.value.slice(en);
+              const np = s + k.ins.length - (k.back || 0);
+              ed.selectionStart = ed.selectionEnd = np;
+            }
+            ed.focus();
+            ed.dispatchEvent(new Event('input'));
+          });
+        });
+      });
+
+      // Hidden 5-tap on ICT - PYTHON brand badge within 2.5s opens Teacher Sync Modal on iPad
+      let tapCount = 0, tapTimer = null;
+      const brandBtn = document.getElementById('brandHomeBtn');
+      if (brandBtn) {
+        brandBtn.addEventListener('click', () => {
+          tapCount += 1;
+          clearTimeout(tapTimer);
+          if (tapCount >= 5) {
+            tapCount = 0;
+            const m = document.getElementById('teacherSyncModal');
+            if (m) m.classList.remove('hidden');
+          } else {
+            tapTimer = setTimeout(() => { tapCount = 0; }, 2200);
+          }
+        });
+      }
+    }
+
+    // =========================================================================
+    // HKDSE PAST PAPER WORKBENCH
+    // =========================================================================
+    const dseState = { paper: 'ALL', activeId: (DSE_PAPERS[0] && DSE_PAPERS[0].id) || '', done: {} };
+
+    function renderDseList() {
+      const listEl = document.getElementById('dseQuestionList');
+      if (!listEl) return;
+      const doneCnt = Object.keys(dseState.done).length;
+      const cntEl = document.getElementById('dseDoneCount');
+      if (cntEl) cntEl.textContent = `${doneCnt} / ${DSE_PAPERS.length}`;
+      const filtered = DSE_PAPERS.filter((q) => dseState.paper === 'ALL' || q.paper === dseState.paper);
+      listEl.innerHTML = filtered.map((q) => {
+        const active = q.id === dseState.activeId;
+        const ok = Boolean(dseState.done[q.id]);
+        const pCls = q.paper.includes('選修') ? 'text-[#34d399]' : 'text-[#38bdf8]';
+        return `<button data-dseid="${q.id}" class="w-full text-left p-2.5 rounded-sm border transition ${active ? 'bg-[#111c2b] border-[#38bdf8] text-white' : 'bg-[#090d14] border-[#1b2430] text-[#cbd5e1] hover:border-[#324052]'}">
+          <div class="flex items-center justify-between font-mono-code text-[10px] mb-0.5">
+            <span class="${pCls} font-bold">${escapeHtml(q.year)} · ${escapeHtml(q.topic)}</span>
+            <span class="${ok ? 'text-[#34d399] font-bold' : 'text-[#64748b]'}">${ok ? '✓ 已通關' : (q.mode === 'dryrun' ? '空運行' : '編程')}</span>
+          </div>
+          <div class="text-xs font-bold leading-snug">${escapeHtml(q.title)}</div>
+        </button>`;
+      }).join('');
+      listEl.querySelectorAll('[data-dseid]').forEach((b) => {
+        b.addEventListener('click', () => {
+          dseState.activeId = b.getAttribute('data-dseid');
+          loadDseQuestion(dseState.activeId);
+          renderDseList();
+        });
+      });
+    }
+
+    function loadDseQuestion(id) {
+      const q = DSE_PAPERS.find((x) => x.id === id) || DSE_PAPERS[0];
+      if (!q) return;
+      dseState.activeId = q.id;
+      document.getElementById('dsePaperBadge').textContent = q.paper;
+      document.getElementById('dseYearBadge').textContent = q.year;
+      document.getElementById('dseTopicBadge').textContent = q.topic;
+      document.getElementById('dseStatusBadge').classList.toggle('hidden', !dseState.done[q.id]);
+      document.getElementById('dseTitle').textContent = q.title;
+      document.getElementById('dsePrompt').textContent = q.prompt;
+      document.getElementById('dseFeedback').classList.add('hidden');
+      const dtw = document.getElementById('dseTraceWrap'); if (dtw) dtw.classList.add('hidden');
+      document.getElementById('dseExplainText').textContent = '';
+      document.getElementById('dseExplainBox').classList.add('hidden');
+
+      const vizBtn = document.getElementById('dseJumpVizBtn');
+      if (q.vizLink) {
+        vizBtn.classList.remove('hidden');
+        vizBtn.onclick = () => { switchMode('viz'); loadVisualizer(q.vizLink); };
+      } else {
+        vizBtn.classList.add('hidden');
+      }
+
+      const isDry = q.mode === 'dryrun';
+      document.getElementById('dseDryrunPanel').classList.toggle('hidden', !isDry);
+      document.getElementById('dseCodePanel').classList.toggle('hidden', isDry);
+      if (isDry) {
+        const numbered = (q.code || '').split('\n').map((ln, i) => `${String(i + 1).padStart(2, '0')}  ${ln}`).join('\n');
+        document.getElementById('dseDryrunCode').textContent = numbered;
+        document.getElementById('dseDryrunInput').value = '';
+      } else {
+        const ed = document.getElementById('dseCodeInput');
+        ed.value = q.starter || '';
+        updateLineGutter(ed, document.getElementById('dseLineGutter'));
+        document.getElementById('dseExpectedPre').textContent = dseState.done[q.id] ? '✓ 已通過雲端輸出核對' : '（提交後由雲端即時核對 HKDSE 標準輸出）';
+        document.getElementById('dseOutputPre').textContent = '按「執行測試」或「核對試題輸出」...';
+      }
+    }
+
+    async function checkDseCode(doCheck) {
+      const q = DSE_PAPERS.find((x) => x.id === dseState.activeId);
+      if (!q) return;
+      const code = document.getElementById('dseCodeInput').value;
+      const outEl = document.getElementById('dseOutputPre');
+      const fbEl = document.getElementById('dseFeedback');
+      fbEl.classList.add('hidden');
+      const astRes = checkCodeAst(code, []);
+      if (astRes.syntax_error) { outEl.textContent = astRes.syntax_error; playError(); return; }
+      if (doCheck && astRes.issues.length > 0) {
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
+        fbEl.textContent = '標準 Python 規範未通過：' + astRes.issues.join('；');
+        fbEl.classList.remove('hidden'); playError(); return;
+      }
+      const res = await runPythonCode(code, q.stdin || '');
+      outEl.textContent = res.ok ? (res.output || '（無輸出）') : `執行錯誤：${res.error}`;
+      if (!doCheck) return;
+      fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#38bdf8]/15 border border-[#38bdf8]/40 text-[#bae6fd]';
+      fbEl.textContent = '正在雲端核對 HKDSE 試題輸出...';
+      fbEl.classList.remove('hidden');
+      const cloudRes = await callCloudGrader({
+        action: 'grade',
+        kind: 'dse_code',
+        id: q.id,
+        output: res.ok ? res.output : '',
+        hasError: !res.ok
+      });
+      if (cloudRes.status !== 'ok') {
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
+        fbEl.textContent = cloudRes.message || '雲端核對暫時未能連線。';
+        playError(); return;
+      }
+      if (cloudRes.passed) {
+        dseState.done[q.id] = true;
+        if (cloudRes.expected) document.getElementById('dseExpectedPre').textContent = cloudRes.expected;
+        document.getElementById('dseExplainText').textContent = cloudRes.explain || '';
+        document.getElementById('dseStatusBadge').classList.remove('hidden');
+        document.getElementById('dseExplainBox').classList.remove('hidden');
+        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#10b981]/15 border border-[#10b981]/45 text-[#a7f3d0]';
+        fbEl.textContent = '✓ 完全正確！已通過 HKDSE 真題核對！';
+        fbEl.classList.remove('hidden');
+        playSuccess(); renderDseList();
+        if (state.student) {
+          syncToGoogleSheet({
+            cls: state.student.cls, no: state.student.no, name: state.student.name,
+            lesson: q.paper, levelId: q.id, tier: 'DSE真題編程', passed: true,
+            xp: state.xp, penalty: state.penalty, attempts: 1,
+            tabSwitches: state.tabSwitches, awaySeconds: state.awaySeconds, aiFlags: [], code: code.slice(0, 1500)
+          });
+        }
+      } else {
+        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+        fbEl.textContent = '✗ 輸出與預期不符，請檢查邏輯後再試。';
+        fbEl.classList.remove('hidden'); playError();
+      }
+    }
+
+    async function checkDseDryrun() {
+      const q = DSE_PAPERS.find((x) => x.id === dseState.activeId);
+      if (!q) return;
+      const norm = (s) => String(s || '').replace(/\r\n/g, '\n').split('\n').map((x) => x.trim()).filter(Boolean).join('\n');
+      const userAns = norm(document.getElementById('dseDryrunInput').value);
+      const fbEl = document.getElementById('dseFeedback');
+      fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#38bdf8]/15 border border-[#38bdf8]/40 text-[#bae6fd]';
+      fbEl.textContent = '正在雲端核對 HKDSE 空運行答案...';
+      fbEl.classList.remove('hidden');
+      const cloudRes = await callCloudGrader({ action: 'grade', kind: 'dse_dryrun', id: q.id, userAns });
+      if (cloudRes.status !== 'ok') {
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
+        fbEl.textContent = cloudRes.message || '雲端核對暫時未能連線。';
+        playError(); return;
+      }
+      if (cloudRes.passed) {
+        dseState.done[q.id] = true;
+        document.getElementById('dseExplainText').textContent = cloudRes.explain || '';
+        document.getElementById('dseStatusBadge').classList.remove('hidden');
+        document.getElementById('dseExplainBox').classList.remove('hidden');
+        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#10b981]/15 border border-[#10b981]/45 text-[#a7f3d0]';
+        fbEl.textContent = '✓ 空運行追蹤完全正確！';
+        fbEl.classList.remove('hidden');
+        playSuccess(); renderDseList();
+        if (state.student) {
+          syncToGoogleSheet({
+            cls: state.student.cls, no: state.student.no, name: state.student.name,
+            lesson: q.paper, levelId: q.id, tier: 'DSE真題空運行', passed: true,
+            xp: state.xp, penalty: state.penalty, attempts: 1,
+            tabSwitches: state.tabSwitches, awaySeconds: state.awaySeconds, aiFlags: [], code: `DryRun: ${userAns}`
+          });
+        }
+      } else {
+        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+        fbEl.textContent = '✗ 輸出未完全相符，請再逐行檢查變量數值與格式！';
+        fbEl.classList.remove('hidden'); playError();
+      }
+    }
+
+    // =========================================================================
+    // BESPOKE HKDSE ALGORITHM ANIMATION STUDIO (OPERATION-STREAM ENGINE)
+    // =========================================================================
+    const vizState = {
+      algo: 'binary_search',
+      frames: [],
+      step: 0,
+      timer: null,
+      codeLines: [],
+      // Live interactive state for Stack & Circular Queue
+      stackArr: ['A', 'B', 'C'],
+      cqArr: ['', '', '', '', '', '', 'A', 'B'],
+      cqHead: 6,
+      cqTail: 7,
+      cqN: 2,
+      cqNextChar: 67
+    };
+
+    function stopVizTimer() {
+      if (vizState.timer) { clearInterval(vizState.timer); vizState.timer = null; }
+      const b = document.getElementById('vizPlayBtn');
+      if (b) b.textContent = '▶ 自動播放';
+    }
+
+    function setVizCode(lines) {
+      vizState.codeLines = lines;
+      document.getElementById('vizCodeBox').innerHTML = lines.map((ln, idx) =>
+        `<div class="viz-code-line" data-vcl="${idx + 1}"><span class="text-[#475569] mr-2 select-none">${String(idx + 1).padStart(2, '0')}</span>${escapeHtml(ln)}</div>`
+      ).join('');
+    }
+
+    function buildBinarySearchFrames(arr, target) {
+      const code = [
+        'start = 0',
+        'end = len(mark) - 1',
+        'found = False',
+        'while start <= end and found == False:',
+        '    mid = (start + end) // 2',
+        '    if mark[mid] == target:',
+        '        found = True',
+        '    elif target < mark[mid]:',
+        '        end = mid - 1',
+        '    else:',
+        '        start = mid + 1'
+      ];
+      setVizCode(code);
+      const frames = [];
+      let s = 0, e = arr.length - 1, found = false, cmp = 0;
+      frames.push({ arr, s, e, mid: -1, found, line: 1, cmp, swp: 0, note: `初始化：搜尋目標 ${target}，範圍 start = 0 至 end = ${e}。`, vars: { target, start: s, end: e, mid: '-', found: 'False' } });
+      while (s <= e && !found) {
+        const mid = Math.floor((s + e) / 2);
+        cmp += 1;
+        frames.push({ arr, s, e, mid, found, line: 5, cmp, swp: 0, note: `計算中間索引 mid = (${s} + ${e}) // 2 = ${mid}，比較 mark[${mid}] = ${arr[mid]} 與目標 ${target}。`, vars: { target, start: s, end: e, mid, 'mark[mid]': arr[mid], found: 'False' } });
+        if (arr[mid] === target) {
+          found = true;
+          frames.push({ arr, s, e, mid, found: true, line: 7, cmp, swp: 0, note: `🎉 找到目標！mark[${mid}] == ${target}，共比較 ${cmp} 次！`, vars: { target, start: s, end: e, mid, found: 'True' } });
+        } else if (target < arr[mid]) {
+          e = mid - 1;
+          frames.push({ arr, s, e, mid, found: false, line: 9, cmp, swp: 0, note: `${target} < ${arr[mid]}，目標只可能在左半邊 → 淘汰右半邊，更新 end = ${e}。`, vars: { target, start: s, end: e, mid, found: 'False' } });
+        } else {
+          s = mid + 1;
+          frames.push({ arr, s, e, mid, found: false, line: 11, cmp, swp: 0, note: `${target} > ${arr[mid]}，目標只可能在右半邊 → 淘汰左半邊，更新 start = ${s}。`, vars: { target, start: s, end: e, mid, found: 'False' } });
+        }
+      }
+      if (!found) {
+        frames.push({ arr, s, e, mid: -1, found: false, line: 4, cmp, swp: 0, note: `start (${s}) > end (${e})，搜尋結束：目標 ${target} 不存在於列表（共比較 ${cmp} 次）。`, vars: { target, start: s, end: e, found: 'False' } });
+      }
+      return frames;
+    }
+
+    function buildSearchRaceFrames(arr, target) {
+      setVizCode([
+        '# 線性檢索 O(N)',
+        'i = 0',
+        'while i < len(A) and A[i] != target:',
+        '    i = i + 1',
+        '',
+        '# 對分檢索 O(log2 N)',
+        'start = 0; end = len(A) - 1',
+        'while start <= end:',
+        '    mid = (start + end) // 2'
+      ]);
+      const frames = [];
+      let li = 0, lDone = false, lFound = false, lSteps = 0;
+      let bs = 0, be = arr.length - 1, bMid = -1, bDone = false, bFound = false, bSteps = 0;
+      frames.push({ arr, target, li: -1, lFound, lDone, lSteps, bs, be, bMid, bFound, bDone, bSteps, line: 2, cmp: 0, swp: 0, note: `同場賽跑：於 ${arr.length} 項已排序列表中尋找 ${target}！按播放觀察線性檢索與對分檢索的步數差距。`, vars: { target, '線性步數': 0, '對分步數': 0 } });
+      while (!lDone || !bDone) {
+        if (!lDone) {
+          lSteps += 1;
+          if (arr[li] === target) { lFound = true; lDone = true; }
+          else { li += 1; if (li >= arr.length) lDone = true; }
+        }
+        if (!bDone) {
+          if (bs > be) { bDone = true; bMid = -1; }
+          else {
+            bSteps += 1;
+            bMid = Math.floor((bs + be) / 2);
+            if (arr[bMid] === target) { bFound = true; bDone = true; }
+            else if (target < arr[bMid]) be = bMid - 1;
+            else bs = bMid + 1;
+            if (bs > be && !bFound) bDone = true;
+          }
+        }
+        frames.push({
+          arr, target, li: Math.min(li, arr.length - 1), lFound, lDone, lSteps,
+          bs, be, bMid, bFound, bDone, bSteps, line: bDone ? 3 : 9, cmp: lSteps, swp: bSteps,
+          note: `第 ${Math.max(lSteps, bSteps)} 拍 — 線性檢索：${lDone ? (lFound ? '已找到 (' + lSteps + '步)' : '找不到 (' + lSteps + '步)') : '檢查索引 ' + li} ｜ 對分檢索：${bDone ? (bFound ? '已找到 (' + bSteps + '步)' : '找不到 (' + bSteps + '步)') : '檢查 mid=' + bMid}`,
+          vars: { target, '線性比較': lSteps, '對分比較': bSteps }
+        });
+      }
+      return frames;
+    }
+
+    function buildBubbleSortFrames(initArr) {
+      setVizCode([
+        'for i in range(0, len(A) - 1):',
+        '    for j in range(0, len(A) - 1 - i):',
+        '        if A[j] > A[j + 1]:',
+        '            temp = A[j]',
+        '            A[j] = A[j + 1]',
+        '            A[j + 1] = temp'
+      ]);
+      const a = [...initArr];
+      const n = a.length;
+      const frames = [];
+      let cmp = 0, swp = 0;
+      frames.push({ arr: [...a], hi: [], sortedFrom: n, line: 1, cmp, swp, note: `初始未排序列表：[${a.join(', ')}]，準備進行升序冒泡排序。`, vars: { i: '-', j: '-', cmp, swp } });
+      for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - 1 - i; j++) {
+          cmp += 1;
+          frames.push({ arr: [...a], hi: [j, j + 1], swapPair: false, sortedFrom: n - i, line: 3, cmp, swp, note: `第 ${i + 1} 輪：比較相鄰項目 A[${j}]=${a[j]} 與 A[${j + 1}]=${a[j + 1]}。`, vars: { i, j, 'A[j]': a[j], 'A[j+1]': a[j + 1] } });
+          if (a[j] > a[j + 1]) {
+            const t = a[j]; a[j] = a[j + 1]; a[j + 1] = t;
+            swp += 1;
+            frames.push({ arr: [...a], hi: [j, j + 1], swapPair: true, sortedFrom: n - i, line: 5, cmp, swp, note: `${a[j + 1]} > ${a[j]}，透過暫存變量 temp 交換 A[${j}] 與 A[${j + 1}]！`, vars: { i, j, temp: t, swp } });
+          }
+        }
+        frames.push({ arr: [...a], hi: [], sortedFrom: n - 1 - i, line: 1, cmp, swp, note: `第 ${i + 1} 輪完成！最大值 ${a[n - 1 - i]} 已浮升定位至索引 ${n - 1 - i}。`, vars: { i, '已定位置': n - 1 - i } });
+      }
+      frames.push({ arr: [...a], hi: [], sortedFrom: 0, line: 1, cmp, swp, note: `🎉 冒泡排序完成：[${a.join(', ')}]（共比較 ${cmp} 次、交換 ${swp} 次）。`, vars: { '比較次數': cmp, '交換次數': swp } });
+      return frames;
+    }
+
+    function buildSelectionSortFrames(initArr) {
+      setVizCode([
+        'for i in range(0, len(A) - 1):',
+        '    min_idx = i',
+        '    for j in range(i + 1, len(A)):',
+        '        if A[j] < A[min_idx]:',
+        '            min_idx = j',
+        '    temp = A[i]',
+        '    A[i] = A[min_idx]',
+        '    A[min_idx] = temp'
+      ]);
+      const a = [...initArr];
+      const n = a.length;
+      const frames = [];
+      let cmp = 0, swp = 0;
+      frames.push({ arr: [...a], sortedTo: -1, curI: -1, curJ: -1, minIdx: -1, line: 1, cmp, swp, note: `選擇排序：每輪在未排序區找出最小值，與首項 A[i] 交換。`, vars: { i: '-', min_idx: '-' } });
+      for (let i = 0; i < n - 1; i++) {
+        let minIdx = i;
+        frames.push({ arr: [...a], sortedTo: i - 1, curI: i, curJ: -1, minIdx, line: 2, cmp, swp, note: `第 ${i + 1} 輪：先假設最小值索引 min_idx = ${i}（值為 ${a[i]}）。`, vars: { i, min_idx: minIdx, 'A[min_idx]': a[minIdx] } });
+        for (let j = i + 1; j < n; j++) {
+          cmp += 1;
+          if (a[j] < a[minIdx]) {
+            minIdx = j;
+            frames.push({ arr: [...a], sortedTo: i - 1, curI: i, curJ: j, minIdx, line: 5, cmp, swp, note: `發現更小值 A[${j}] = ${a[j]}，更新 min_idx = ${j}！`, vars: { i, j, min_idx: minIdx, 'A[min_idx]': a[minIdx] } });
+          } else {
+            frames.push({ arr: [...a], sortedTo: i - 1, curI: i, curJ: j, minIdx, line: 4, cmp, swp, note: `檢查 A[${j}] = ${a[j]} >= A[${minIdx}] = ${a[minIdx]}，min_idx 保持 ${minIdx}。`, vars: { i, j, min_idx: minIdx } });
+          }
+        }
+        const t = a[i]; a[i] = a[minIdx]; a[minIdx] = t;
+        swp += 1;
+        frames.push({ arr: [...a], sortedTo: i, curI: i, curJ: -1, minIdx, swapped: true, line: 7, cmp, swp, note: `交換 A[${i}] 與 A[${minIdx}] → ${a[i]} 已固定在已排序區索引 ${i}！`, vars: { i, min_idx: minIdx, swp } });
+      }
+      frames.push({ arr: [...a], sortedTo: n - 1, curI: -1, curJ: -1, minIdx: -1, line: 1, cmp, swp, note: `🎉 選擇排序完成：[${a.join(', ')}]（共比較 ${cmp} 次、交換 ${swp} 次）。`, vars: { '比較次數': cmp, '交換次數': swp } });
+      return frames;
+    }
+
+    function buildInsertionSortFrames(initArr) {
+      setVizCode([
+        'for i in range(1, len(A)):',
+        '    key = A[i]',
+        '    j = i - 1',
+        '    while j >= 0 and key < A[j]:',
+        '        A[j + 1] = A[j]',
+        '        j = j - 1',
+        '    A[j + 1] = key'
+      ]);
+      const a = [...initArr];
+      const n = a.length;
+      const frames = [];
+      let cmp = 0, swp = 0;
+      frames.push({ arr: [...a], sortedTo: 0, keyVal: null, hole: -1, scanJ: -1, line: 1, cmp, swp, note: `插入排序：先視首項 A[0]=${a[0]} 為已排序區，再逐一抽出關鍵值 key 插入正確位置。`, vars: { i: '-', key: '-', j: '-' } });
+      for (let i = 1; i < n; i++) {
+        const key = a[i];
+        let j = i - 1;
+        frames.push({ arr: [...a], sortedTo: i - 1, keyVal: key, hole: i, scanJ: j, line: 2, cmp, swp, note: `抽出關鍵值 key = A[${i}] = ${key}，向左與已排序區逐一比較。`, vars: { i, key, j } });
+        while (j >= 0) {
+          cmp += 1;
+          if (key < a[j]) {
+            a[j + 1] = a[j];
+            swp += 1;
+            frames.push({ arr: [...a], sortedTo: i, keyVal: key, hole: j, scanJ: j, line: 5, cmp, swp, note: `key (${key}) < A[${j}] (${a[j]}) → 將 ${a[j]} 右移一格至 A[${j + 1}]！`, vars: { i, key, j } });
+            j -= 1;
+          } else {
+            frames.push({ arr: [...a], sortedTo: i, keyVal: key, hole: j + 1, scanJ: j, line: 4, cmp, swp, note: `key (${key}) >= A[${j}] (${a[j]})，停止左移，找到插入位置！`, vars: { i, key, j } });
+            break;
+          }
+        }
+        a[j + 1] = key;
+        frames.push({ arr: [...a], sortedTo: i, keyVal: null, hole: j + 1, scanJ: -1, inserted: true, line: 7, cmp, swp, note: `將 key (${key}) 插入至 A[${j + 1}]！目前前 ${i + 1} 項已排序。`, vars: { i, '插入位置': j + 1, key } });
+      }
+      frames.push({ arr: [...a], sortedTo: n - 1, keyVal: null, hole: -1, scanJ: -1, line: 1, cmp, swp, note: `🎉 插入排序完成：[${a.join(', ')}]（比較 ${cmp} 次、右移 ${swp} 次）。`, vars: { '比較次數': cmp, '移動次數': swp } });
+      return frames;
+    }
+
+    function buildMergeFrames(A, B) {
+      setVizCode([
+        'i = 0; j = 0',
+        'for k in range(0, len(A) + len(B)):',
+        '    if i < len(A) and (j == len(B) or A[i] < B[j]):',
+        '        merged[k] = A[i]',
+        '        i = i + 1',
+        '    else:',
+        '        merged[k] = B[j]',
+        '        j = j + 1'
+      ]);
+      const merged = new Array(A.length + B.length).fill('');
+      const frames = [];
+      let i = 0, j = 0, cmp = 0;
+      frames.push({ A, B, merged: [...merged], i, j, k: -1, pick: '', line: 1, cmp, swp: 0, note: `雙指針合併：比較兩個已排序列表的當前首項 A[i] 與 B[j]，較小者放入 merged[k]。`, vars: { i, j, k: '-' } });
+      for (let k = 0; k < merged.length; k++) {
+        cmp += 1;
+        if (i < A.length && (j === B.length || A[i] < B[j])) {
+          const val = A[i];
+          merged[k] = val;
+          frames.push({ A, B, merged: [...merged], i, j, k, pick: 'A', line: 4, cmp, swp: k + 1, note: j === B.length ? `B 已取完 → 直接複製 A[${i}] = ${val} 至 merged[${k}]。` : `A[${i}] (${val}) < B[${j}] (${B[j]}) → 複製 ${val} 至 merged[${k}]，i 前進。`, vars: { i: i + 1, j, k } });
+          i += 1;
+        } else {
+          const val = B[j];
+          merged[k] = val;
+          frames.push({ A, B, merged: [...merged], i, j, k, pick: 'B', line: 7, cmp, swp: k + 1, note: i === A.length ? `A 已取完 → 直接複製 B[${j}] = ${val} 至 merged[${k}]。` : `B[${j}] (${val}) <= A[${i}] (${A[i]}) → 複製 ${val} 至 merged[${k}]，j 前進。`, vars: { i, j: j + 1, k } });
+          j += 1;
+        }
+      }
+      frames.push({ A, B, merged: [...merged], i, j, k: -1, pick: '', line: 2, cmp, swp: merged.length, note: `🎉 合併完成：[${merged.join(', ')}]（線性時間 O(N+M) 完成！）。`, vars: { '總複製次數': merged.length } });
+      return frames;
+    }
+
+    function buildLinkedListFrames() {
+      setVizCode([
+        'D  = ["", "Iris", "Ada", "Peter", "", "Ben"]',
+        'NP = [0,   2,      10,    1,       0,  3]',
+        'start = 5  # Ben -> Peter -> Iris -> Ada',
+        '# 刪除第 3 個節點 (Iris, 索引 1)',
+        'prev = start          # 5 (Ben)',
+        'current = NP[start]   # 3 (Peter)',
+        'prev = current        # 3 (Peter)',
+        'current = NP[current] # 1 (Iris)',
+        'NP[prev] = NP[current]# NP[3] = 2 (Ada)'
+      ]);
+      const baseD = ['', 'Iris', 'Ada', 'Peter', '', 'Ben'];
+      const baseNP = [0, 2, 10, 1, 0, 3];
+      const frames = [
+        { D: [...baseD], NP: [...baseNP], start: 5, prev: -1, cur: 5, delNode: -1, line: 3, cmp: 0, swp: 0, note: '初始鏈表（明德例題 5.5）：由 start=5 出發，順序為 Ben(5) → Peter(3) → Iris(1) → Ada(2) → NULL(10)。', vars: { start: 5, prev: '-', current: '-' } },
+        { D: [...baseD], NP: [...baseNP], start: 5, prev: 5, cur: 3, delNode: -1, line: 6, cmp: 1, swp: 0, note: '準備刪除第 3 個節點（Iris）：設定 prev = 5 (Ben)、current = NP[5] = 3 (Peter)。', vars: { start: 5, prev: '5 (Ben)', current: '3 (Peter)' } },
+        { D: [...baseD], NP: [...baseNP], start: 5, prev: 3, cur: 1, delNode: -1, line: 8, cmp: 2, swp: 0, note: '指示標各前進一步：prev = 3 (Peter)、current = NP[3] = 1 (Iris)，已鎖定目標節點！', vars: { start: 5, prev: '3 (Peter)', current: '1 (Iris)' } },
+        { D: [...baseD], NP: [0, 2, 10, 2, 0, 3], start: 5, prev: 3, cur: 1, delNode: 1, line: 9, cmp: 2, swp: 1, note: '🎯 關鍵一步：NP[3] = NP[1] = 2！Peter 直接指向 Ada(2)，跳過並刪除 Iris(1)（無須搬移其他數據）！', vars: { 'NP[3]': '1 → 2', '新順序': 'Ben → Peter → Ada' } }
+      ];
+      return frames;
+    }
+
+    function buildArray2DFrames(rowMajor) {
+      const grid = [
+        [5, 9, 6, 5, 3],
+        [2, 3, 8, 2, 6],
+        [8, 3, 5, 3, 9]
+      ];
+      setVizCode(rowMajor ? [
+        'total = 0',
+        'for i in range(0, 3):     # 外循環：列 (Row)',
+        '    for j in range(0, 5): # 內循環：欄 (Col)',
+        '        total = total + B[i][j]',
+        'print(total)'
+      ] : [
+        'total = 0',
+        'for j in range(0, 5):     # 外循環：欄 (Col)',
+        '    for i in range(0, 3): # 內循環：列 (Row)',
+        '        total = total + B[i][j]',
+        'print(total)'
+      ]);
+      const frames = [];
+      let total = 0, visited = [], step = 0;
+      frames.push({ grid, curI: -1, curJ: -1, visited: [], total: 0, rowMajor, line: 1, cmp: 0, swp: 0, note: rowMajor ? '逐列掃描（Row-major）：外循環固定列 i，內循環由左至右掃描欄 j。' : '逐欄掃描（Col-major）：外循環固定欄 j，內循環由上至下掃描列 i。', vars: { i: '-', j: '-', total: 0 } });
+      if (rowMajor) {
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 5; j++) {
+            step += 1; total += grid[i][j]; visited = [...visited, `${i},${j}`];
+            frames.push({ grid, curI: i, curJ: j, visited, total, rowMajor, line: 4, cmp: step, swp: total, note: `存取 B[${i}][${j}] = ${grid[i][j]} → total 累加至 ${total}。`, vars: { i, j, 'B[i][j]': grid[i][j], total } });
+          }
+        }
+      } else {
+        for (let j = 0; j < 5; j++) {
+          for (let i = 0; i < 3; i++) {
+            step += 1; total += grid[i][j]; visited = [...visited, `${i},${j}`];
+            frames.push({ grid, curI: i, curJ: j, visited, total, rowMajor, line: 4, cmp: step, swp: total, note: `存取 B[${i}][${j}] = ${grid[i][j]} → total 累加至 ${total}。`, vars: { j, i, 'B[i][j]': grid[i][j], total } });
+          }
+        }
+      }
+      frames.push({ grid, curI: -1, curJ: -1, visited, total, rowMajor, line: 5, cmp: step, swp: total, note: `🎉 掃描完畢！共存取 ${step} 格，總和 total = ${total}。`, vars: { '總格數': step, total } });
+      return frames;
+    }
+
+    function renderStackQueueInteractive() {
+      setVizCode([
+        '# 堆疊 (LIFO) — 頂端推入/彈出',
+        'stack.append(item)   # Push',
+        'stack.pop()          # Pop',
+        '',
+        '# 循環隊列 (FIFO) — 大小 N=8',
+        'tail = (tail + 1) % 8',
+        'cir_queue[tail] = item',
+        'head = (head + 1) % 8'
+      ]);
+      const stage = document.getElementById('vizStage');
+      const stHtml = [4, 3, 2, 1, 0].map((idx) => {
+        const val = vizState.stackArr[idx];
+        const isTop = idx === vizState.stackArr.length - 1;
+        return `<div class="h-10 rounded-sm border flex items-center justify-between px-3 font-mono-code text-xs transition ${val ? (isTop ? 'bg-[#2563eb]/30 border-[#38bdf8] text-white font-bold' : 'bg-[#132035] border-[#263a59] text-[#cbd5e1]') : 'bg-[#080d16] border-[#1e2d44] border-dashed text-[#475569]'}">
+          <span>[${idx}]</span><span>${val || '空'}</span><span>${isTop ? '← TOP' : ''}</span>
+        </div>`;
+      }).join('');
+
+      // 8-slot SVG Circular Queue Ring
+      const cx = 130, cy = 125, r = 82;
+      let ringSvg = `<svg viewBox="0 0 260 250" class="w-full max-w-[260px] mx-auto">`;
+      ringSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1e2d44" stroke-width="2" stroke-dasharray="4 4"/>`;
+      ringSvg += `<text x="${cx}" y="${cy - 6}" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="IBM Plex Mono">N = ${vizState.cqN} / 8</text>`;
+      ringSvg += `<text x="${cx}" y="${cy + 14}" text-anchor="middle" fill="#38bdf8" font-size="10" font-family="IBM Plex Mono">head:${vizState.cqHead} tail:${vizState.cqTail}</text>`;
+      for (let k = 0; k < 8; k++) {
+        const ang = (k * 45 - 90) * Math.PI / 180;
+        const x = cx + r * Math.cos(ang);
+        const y = cy + r * Math.sin(ang);
+        const val = vizState.cqArr[k];
+        const isH = vizState.cqN > 0 && k === vizState.cqHead;
+        const isT = vizState.cqN > 0 && k === vizState.cqTail;
+        const fill = val ? (isH && isT ? '#059669' : isH ? '#2563eb' : isT ? '#d97706' : '#132035') : '#080d16';
+        const stroke = isH ? '#38bdf8' : isT ? '#fbbf24' : (val ? '#34d399' : '#243754');
+        ringSvg += `<g>
+          <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="22" fill="${fill}" stroke="${stroke}" stroke-width="${isH || isT ? 2.5 : 1.5}"/>
+          <text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="middle" fill="${val ? '#fff' : '#475569'}" font-size="13" font-weight="700" font-family="IBM Plex Mono">${val || '-'}</text>
+          <text x="${x.toFixed(1)}" y="${(y - 26).toFixed(1)}" text-anchor="middle" fill="#64748b" font-size="9" font-family="IBM Plex Mono">[${k}]${isH ? ' H' : ''}${isT ? ' T' : ''}</text>
+        </g>`;
+      }
+      ringSvg += `</svg>`;
+
+      stage.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+        <div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#38bdf8]">堆疊 Stack（後進先出 LIFO）</span>
+            <span class="font-mono-code text-[11px] text-[#9aa7b8]">${vizState.stackArr.length} / 5</span>
+          </div>
+          <div class="space-y-1.5">${stHtml}</div>
+          <div class="flex gap-2 pt-1">
+            <button id="vizStackPush" class="flex-1 hw-btn hw-btn-primary py-1.5 rounded-sm text-xs font-bold">+ 推入 Push</button>
+            <button id="vizStackPop" class="flex-1 hw-btn py-1.5 rounded-sm bg-[#132035] border border-[#fb7185]/45 text-[#fda4af] text-xs font-bold">- 彈出 Pop</button>
+          </div>
+        </div>
+        <div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3.5 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#fbbf24]">循環隊列 Circular Queue（先進先出 FIFO）</span>
+            <span class="font-mono-code text-[10px] text-[#9aa7b8]">H=head · T=tail</span>
+          </div>
+          ${ringSvg}
+          <div class="flex gap-2">
+            <button id="vizCqEnq" class="flex-1 hw-btn hw-btn-cyan py-1.5 rounded-sm text-xs font-bold">+ 排隊 Enqueue</button>
+            <button id="vizCqDeq" class="flex-1 hw-btn py-1.5 rounded-sm bg-[#132035] border border-[#fb7185]/45 text-[#fda4af] text-xs font-bold">- 離隊 Dequeue</button>
+          </div>
+        </div>
+      </div>`;
+
+      document.getElementById('vizStackPush').onclick = () => {
+        if (vizState.stackArr.length >= 5) {
+          document.getElementById('vizNarration').textContent = '⚠ 堆疊上溢錯誤（Stack Overflow）！堆疊已滿（5/5），不能再推入項目。';
+          playError(); return;
+        }
+        const ch = String.fromCharCode(65 + (vizState.cqNextChar++ % 26));
+        vizState.stackArr.push(ch);
+        document.getElementById('vizNarration').textContent = `✓ Push("${ch}")：將 "${ch}" 推入堆疊頂端索引 [${vizState.stackArr.length - 1}]。`;
+        playSuccess(); renderStackQueueInteractive();
+      };
+      document.getElementById('vizStackPop').onclick = () => {
+        if (vizState.stackArr.length === 0) {
+          document.getElementById('vizNarration').textContent = '⚠ 堆疊下溢錯誤（Stack Underflow）！空堆疊沒有可彈出的項目。';
+          playError(); return;
+        }
+        const popped = vizState.stackArr.pop();
+        document.getElementById('vizNarration').textContent = `✓ Pop() → 彈出頂端項目 "${popped}"（後進先出）。`;
+        playSuccess(); renderStackQueueInteractive();
+      };
+      document.getElementById('vizCqEnq').onclick = () => {
+        if (vizState.cqN >= 8) {
+          document.getElementById('vizNarration').textContent = '⚠ 隊列上溢錯誤（Queue Overflow）！循環隊列已滿（N = 8）。';
+          playError(); return;
+        }
+        const ch = String.fromCharCode(65 + (vizState.cqNextChar++ % 26));
+        if (vizState.cqN === 0) { vizState.cqHead = 0; vizState.cqTail = 0; }
+        else { vizState.cqTail = (vizState.cqTail + 1) % 8; }
+        vizState.cqArr[vizState.cqTail] = ch;
+        vizState.cqN += 1;
+        document.getElementById('vizNarration').textContent = `✓ Enqueue("${ch}")：tail = (tail + 1) % 8 → ${vizState.cqTail}，寫入 cir_queue[${vizState.cqTail}] = "${ch}"（N=${vizState.cqN}）。`;
+        playSuccess(); renderStackQueueInteractive();
+      };
+      document.getElementById('vizCqDeq').onclick = () => {
+        if (vizState.cqN === 0) {
+          document.getElementById('vizNarration').textContent = '⚠ 隊列下溢錯誤（Queue Underflow）！循環隊列為空（N = 0）。';
+          playError(); return;
+        }
+        const out = vizState.cqArr[vizState.cqHead];
+        vizState.cqArr[vizState.cqHead] = '';
+        vizState.cqN -= 1;
+        if (vizState.cqN > 0) vizState.cqHead = (vizState.cqHead + 1) % 8;
+        document.getElementById('vizNarration').textContent = `✓ Dequeue() → 取出隊首 "${out}"，head 移至 ${vizState.cqHead}（N=${vizState.cqN}）。`;
+        playSuccess(); renderStackQueueInteractive();
+      };
+      document.getElementById('vizVarsBox').innerHTML = `<div>Stack: [${vizState.stackArr.join(', ')}]</div><div>Circular Queue: head=${vizState.cqHead}, tail=${vizState.cqTail}, N=${vizState.cqN}</div>`;
+    }
+
+    function renderVizFrame(stepIdx) {
+      if (vizState.algo === 'stack_queue') return;
+      const frames = vizState.frames;
+      if (!frames.length) return;
+      vizState.step = Math.max(0, Math.min(stepIdx, frames.length - 1));
+      const f = frames[vizState.step];
+      document.getElementById('vizScrubber').max = frames.length - 1;
+      document.getElementById('vizScrubber').value = vizState.step;
+      document.getElementById('vizStepLabel').textContent = `${vizState.step + 1} / ${frames.length}`;
+      document.getElementById('vizCmpCount').textContent = f.cmp || 0;
+      document.getElementById('vizSwapCount').textContent = f.swp || 0;
+      document.getElementById('vizNarration').textContent = f.note || '';
+
+      document.querySelectorAll('#vizCodeBox .viz-code-line').forEach((el) => {
+        el.classList.toggle('active', Number(el.getAttribute('data-vcl')) === f.line);
+      });
+      document.getElementById('vizVarsBox').innerHTML = Object.entries(f.vars || {})
+        .map(([k, v]) => `<div class="flex justify-between"><span class="text-[#94a3b8]">${escapeHtml(k)}</span><span class="text-[#38bdf8] font-bold">${escapeHtml(String(v))}</span></div>`).join('');
+
+      const stage = document.getElementById('vizStage');
+      const algo = vizState.algo;
+
+      if (algo === 'binary_search') {
+        stage.innerHTML = `<div class="flex flex-wrap justify-center gap-2 py-6">
+          ${f.arr.map((val, idx) => {
+            const outOfRange = idx < f.s || idx > f.e;
+            const isMid = idx === f.mid;
+            const cls = isMid
+              ? (f.found ? 'bg-[#10b981] text-[#04140e] border-[#34d399] scale-110 shadow-lg shadow-[#10b981]/30' : 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24] scale-105')
+              : (outOfRange ? 'bg-[#0a0f18] text-[#475569] border-[#1b2430] opacity-35' : 'bg-[#132035] text-white border-[#38bdf8]/50');
+            const tags = [];
+            if (idx === f.s) tags.push('<span class="text-[#38bdf8]">S</span>');
+            if (isMid) tags.push('<span class="text-[#fbbf24]">M</span>');
+            if (idx === f.e) tags.push('<span class="text-[#c084fc]">E</span>');
+            return `<div class="flex flex-col items-center gap-1">
+              <div class="font-mono-code text-[10px] text-[#64748b]">[${idx}]</div>
+              <div class="viz-cell w-12 h-12 sm:w-14 sm:h-14 rounded-sm border-2 flex items-center justify-center font-mono-code text-base font-black ${cls}">${val}</div>
+              <div class="font-mono-code text-[11px] font-bold h-4">${tags.join('·')}</div>
+            </div>`;
+          }).join('')}
+        </div>`;
+      } else if (algo === 'search_race') {
+        const renderTrack = (label, color, cellsHtml, badge) => `<div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3 space-y-2">
+          <div class="flex justify-between items-center text-xs font-bold"><span style="color:${color}">${label}</span><span class="font-mono-code text-[#cbd5e1]">${badge}</span></div>
+          <div class="flex flex-wrap gap-1.5">${cellsHtml}</div>
+        </div>`;
+        const linCells = f.arr.map((v, i) => {
+          const active = i === f.li;
+          const past = i < f.li;
+          const cls = active ? (f.lFound ? 'bg-[#10b981] text-[#04140e] border-[#34d399]' : 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24]') : (past ? 'bg-[#0b1322] text-[#475569] border-[#1e2d44]' : 'bg-[#132035] text-white border-[#263a59]');
+          return `<div class="viz-cell w-10 h-10 rounded-sm border flex items-center justify-center font-mono-code text-xs font-bold ${cls}">${v}</div>`;
+        }).join('');
+        const binCells = f.arr.map((v, i) => {
+          const out = i < f.bs || i > f.be;
+          const isM = i === f.bMid;
+          const cls = isM ? (f.bFound ? 'bg-[#10b981] text-[#04140e] border-[#34d399]' : 'bg-[#38bdf8] text-[#041320] border-[#7dd3fc]') : (out ? 'bg-[#090e17] text-[#475569] border-[#1b2430] opacity-30' : 'bg-[#132035] text-white border-[#38bdf8]/45');
+          return `<div class="viz-cell w-10 h-10 rounded-sm border flex items-center justify-center font-mono-code text-xs font-bold ${cls}">${v}</div>`;
+        }).join('');
+        stage.innerHTML = `<div class="space-y-3">
+          ${renderTrack('賽道 1：線性檢索 Linear Search', '#fbbf24', linCells, `比較 ${f.lSteps} 次`)}
+          ${renderTrack('賽道 2：對分檢索 Binary Search', '#38bdf8', binCells, `比較 ${f.bSteps} 次`)}
+        </div>`;
+      } else if (algo === 'bubble_sort' || algo === 'selection_sort' || algo === 'insertion_sort') {
+        const maxVal = Math.max(...f.arr, 1);
+        const bars = f.arr.map((val, idx) => {
+          const h = Math.max(28, Math.round((val / maxVal) * 200));
+          let bg = '#2563eb';
+          let ring = '';
+          let tag = `[${idx}]`;
+          if (algo === 'bubble_sort') {
+            if (idx >= f.sortedFrom) bg = '#10b981';
+            if (f.hi && f.hi.includes(idx)) { bg = f.swapPair ? '#f43f5e' : '#f59e0b'; ring = 'ring-2 ring-white/60'; }
+          } else if (algo === 'selection_sort') {
+            if (idx <= f.sortedTo) bg = '#10b981';
+            if (idx === f.minIdx) { bg = '#f43f5e'; tag = 'min'; ring = 'ring-2 ring-[#fda4af]'; }
+            else if (idx === f.curJ) { bg = '#f59e0b'; tag = 'j'; }
+            else if (idx === f.curI) { bg = '#38bdf8'; tag = 'i'; }
+          } else {
+            if (idx <= f.sortedTo) bg = '#10b981';
+            if (idx === f.hole) { bg = f.inserted ? '#38bdf8' : '#f59e0b'; tag = f.inserted ? '插入' : '空位'; ring = 'ring-2 ring-white/70'; }
+            else if (idx === f.scanJ) { bg = '#f43f5e'; tag = 'j'; }
+          }
+          return `<div class="flex flex-col items-center justify-end gap-1.5 flex-1 max-w-[64px]">
+            <span class="font-mono-code text-xs font-black text-white">${val}</span>
+            <div class="viz-bar w-full rounded-t-sm ${ring}" style="height:${h}px;background:${bg};"></div>
+            <span class="font-mono-code text-[10px] text-[#94a3b8]">${tag}</span>
+          </div>`;
+        }).join('');
+        const keyBanner = (algo === 'insertion_sort' && f.keyVal !== null)
+          ? `<div class="text-center mb-2"><span class="inline-block px-3 py-1 rounded-sm bg-[#f59e0b]/20 border border-[#fbbf24] text-[#fde68a] font-mono-code text-xs font-bold">抽出關鍵值 key = ${f.keyVal}</span></div>` : '';
+        stage.innerHTML = `${keyBanner}<div class="flex items-end justify-center gap-2 sm:gap-3 h-[255px] px-2 pt-4">${bars}</div>`;
+      } else if (algo === 'merge_lists') {
+        const boxRow = (name, arr, ptr, color) => `<div class="flex items-center gap-2 flex-wrap">
+          <span class="font-mono-code text-xs font-bold w-16" style="color:${color}">${name}</span>
+          ${arr.map((v, idx) => {
+            const cur = idx === ptr;
+            const done = ptr >= 0 && idx < ptr;
+            const cls = cur ? 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24] scale-105' : (done ? 'bg-[#090e17] text-[#475569] border-[#1b2430] opacity-40' : 'bg-[#132035] text-white border-[#263a59]');
+            return `<div class="viz-cell w-11 h-11 rounded-sm border-2 flex items-center justify-center font-mono-code text-xs font-black ${cls}">${v}</div>`;
+          }).join('')}
+        </div>`;
+        const mergedRow = `<div class="flex items-center gap-2 flex-wrap pt-2 border-t border-[#1e2d44]">
+          <span class="font-mono-code text-xs font-bold w-16 text-[#34d399]">merged</span>
+          ${f.merged.map((v, idx) => {
+            const isK = idx === f.k;
+            const cls = isK ? 'bg-[#10b981] text-[#04140e] border-[#34d399] scale-105' : (v !== '' ? 'bg-[#0d2821] text-[#a7f3d0] border-[#10b981]/50' : 'bg-[#080d16] text-[#475569] border-[#1e2d44] border-dashed');
+            return `<div class="viz-cell w-11 h-11 rounded-sm border-2 flex items-center justify-center font-mono-code text-xs font-black ${cls}">${v === '' ? '-' : v}</div>`;
+          }).join('')}
+        </div>`;
+        stage.innerHTML = `<div class="space-y-4 py-4">${boxRow('List A', f.A, f.i, '#38bdf8')}${boxRow('List B', f.B, f.j, '#c084fc')}${mergedRow}</div>`;
+      } else if (algo === 'linked_list') {
+        // Logical chain SVG + Parallel Array Table
+        const chain = [];
+        let c = f.start, guard = 0;
+        while (c !== 10 && c >= 0 && c < f.D.length && guard < 10) { chain.push(c); c = f.NP[c]; guard++; }
+        const chainHtml = chain.map((idx, pos) => {
+          const isPrev = idx === f.prev;
+          const isCur = idx === f.cur;
+          const bCls = isPrev ? 'border-[#38bdf8] bg-[#2563eb]/25' : (isCur ? 'border-[#f43f5e] bg-[#f43f5e]/25' : 'border-[#34d399]/50 bg-[#132035]');
+          const arrow = pos < chain.length - 1 ? '<span class="text-[#38bdf8] font-black text-lg px-1">→</span>' : '<span class="text-[#64748b] font-mono-code text-xs pl-2">→ NULL(10)</span>';
+          return `<div class="inline-flex items-center">
+            <div class="px-3 py-2 rounded-sm border-2 ${bCls} text-center">
+              <div class="font-mono-code text-[10px] text-[#94a3b8]">索引 ${idx}${isPrev ? ' · prev' : ''}${isCur ? ' · cur' : ''}</div>
+              <div class="font-bold text-sm text-white">${f.D[idx]}</div>
+              <div class="font-mono-code text-[10px] text-[#fbbf24]">NP→${f.NP[idx]}</div>
+            </div>${arrow}
+          </div>`;
+        }).join('');
+        const tblHtml = `<div class="overflow-x-auto"><table class="w-full text-center font-mono-code text-xs border-collapse">
+          <tr class="text-[#94a3b8] border-b border-[#1e2d44]"><th class="py-1 px-2 text-left">索引</th>${[1,2,3,4,5].map(i=>`<th class="py-1 px-2">[${i}]</th>`).join('')}</tr>
+          <tr class="text-white border-b border-[#1e2d44]"><td class="py-1.5 px-2 text-left text-[#38bdf8]">D[]</td>${[1,2,3,4,5].map(i=>`<td class="py-1.5 px-2 ${i===f.delNode?'line-through text-[#64748b]':''}">${f.D[i]||'-'}</td>`).join('')}</tr>
+          <tr class="text-[#fbbf24]"><td class="py-1.5 px-2 text-left text-[#34d399]">NP[]</td>${[1,2,3,4,5].map(i=>`<td class="py-1.5 px-2 ${i===f.prev?'bg-[#2563eb]/30 font-black text-white rounded-sm':''}">${f.NP[i]}</td>`).join('')}</tr>
+        </table></div>`;
+        stage.innerHTML = `<div class="space-y-5 py-2">
+          <div class="text-xs font-bold text-[#38bdf8]">邏輯鏈結順序（start = ${f.start}）：</div>
+          <div class="flex flex-wrap items-center gap-y-3">${chainHtml}</div>
+          <div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3">${tblHtml}</div>
+        </div>`;
+      } else if (algo === 'array_2d') {
+        const visSet = new Set(f.visited || []);
+        const rows = f.grid.map((r, i) => `<tr>
+          <th class="font-mono-code text-xs text-[#38bdf8] pr-2">i=${i}</th>
+          ${r.map((val, j) => {
+            const cur = i === f.curI && j === f.curJ;
+            const vis = visSet.has(`${i},${j}`);
+            const cls = cur ? 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24] scale-105 font-black' : (vis ? 'bg-[#10b981]/25 text-[#a7f3d0] border-[#10b981]/60' : 'bg-[#132035] text-white border-[#243754]');
+            return `<td class="p-1"><div class="viz-cell w-12 h-11 sm:w-14 sm:h-12 rounded-sm border-2 flex items-center justify-center font-mono-code text-sm ${cls}">${val}</div></td>`;
+          }).join('')}
+        </tr>`).join('');
+        stage.innerHTML = `<div class="flex flex-col items-center py-2 space-y-2">
+          <table class="border-collapse">
+            <tr><th></th>${[0,1,2,3,4].map(j=>`<th class="font-mono-code text-xs text-[#c084fc] pb-1">j=${j}</th>`).join('')}</tr>
+            ${rows}
+          </table>
+          <div class="font-mono-code text-xs text-[#34d399] font-bold">目前累加總和 total = ${f.total}</div>
+        </div>`;
+      }
+    }
+
+    function loadVisualizer(algoKey) {
+      stopVizTimer();
+      vizState.algo = algoKey;
+      document.querySelectorAll('#vizAlgoTabs [data-viz]').forEach((b) => {
+        const on = b.getAttribute('data-viz') === algoKey;
+        b.className = on ? 'shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#2563eb] text-white' : 'shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]';
+      });
+      const inpWrap = document.getElementById('vizInputsWrap');
+      const playbackHidden = algoKey === 'stack_queue';
+      document.getElementById('vizScrubber').parentElement.classList.toggle('hidden', playbackHidden);
+      document.getElementById('vizPlayBtn').parentElement.classList.toggle('hidden', playbackHidden);
+
+      if (algoKey === 'binary_search' || algoKey === 'search_race') {
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">搜尋目標：</span>
+          <input id="vizTargetInp" type="number" value="80" class="w-20 rounded-sm bg-[#070b13] border border-[#243754] px-2 py-1 text-white font-mono-code" />
+          <button id="vizApplyBtn" class="hw-btn hw-btn-cyan px-3 py-1 rounded-sm text-xs font-bold">套用目標</button>`;
+        const arr = [50, 51, 64, 65, 75, 79, 80, 85, 88, 97];
+        const build = () => {
+          stopVizTimer();
+          const t = Number(document.getElementById('vizTargetInp').value);
+          vizState.frames = algoKey === 'binary_search' ? buildBinarySearchFrames(arr, t) : buildSearchRaceFrames(arr, t);
+          renderVizFrame(0);
+        };
+        document.getElementById('vizApplyBtn').onclick = build;
+        build();
+      } else if (algoKey === 'bubble_sort' || algoKey === 'selection_sort' || algoKey === 'insertion_sort') {
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">自訂數字（逗號分隔）：</span>
+          <input id="vizArrInp" type="text" value="73, 85, 62, 96, 61, 48" class="w-48 sm:w-60 rounded-sm bg-[#070b13] border border-[#243754] px-2 py-1 text-white font-mono-code" />
+          <button id="vizApplyBtn" class="hw-btn hw-btn-cyan px-3 py-1 rounded-sm text-xs font-bold">套用數據</button>`;
+        const build = () => {
+          stopVizTimer();
+          const nums = document.getElementById('vizArrInp').value.split(',').map((x) => Number(x.trim())).filter((x) => !Number.isNaN(x)).slice(0, 10);
+          const safe = nums.length >= 2 ? nums : [73, 85, 62, 96, 61, 48];
+          vizState.frames = algoKey === 'bubble_sort' ? buildBubbleSortFrames(safe) : (algoKey === 'selection_sort' ? buildSelectionSortFrames(safe) : buildInsertionSortFrames(safe));
+          renderVizFrame(0);
+        };
+        document.getElementById('vizApplyBtn').onclick = build;
+        build();
+      } else if (algoKey === 'merge_lists') {
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">明德課本 6.4：合併 class4A [45, 55, 66, 82] 與 class4B [43, 69, 85, 91]</span>`;
+        vizState.frames = buildMergeFrames([45, 55, 66, 82], [43, 69, 85, 91]);
+        renderVizFrame(0);
+      } else if (algoKey === 'stack_queue') {
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">直接點擊下方「推入／彈出」或「排隊／離隊」即時觀察指示標與上溢／下溢！</span>`;
+        document.getElementById('vizNarration').textContent = '互動模式：點擊按鈕即時測試 LIFO 堆疊與 FIFO 循環隊列操作。';
+        renderStackQueueInteractive();
+      } else if (algoKey === 'linked_list') {
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">明德課本例題 5.5：平行陣列 D[] 與 NP[] 刪除節點 delete(3)</span>`;
+        vizState.frames = buildLinkedListFrames();
+        renderVizFrame(0);
+      } else if (algoKey === 'array_2d') {
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">掃描次序：</span>
+          <button id="vizRowMajBtn" class="hw-btn hw-btn-primary px-3 py-1 rounded-sm text-xs font-bold">逐列（外 i 內 j）</button>
+          <button id="vizColMajBtn" class="hw-btn px-3 py-1 rounded-sm bg-[#132035] border border-[#243754] text-xs font-bold text-[#cbd5e1]">逐欄（外 j 內 i）</button>`;
+        document.getElementById('vizRowMajBtn').onclick = () => { stopVizTimer(); vizState.frames = buildArray2DFrames(true); renderVizFrame(0); };
+        document.getElementById('vizColMajBtn').onclick = () => { stopVizTimer(); vizState.frames = buildArray2DFrames(false); renderVizFrame(0); };
+        vizState.frames = buildArray2DFrames(true);
+        renderVizFrame(0);
+      }
+    }
+
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      updateSyncTag();
+
+      document.getElementById('brandHomeBtn').addEventListener('click', () => switchMode('dse'));
+          document.getElementById('modeSprintBtn').addEventListener('click', () => switchMode('sprint'));
+      document.getElementById('modeSandboxBtn').addEventListener('click', () => switchMode('sandbox'));
+      document.getElementById('modeDseBtn').addEventListener('click', () => switchMode('dse'));
+      document.getElementById('modeVizBtn').addEventListener('click', () => switchMode('viz'));
+
+      // DSE Past Paper listeners
+      document.querySelectorAll('#dsePaperFilters [data-paper]').forEach((b) => {
+        b.addEventListener('click', () => {
+          dseState.paper = b.getAttribute('data-paper');
+          document.querySelectorAll('#dsePaperFilters [data-paper]').forEach((x) => {
+            const on = x.getAttribute('data-paper') === dseState.paper;
+            x.className = on ? 'py-1.5 rounded-sm bg-[#2563eb] text-white' : 'py-1.5 rounded-sm bg-[#132035] text-[#cbd5e1] border border-[#243754]';
+          });
+          renderDseList();
+        });
+      });
+      document.getElementById('dseDryrunCheckBtn').addEventListener('click', checkDseDryrun);
+      document.getElementById('dseRunBtn').addEventListener('click', () => checkDseCode(false));
+      document.getElementById('dseCheckBtn').addEventListener('click', () => checkDseCode(true));
+      document.getElementById('dseResetBtn').addEventListener('click', () => loadDseQuestion(dseState.activeId));
+      const wireExtraTrace = (slot, pfx) => {
+        document.getElementById(`${pfx}TracePrevBtn`).addEventListener('click', () => {
+          const tr = liveTraces[slot]; if (tr.idx > 0) { tr.idx -= 1; renderLiveTracePanel(slot); }
+        });
+        document.getElementById(`${pfx}TraceNextBtn`).addEventListener('click', () => {
+          const tr = liveTraces[slot]; if (tr.idx < tr.steps.length - 1) { tr.idx += 1; renderLiveTracePanel(slot); }
+        });
+        document.getElementById(`${pfx}TraceAutoBtn`).addEventListener('click', () => {
+          const tr = liveTraces[slot];
+          const b = document.getElementById(`${pfx}TraceAutoBtn`);
+          if (tr.timer) { clearInterval(tr.timer); tr.timer = null; b.textContent = '▶ 自動'; return; }
+          if (tr.idx >= tr.steps.length - 1) tr.idx = 0;
+          b.textContent = '⏸ 暫停';
+          tr.timer = setInterval(() => {
+            if (tr.idx >= tr.steps.length - 1) { clearInterval(tr.timer); tr.timer = null; b.textContent = '▶ 自動'; return; }
+            tr.idx += 1; renderLiveTracePanel(slot);
+          }, 750);
+        });
+      };
+      wireExtraTrace('dse', 'dse');
+
+      document.getElementById('dseTraceBtn').addEventListener('click', async () => {
+        const q = DSE_PAPERS.find((x) => x.id === dseState.activeId);
+        if (!q) return;
+        const codeStr = q.mode === 'code' ? document.getElementById('dseCodeInput').value : q.code;
+        if (q.mode === 'dryrun' && !dseState.done[q.id] && !document.getElementById('dseDryrunInput').value.trim()) {
+          const fb = document.getElementById('dseFeedback');
+          fb.className = 'px-3.5 py-2.5 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/45 text-[#fde68a]';
+          fb.textContent = '請先嘗試輸入你的空運行答案，即可解鎖逐步追蹤表對照每一步變量變化！';
+          fb.classList.remove('hidden');
+          return;
+        }
+        const res = await runLiveTrace(codeStr, q.stdin || '');
+        liveTraces.dse = { codeLines: codeStr.split('\n'), steps: res.steps || [], idx: 0, timer: null };
+        document.getElementById('dseTraceWrap').classList.remove('hidden');
+        renderLiveTracePanel('dse');
+      });
+
+      // Visualizer listeners
+      document.querySelectorAll('#vizAlgoTabs [data-viz]').forEach((b) => {
+        b.addEventListener('click', () => loadVisualizer(b.getAttribute('data-viz')));
+      });
+      document.getElementById('vizPrevBtn').addEventListener('click', () => { stopVizTimer(); renderVizFrame(vizState.step - 1); });
+      document.getElementById('vizNextBtn').addEventListener('click', () => { stopVizTimer(); renderVizFrame(vizState.step + 1); });
+      document.getElementById('vizResetBtn').addEventListener('click', () => { stopVizTimer(); renderVizFrame(0); });
+      document.getElementById('vizScrubber').addEventListener('input', (e) => { stopVizTimer(); renderVizFrame(Number(e.target.value)); });
+      document.getElementById('vizPlayBtn').addEventListener('click', () => {
+        if (vizState.timer) { stopVizTimer(); return; }
+        if (vizState.step >= vizState.frames.length - 1) renderVizFrame(0);
+        document.getElementById('vizPlayBtn').textContent = '⏸ 暫停';
+        const ms = Number(document.getElementById('vizSpeedSelect').value) || 700;
+        vizState.timer = setInterval(() => {
+          if (vizState.step >= vizState.frames.length - 1) { stopVizTimer(); return; }
+          renderVizFrame(vizState.step + 1);
+        }, ms);
+      });
+
+      // Init iPad touch toolbars & hidden 5-tap teacher gesture
+      initIpadTouchToolbars();
+      // Hidden teacher sync shortcut (Ctrl+Shift+T)
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toUpperCase() === 'T') {
+          e.preventDefault();
+          document.getElementById('gasUrlInput').value = getGasUrl();
+          document.getElementById('googleClientIdInput').value = getGoogleClientId();
+          document.getElementById('allowedDomainInput').value = getAllowedDomain();
+          document.getElementById('gasSaveMsg').classList.add('hidden');
+          document.getElementById('teacherSyncModal').classList.remove('hidden');
+        }
+      });
+
+      // Sprint Game listeners
+      document.getElementById('spStartBtn').addEventListener('click', spStart);
+      document.getElementById('spOverlayStartBtn').addEventListener('click', spStart);
+      document.getElementById('spPauseBtn').addEventListener('click', () => {
+        sp.paused = !sp.paused;
+        document.getElementById('spPauseBtn').textContent = sp.paused ? '繼續' : '暫停';
+        if (!sp.paused) { sp.lastTs = performance.now(); sp.raf = requestAnimationFrame(spLoop); }
+      });
+      document.getElementById('spFireBtn').addEventListener('click', spFire);
+      document.getElementById('spTabBtn').addEventListener('click', () => {
+        if (sp.cards.length > 1) {
+          const i = sp.cards.findIndex((c) => c.uid === sp.targetUid);
+          sp.targetUid = sp.cards[(i + 1) % sp.cards.length].uid; spSyncUI();
+        }
+      });
+      document.getElementById('spInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); spFire(); }
+        else if (e.key === 'Tab') { e.preventDefault(); document.getElementById('spTabBtn').click(); }
+      });
+
+      // Sandbox listeners
+      const sbInput = document.getElementById('sbInput');
+      const sbGutter = document.getElementById('sbLineGutter');
+      updateLineGutter(sbInput, sbGutter);
+      sbInput.addEventListener('input', () => updateLineGutter(sbInput, sbGutter));
+      document.getElementById('sbRunBtn').addEventListener('click', async () => {
+        const res = await runPythonCode(sbInput.value, document.getElementById('sbStdin').value.replace(/\\n/g, '\n'));
+        document.getElementById('sbOutput').textContent = res.ok ? (res.output || '（執行成功）') : `錯誤：${res.error}`;
+        renderVirtualFiles();
+      });
+      document.getElementById('sbResetFilesBtn').addEventListener('click', resetVirtualFiles);
+
+      // Modals & Mobile Drawer
+          document.getElementById('soundToggleBtn').addEventListener('click', (e) => { state.soundOn = !state.soundOn; e.currentTarget.classList.toggle('text-[#10d981]', state.soundOn); });
+
+      document.getElementById('studentProfileBtn').addEventListener('click', () => {
+        if (state.student) {
+          document.getElementById('loginClassInput').value = state.student.cls || '';
+          document.getElementById('loginNoInput').value = state.student.no || '';
+          document.getElementById('loginNameInput').value = state.student.name || '';
+          document.getElementById('loginTeacherToggle').checked = Boolean(state.student.teacherMode);
+        }
+        document.getElementById('loginErrorMsg').classList.add('hidden');
+        document.getElementById('loginCloudStatus').classList.add('hidden');
+        updateGmailModalUI();
+        document.getElementById('loginModal').classList.remove('hidden');
+      });
+      document.getElementById('closeLoginModalBtn').addEventListener('click', () => document.getElementById('loginModal').classList.add('hidden'));
+
+      document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+        const cls = document.getElementById('loginClassInput').value.trim().toUpperCase();
+        const no = document.getElementById('loginNoInput').value.trim().padStart(2, '0');
+        const name = document.getElementById('loginNameInput').value.trim();
+        const teacherMode = document.getElementById('loginTeacherToggle').checked || cls === 'TEACHER';
+        const err = document.getElementById('loginErrorMsg');
+        const stEl = document.getElementById('loginCloudStatus');
+        const cid = getGoogleClientId();
+        let email = pendingGoogleUser ? pendingGoogleUser.email : (state.student && state.student.email ? state.student.email : '');
+        let verifiedGoogle = pendingGoogleUser ? Boolean(pendingGoogleUser.verifiedGoogle) : Boolean(state.student && state.student.verifiedGoogle);
+        let picture = pendingGoogleUser ? (pendingGoogleUser.picture || '') : (state.student ? (state.student.picture || '') : '');
+
+        if (!verifiedGoogle && !cid) {
+          email = (document.getElementById('loginEmailInput').value || '').trim().toLowerCase();
+        }
+        if (cid && !verifiedGoogle) {
+          err.textContent = '請先點擊上方「使用 Google 帳戶登入」完成 Gmail 身份認證。';
+          err.classList.remove('hidden');
+          return;
+        }
+        if (!email || !email.includes('@')) {
+          err.textContent = '請輸入有效嘅 Gmail／學校電郵地址。';
+          err.classList.remove('hidden');
+          return;
+        }
+        const dom = getAllowedDomain().trim().toLowerCase();
+        if (dom && !email.endsWith('@' + dom) && !teacherMode) {
+          err.textContent = `請使用學校帳戶（@${dom}）登入。`;
+          err.classList.remove('hidden');
+          return;
+        }
+        if (!cls || !no || !name) {
+          err.textContent = '請填妥班別、學號及姓名。';
+          err.classList.remove('hidden');
+          return;
+        }
+        err.classList.add('hidden');
+        stEl.textContent = '正在同步雲端進度...';
+        stEl.classList.remove('hidden');
+
+        const profile = { id: email, email, cls, no, name, picture, verifiedGoogle, teacherMode };
+        loadProfile(profile);
+
+        const cloud = await loadCloudProgressByEmail(email);
+        if (cloud) {
+          state.xp = Math.max(state.xp, Number(cloud.xp || 0));
+          state.penalty = Math.max(state.penalty, Number(cloud.penalty || 0));
+          state.completed = { ...(cloud.completed || {}), ...state.completed };
+          if (cloud.tbDone && typeof tbState !== 'undefined') {
+            tbState.done = { ...cloud.tbDone, ...tbState.done };
+            try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
+          }
+          saveProgress();
+          renderProgressWidgets();
+          renderSidebars();
+          renderHomeRoadmap();
+          
+        } else {
+          syncToGoogleSheet({ cls, no, name, email });
+        }
+
+        stEl.classList.add('hidden');
+        document.getElementById('loginModal').classList.add('hidden');
+        playSuccess();
+      });
+
+      document.getElementById('gmailSignOutBtn').addEventListener('click', () => {
+        pendingGoogleUser = null;
+        try { localStorage.removeItem(ACTIVE_USER_KEY); } catch (e) {}
+        state.student = null;
+        document.getElementById('headerStudentLabel').textContent = 'Gmail 登入';
+        document.getElementById('loginClassInput').value = '';
+        document.getElementById('loginNoInput').value = '';
+        document.getElementById('loginNameInput').value = '';
+        updateGmailModalUI();
+      });
+
+      document.getElementById('closeSyncModalBtn').addEventListener('click', () => document.getElementById('teacherSyncModal').classList.add('hidden'));
+      document.getElementById('saveGasUrlBtn').addEventListener('click', () => {
+        const u = document.getElementById('gasUrlInput').value.trim();
+        const cid = document.getElementById('googleClientIdInput').value.trim();
+        const dom = document.getElementById('allowedDomainInput').value.trim();
+        try {
+          if (u) localStorage.setItem(GAS_URL_KEY, u); else localStorage.removeItem(GAS_URL_KEY);
+          if (cid) localStorage.setItem(GOOGLE_CID_KEY, cid); else localStorage.removeItem(GOOGLE_CID_KEY);
+          if (dom) localStorage.setItem(ALLOWED_DOM_KEY, dom); else localStorage.removeItem(ALLOWED_DOM_KEY);
+        } catch (e) {}
+        updateSyncTag();
+        const msg = document.getElementById('gasSaveMsg');
+        msg.textContent = '✓ 已儲存雲端同步與 Gmail 登入設定！';
+        msg.classList.remove('hidden');
+        playSuccess();
+      });
+
+      // Boot profile + Cloud Progress Restore + UI + Pyodide
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(ACTIVE_USER_KEY) || 'null'); } catch (e) {}
+      if (saved && saved.id && saved.email) {
+        loadProfile(saved);
+        loadCloudProgressByEmail(saved.email).then((cloud) => {
+          if (!cloud) return;
+          state.xp = Math.max(state.xp, Number(cloud.xp || 0));
+          state.penalty = Math.max(state.penalty, Number(cloud.penalty || 0));
+          state.completed = { ...(cloud.completed || {}), ...state.completed };
+          if (cloud.tbDone && typeof tbState !== 'undefined') {
+            tbState.done = { ...cloud.tbDone, ...tbState.done };
+            try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
+          }
+          saveProgress(); renderProgressWidgets(); renderSidebars(); renderHomeRoadmap();
+        });
+      } else {
+        document.getElementById('headerStudentLabel').textContent = 'Gmail 登入';
+        renderProgressWidgets(); renderSidebars(); renderHomeRoadmap();
+        updateGmailModalUI();
+        document.getElementById('loginModal').classList.remove('hidden');
+      }
+
+      switchMode('dse');
+      
+      initPyodideEngine();
+    });
+  </script>
+</body>
+</html>
