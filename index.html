@@ -944,17 +944,35 @@
         signedBox.classList.add('hidden');
         signInSec.classList.remove('hidden');
         const cid = getGoogleClientId();
+        const wrap = document.getElementById('googleBtnWrap');
         if (cid && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
           fallbackNote.classList.add('hidden');
-          const wrap = document.getElementById('googleBtnWrap');
           wrap.innerHTML = '';
           google.accounts.id.initialize({
             client_id: cid,
             callback: handleGoogleCredentialResponse
           });
           google.accounts.id.renderButton(wrap, { theme: 'filled_blue', size: 'large', width: 320, text: 'signin_with', locale: 'zh_HK' });
+        } else if (cid) {
+          fallbackNote.classList.add('hidden');
+          wrap.innerHTML = '<div class="text-xs text-[#9aa7b8] py-2 font-mono-code">正在載入 Google 帳戶登入按鈕...</div>';
+          if (!window._gsiRetryTimer) {
+            let tries = 0;
+            window._gsiRetryTimer = setInterval(() => {
+              tries++;
+              if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                clearInterval(window._gsiRetryTimer);
+                window._gsiRetryTimer = null;
+                updateGmailModalUI();
+              } else if (tries >= 40) {
+                clearInterval(window._gsiRetryTimer);
+                window._gsiRetryTimer = null;
+                wrap.innerHTML = '<div class="text-xs text-[#fda4af] py-2">無法載入 Google 登入服務，請檢查網絡或改用瀏覽器開啟 GitHub Pages 網址。</div>';
+              }
+            }, 200);
+          }
         } else {
-          document.getElementById('googleBtnWrap').innerHTML = '';
+          wrap.innerHTML = '';
           fallbackNote.classList.remove('hidden');
           if (user && user.email) document.getElementById('loginEmailInput').value = user.email;
         }
@@ -1129,14 +1147,14 @@ def _hkdse_check_code(code_str, forbidden_calls):
 `;
 
     async function initPyodideEngine() {
-      const statusEl = { textContent: '', className: '' };
+      const statusEl = document.getElementById('headerEngineDot') || { innerHTML: '', className: '' };
       try {
         if (typeof loadPyodide !== 'function') throw new Error('Pyodide CDN unavailable');
         state.pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' });
         state.pyodide.runPython(PY_AST_CHECKER);
         resetVirtualFiles();
-        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#10d981] shadow-[0_0_8px_#10d981]"></span> PYTHON 3 WASM READY';
-        statusEl.className = 'flex items-center gap-1.5 text-[#10d981] font-mono-code text-[10px]';
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#10d981] shadow-[0_0_8px_#10d981]"></span> Python 3 就緒';
+        statusEl.className = 'hidden sm:inline-flex items-center gap-1.5 h-[34px] font-mono-code text-[11px] text-[#34d399] px-2.5 rounded bg-[#0c1422] border border-[#10b981]/40';
       } catch (err) {
         statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#f5a623]"></span> OFFLINE PREVIEW';
         statusEl.className = 'flex items-center gap-1.5 text-[#f5a623] font-mono-code text-[10px]';
@@ -1230,6 +1248,16 @@ sorted([fn for fn in os.listdir(".") if fn.endswith(".txt")])
     // =========================================================================
     // INTERACTIVE STEP-BY-STEP DRY-RUN TRACE VISUALIZER (GREEN-BAR PAPER)
     // =========================================================================
+
+    const TB_DONE_KEY = 'hkdse_py_practice_tb_done_v1';
+    function updateLineGutter(textarea, gutter) {
+      if (!textarea || !gutter) return;
+      const count = Math.max(1, (textarea.value || '').split('\n').length);
+      let out = '';
+      for (let i = 1; i <= count; i++) out += i + '\n';
+      gutter.textContent = out.trimEnd();
+    }
+
     function renderProgressWidgets() {}
     function renderSidebars() {}
     function renderHomeRoadmap() {}
@@ -2015,7 +2043,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       const baseD = ['', 'Iris', 'Ada', 'Peter', '', 'Ben'];
       const baseNP = [0, 2, 10, 1, 0, 3];
       const frames = [
-        { D: [...baseD], NP: [...baseNP], start: 5, prev: -1, cur: 5, delNode: -1, line: 3, cmp: 0, swp: 0, note: '初始鏈表（明德例題 5.5）：由 start=5 出發，順序為 Ben(5) → Peter(3) → Iris(1) → Ada(2) → NULL(10)。', vars: { start: 5, prev: '-', current: '-' } },
+        { D: [...baseD], NP: [...baseNP], start: 5, prev: -1, cur: 5, delNode: -1, line: 3, cmp: 0, swp: 0, note: '初始鏈表：由 start=5 出發，順序為 Ben(5) → Peter(3) → Iris(1) → Ada(2) → NULL(10)。', vars: { start: 5, prev: '-', current: '-' } },
         { D: [...baseD], NP: [...baseNP], start: 5, prev: 5, cur: 3, delNode: -1, line: 6, cmp: 1, swp: 0, note: '準備刪除第 3 個節點（Iris）：設定 prev = 5 (Ben)、current = NP[5] = 3 (Peter)。', vars: { start: 5, prev: '5 (Ben)', current: '3 (Peter)' } },
         { D: [...baseD], NP: [...baseNP], start: 5, prev: 3, cur: 1, delNode: -1, line: 8, cmp: 2, swp: 0, note: '指示標各前進一步：prev = 3 (Peter)、current = NP[3] = 1 (Iris)，已鎖定目標節點！', vars: { start: 5, prev: '3 (Peter)', current: '1 (Iris)' } },
         { D: [...baseD], NP: [0, 2, 10, 2, 0, 3], start: 5, prev: 3, cur: 1, delNode: 1, line: 9, cmp: 2, swp: 1, note: '🎯 關鍵一步：NP[3] = NP[1] = 2！Peter 直接指向 Ada(2)，跳過並刪除 Iris(1)（無須搬移其他數據）！', vars: { 'NP[3]': '1 → 2', '新順序': 'Ben → Peter → Ada' } }
@@ -2377,7 +2405,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         document.getElementById('vizApplyBtn').onclick = build;
         build();
       } else if (algoKey === 'merge_lists') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">明德課本 6.4：合併 class4A [45, 55, 66, 82] 與 class4B [43, 69, 85, 91]</span>`;
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">合併範例：合併 class4A [45, 55, 66, 82] 與 class4B [43, 69, 85, 91]</span>`;
         vizState.frames = buildMergeFrames([45, 55, 66, 82], [43, 69, 85, 91]);
         renderVizFrame(0);
       } else if (algoKey === 'stack_queue') {
@@ -2385,7 +2413,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         document.getElementById('vizNarration').textContent = '互動模式：點擊按鈕即時測試 LIFO 堆疊與 FIFO 循環隊列操作。';
         renderStackQueueInteractive();
       } else if (algoKey === 'linked_list') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">明德課本例題 5.5：平行陣列 D[] 與 NP[] 刪除節點 delete(3)</span>`;
+        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">鏈表示範：平行陣列 D[] 與 NP[] 刪除節點 delete(3)</span>`;
         vizState.frames = buildLinkedListFrames();
         renderVizFrame(0);
       } else if (algoKey === 'array_2d') {
@@ -2425,6 +2453,8 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       document.getElementById('dseRunBtn').addEventListener('click', () => checkDseCode(false));
       document.getElementById('dseCheckBtn').addEventListener('click', () => checkDseCode(true));
       document.getElementById('dseResetBtn').addEventListener('click', () => loadDseQuestion(dseState.activeId));
+      const dseEd = document.getElementById('dseCodeInput');
+      if (dseEd) dseEd.addEventListener('input', () => updateLineGutter(dseEd, document.getElementById('dseLineGutter')));
       const wireExtraTrace = (slot, pfx) => {
         document.getElementById(`${pfx}TracePrevBtn`).addEventListener('click', () => {
           const tr = liveTraces[slot]; if (tr.idx > 0) { tr.idx -= 1; renderLiveTracePanel(slot); }
@@ -2664,6 +2694,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
 
       switchMode('dse');
       
+      window.addEventListener('load', () => { if (!state.student) updateGmailModalUI(); });
       initPyodideEngine();
     });
   </script>
