@@ -130,15 +130,17 @@
       border-color: rgba(24, 28, 32, 0.14);
     }
     .no-copy { user-select: none; -webkit-user-select: none; }
-    .code-editor-wrap { display: flex; background: #05080f; border: 1px solid #1d2b40; border-radius: 4px; overflow: hidden; }
+    .code-editor-wrap { display: flex; align-items: stretch; min-width: 0; max-width: 100%; background: #05080f; border: 1px solid #1d2b40; border-radius: 4px; overflow: hidden; }
     .code-editor-wrap:focus-within { border-color: #38bdf8; box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25); }
     .line-gutter {
-      min-width: 40px;
+      min-width: 42px;
+      flex-shrink: 0;
       padding: 14px 8px;
       text-align: right;
       font-family: 'IBM Plex Mono', monospace;
       font-size: 13px;
       line-height: 1.65;
+      white-space: pre;
       color: #526580;
       background: #09101b;
       border-right: 1px solid #1a2638;
@@ -147,6 +149,8 @@
     }
     .py-editor {
       flex: 1;
+      min-width: 0;
+      width: 100%;
       background: transparent;
       padding: 14px;
       font-family: 'IBM Plex Mono', monospace;
@@ -159,6 +163,8 @@
       white-space: pre;
       overflow-x: auto;
     }
+    .chassis-surface { min-width: 0; max-width: 100%; }
+    #dsePrompt { overflow-wrap: anywhere; word-break: break-word; }
     .next-unlocked-pulse {
       background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
       color: #03150e !important;
@@ -216,6 +222,8 @@
       display: flex;
       flex-wrap: nowrap;
       overflow-x: auto;
+      min-width: 0;
+      max-width: 100%;
       gap: 6px;
       padding: 6px 8px;
       background: #09101b;
@@ -224,6 +232,9 @@
       border-radius: 4px 4px 0 0;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
+    }
+    @media (min-width: 640px) {
+      .ipad-key-bar { flex-wrap: wrap; overflow-x: visible; }
     }
     .ipad-key-bar::-webkit-scrollbar { display: none; }
     .ipad-key-btn {
@@ -536,7 +547,7 @@
     
 
     <!-- Right Main Workbench -->
-    <main id="mainWorkbench" class="lg:col-span-12 flex flex-col divide-y divide-[#1e2d44]">
+    <main id="mainWorkbench" class="lg:col-span-12 flex flex-col divide-y divide-[#1e2d44] min-w-0">
 
       <!-- ===================================================================== -->
       <!-- MODE 0: HOME DASHBOARD + INTERACTIVE DRY-RUN TRACE VISUALIZER         -->
@@ -655,7 +666,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div class="lg:col-span-7 space-y-3">
+          <div class="lg:col-span-7 space-y-3 min-w-0">
             <div class="ipad-key-bar rounded-t-sm" data-target-editor="sbInput"></div>
             <div class="code-editor-wrap rounded-b-sm">
               <div id="sbLineGutter" class="line-gutter">1</div>
@@ -673,7 +684,7 @@
             </div>
           </div>
 
-          <div class="lg:col-span-5 space-y-3">
+          <div class="lg:col-span-5 space-y-3 min-w-0">
             <div class="chassis-surface rounded-sm p-3.5 space-y-2.5">
               <div class="flex items-center justify-between border-b border-[#212a36] pb-2">
                 <span class="font-mono-code text-[11px] font-bold text-[#f5a623]">虛擬檔案</span>
@@ -705,7 +716,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
           <!-- Left Selector: Collapsible on Desktop + Slide-over Drawer on Narrow Screens -->
-          <div id="dseSidebarBackdrop" class="hidden lg:block lg:col-span-4">
+          <div id="dseSidebarBackdrop" class="hidden lg:block lg:col-span-4 min-w-0">
             <div id="dseSidebarPanel" class="space-y-2.5 chassis-surface rounded-md p-3 border-[#1e2d44]">
               <div class="flex items-center justify-between pb-1.5 border-b border-[#182438] lg:hidden">
                 <span class="font-mono-code text-[11px] font-bold text-[#38bdf8]">DSE 試題目錄</span>
@@ -721,7 +732,7 @@
           </div>
 
           <!-- Right Practice Frame -->
-          <div id="dseRightFrame" class="lg:col-span-8 space-y-3 sm:space-y-4">
+          <div id="dseRightFrame" class="lg:col-span-8 space-y-3 sm:space-y-4 min-w-0">
             <div class="chassis-surface rounded-sm p-4 space-y-3.5 border-[#1e2d44]">
               <div class="flex flex-wrap items-start justify-between gap-2 border-b border-[#1b283d] pb-3">
                 <div class="space-y-1">
@@ -1034,7 +1045,6 @@
         將 <code>google_apps_script_sync.txt</code> 貼上學校 Google Sheet 的 Apps Script 並部署為 Web App 後，把獲得的網址貼入下方（或直接寫死於本 HTML 程式碼頂部的 <code>GAS_WEBAPP_URL</code> 變數再上載 GitHub Pages）。每次學生提交即自動記錄：班別、學號、題號、得分、切頁次數、離開秒數、疑似超綱語法及程式碼。
       </p>
       <div>
-        <label class="block text-[11px] font-bold text-[#10d981] mb-1">Google Apps Script Web App URL</label>
         <div class="space-y-2.5">
         <div>
           <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">Google Apps Script 同步網址（/exec）</label>
@@ -1060,7 +1070,7 @@
   <script>
     // =========================================================================
     // [老師上載 GitHub Pages 前只需在此貼上您的 Google Apps Script Web App 網址]
-    // 例如：const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyCAlyNostT78pme5JyrPP2LO7fk1w7ng43gNyk_ah1oWv9fL25IC8VKQ9i5hJGGeTH/exec";
+    // 例如：const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxwv7cWC8WvPT1zd43QVTXhTwrvEsgFh8XX_Bl6qRWTT_32Y_qQotS1WYizW4o2j6RSyg/exec";
     // =========================================================================
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzezFIv2KTabhEzSCCQD6TqaRYf-xnVQZjfdTRxuTbz2xKPzk-pAmE6l7Kfi1wnZM-7/exec";
     // 教師設定：貼上 Google Cloud Console 取得的 OAuth 2.0 Web Client ID 即可啟用官方「使用 Google 帳戶登入」按鈕
@@ -1107,7 +1117,14 @@
     };
 
     function getGasUrl() {
-      try { return localStorage.getItem(GAS_URL_KEY) || GAS_WEBAPP_URL; } catch (e) { return GAS_WEBAPP_URL; }
+      try {
+        const saved = localStorage.getItem(GAS_URL_KEY);
+        if (saved && saved.includes('AKfycbyCAlyNostT78pme5JyrPP2LO7fk1w7ng43gNyk_ah1oWv9fL25IC8VKQ9i5hJGGeTH')) {
+          localStorage.removeItem(GAS_URL_KEY);
+          return GAS_WEBAPP_URL;
+        }
+        return saved || GAS_WEBAPP_URL;
+      } catch (e) { return GAS_WEBAPP_URL; }
     }
 
     function updateSyncTag() {}
@@ -3533,6 +3550,10 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           updateLineGutter(dseEd, document.getElementById('dseLineGutter'));
           if (dseState.activeId) saveDraft('dse_code', dseState.activeId, dseEd.value);
         });
+        dseEd.addEventListener('scroll', () => {
+          const g = document.getElementById('dseLineGutter');
+          if (g) g.scrollTop = dseEd.scrollTop;
+        });
         const blockDsePaste = (e) => {
           if (isTeacherUser()) return;
           e.preventDefault();
@@ -3746,6 +3767,9 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       sbInput.addEventListener('input', () => {
         updateLineGutter(sbInput, sbGutter);
         saveDraft('sandbox', 'main', sbInput.value);
+      });
+      sbInput.addEventListener('scroll', () => {
+        if (sbGutter) sbGutter.scrollTop = sbInput.scrollTop;
       });
       document.getElementById('sbRunBtn').addEventListener('click', async () => {
         const res = await runPythonCode(sbInput.value, document.getElementById('sbStdin').value.replace(/\\n/g, '\n'));
