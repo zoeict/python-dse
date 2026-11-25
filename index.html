@@ -926,11 +926,16 @@
       const url = getGasUrl();
       if (!url || !email) return null;
       try {
-        const resp = await fetch(`${url}?action=load&email=${encodeURIComponent(email)}`, { method: 'GET' });
+        const resp = await fetch(`${url}?action=load&email=${encodeURIComponent(email)}&t=${Date.now()}`, { method: 'GET', cache: 'no-store' });
         if (!resp.ok) return null;
         const data = await resp.json();
-        if (data && data.status === 'ok' && data.found && data.progress) {
-          return data.progress;
+        if (data && data.status === 'ok') {
+          if (data.found && data.progress) {
+            return { ...data.progress, _found: true };
+          }
+          if (data.found === false) {
+            return { _found: false, xp: 0, penalty: 0, completed: {}, tbDone: {} };
+          }
         }
       } catch (e) {}
       return null;
@@ -1031,7 +1036,7 @@
       stEl.textContent = '正在從雲端載入你的學習進度...';
       stEl.classList.remove('hidden');
       const cloud = await loadCloudProgressByEmail(email);
-      if (cloud) {
+      if (cloud && cloud._found) {
         if (cloud.cls) document.getElementById('loginClassInput').value = cloud.cls;
         if (cloud.no) document.getElementById('loginNoInput').value = cloud.no;
         if (cloud.name) document.getElementById('loginNameInput').value = cloud.name;
@@ -2917,11 +2922,11 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
 
         const cloud = await loadCloudProgressByEmail(email);
         if (cloud) {
-          state.xp = Math.max(state.xp, Number(cloud.xp || 0));
-          state.penalty = Math.max(state.penalty, Number(cloud.penalty || 0));
-          state.completed = { ...(cloud.completed || {}), ...state.completed };
-          if (cloud.tbDone && typeof tbState !== 'undefined') {
-            tbState.done = { ...cloud.tbDone, ...tbState.done };
+          state.xp = Number(cloud.xp || 0);
+          state.penalty = Number(cloud.penalty || 0);
+          state.completed = { ...(cloud.completed || {}) };
+          if (typeof tbState !== 'undefined') {
+            tbState.done = { ...(cloud.tbDone || {}) };
             try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
           }
           saveProgress();
@@ -2973,11 +2978,11 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         loadProfile(saved);
         loadCloudProgressByEmail(saved.email).then((cloud) => {
           if (!cloud) return;
-          state.xp = Math.max(state.xp, Number(cloud.xp || 0));
-          state.penalty = Math.max(state.penalty, Number(cloud.penalty || 0));
-          state.completed = { ...(cloud.completed || {}), ...state.completed };
-          if (cloud.tbDone && typeof tbState !== 'undefined') {
-            tbState.done = { ...cloud.tbDone, ...tbState.done };
+          state.xp = Number(cloud.xp || 0);
+          state.penalty = Number(cloud.penalty || 0);
+          state.completed = { ...(cloud.completed || {}) };
+          if (typeof tbState !== 'undefined') {
+            tbState.done = { ...(cloud.tbDone || {}) };
             try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
           }
           saveProgress(); renderProgressWidgets(); renderSidebars(); renderHomeRoadmap();
