@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>ICT - Python DSE 操練與工具</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -300,8 +303,6 @@
       </div>
 
       <div class="flex items-center gap-2 order-2 sm:order-3">
-        <span id="headerEngineDot" class="hidden sm:inline-flex items-center gap-1.5 h-[34px] font-mono-code text-[11px] text-[#9aa7b8] px-2.5 rounded bg-[#0c1422] border border-[#1d2b40]">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
           載入 Python...
         </span>
         <span id="headerTeacherBadge" class="hidden items-center gap-1 h-[32px] px-2.5 rounded-md bg-[#f59e0b]/15 border border-[#f59e0b]/45 text-[#fbbf24] font-mono-code text-[11px] font-bold whitespace-nowrap">老師模式</span>
@@ -717,7 +718,7 @@
       <div class="flex items-center justify-between border-b border-[#1e2d44] pb-3">
         <div>
           <h3 class="font-display text-lg font-bold text-white">登入學校 Gmail</h3>
-          <p class="text-[11px] text-[#9aa7b8] mt-0.5">登入後自動記錄進度</p>
+          <p class="text-[11px] text-[#9aa7b8] mt-0.5">使用學校 Google 帳戶一鍵登入，自動同步進度</p>
         </div>
         <button id="closeLoginModalBtn" class="hw-btn p-1.5 rounded-sm bg-[#132035] text-slate-300 border border-[#243754]"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
@@ -742,30 +743,8 @@
           <input id="loginEmailInput" type="email" placeholder="例如：s240101@frcss.edu.hk" class="w-full rounded-sm bg-[#060a12] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
         </div>
       </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">班別（Class）</label>
-          <input id="loginClassInput" type="text" placeholder="例如：4A" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">學號（Class No.）</label>
-          <input id="loginNoInput" type="text" placeholder="例如：01" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
-        </div>
-      </div>
-      <div>
-        <label class="block text-[11px] font-bold text-[#cbd5e1] mb-1">學生姓名（Name）</label>
-        <input id="loginNameInput" type="text" placeholder="例如：Chan Tai Man" class="w-full rounded-sm bg-[#070b13] border border-[#243754] px-3 py-2 text-xs text-white outline-none focus:border-[#38bdf8]" />
-      </div>
-      <label class="hidden flex items-center gap-2 text-xs text-[#cbd5e1]">
-        <input id="loginTeacherToggle" type="checkbox" />
-        <span>Teacher</span>
-      </label>
       <div id="loginCloudStatus" class="hidden text-xs font-bold text-[#38bdf8]"></div>
       <div id="loginErrorMsg" class="hidden text-xs font-bold text-[#fda4af]"></div>
-      <div class="flex justify-end gap-2 pt-1">
-        <button id="saveProfileBtn" class="hw-btn px-4 py-2 rounded-sm bg-gradient-to-r from-[#2563eb] to-[#10b981] text-white text-xs font-bold">確認登入並載入雲端進度</button>
-      </div>
     </div>
   </div>
 
@@ -1024,26 +1003,55 @@
       }
       const isTeacherEmail = TEACHER_EMAILS.includes(email);
       try { sessionStorage.setItem('hkdse_py_dse_id_token', response.credential || ''); } catch (e) {}
-      pendingGoogleUser = { email, name: info.name || '', picture: info.picture || '', verifiedGoogle: true, idToken: response.credential || '', teacherMode: isTeacherEmail };
-      document.getElementById('loginNameInput').value = info.name || document.getElementById('loginNameInput').value;
-      if (isTeacherEmail) {
-        if (!document.getElementById('loginClassInput').value.trim()) document.getElementById('loginClassInput').value = 'TEACHER';
-        if (!document.getElementById('loginNoInput').value.trim()) document.getElementById('loginNoInput').value = '00';
-      }
+      pendingGoogleUser = {
+        email,
+        name: info.name || email.split('@')[0],
+        picture: info.picture || '',
+        verifiedGoogle: true,
+        idToken: response.credential || '',
+        teacherMode: isTeacherEmail
+      };
       updateGmailModalUI();
 
-      // Auto-load cloud progress from Google Sheet!
-      stEl.textContent = '正在從雲端載入你的學習進度...';
+      stEl.textContent = '正在載入雲端進度...';
       stEl.classList.remove('hidden');
       const cloud = await loadCloudProgressByEmail(email);
-      if (cloud && cloud._found) {
-        if (cloud.cls) document.getElementById('loginClassInput').value = cloud.cls;
-        if (cloud.no) document.getElementById('loginNoInput').value = cloud.no;
-        if (cloud.name) document.getElementById('loginNameInput').value = cloud.name;
-        stEl.textContent = `已找到雲端紀錄（已完成 ${Object.keys(cloud.completed || {}).length} 題），按下方按鈕繼續！`;
-      } else {
-        stEl.textContent = '已驗證 Google 帳戶！請填寫班別及學號完成首次登入。';
+      const cls = isTeacherEmail ? 'TEACHER' : ((cloud && cloud._found && cloud.cls) ? cloud.cls : '');
+      const no = isTeacherEmail ? '00' : ((cloud && cloud._found && cloud.no) ? cloud.no : '');
+      const displayName = info.name || ((cloud && cloud._found && cloud.name) ? cloud.name : email.split('@')[0]);
+
+      const profile = {
+        id: email,
+        email,
+        cls,
+        no,
+        name: displayName,
+        picture: info.picture || '',
+        verifiedGoogle: true,
+        teacherMode: isTeacherEmail,
+        idToken: response.credential || ''
+      };
+      loadProfile(profile);
+
+      if (cloud) {
+        state.xp = Number(cloud.xp || 0);
+        state.penalty = Number(cloud.penalty || 0);
+        state.completed = { ...(cloud.completed || {}) };
+        if (typeof tbState !== 'undefined') {
+          tbState.done = { ...(cloud.tbDone || {}) };
+          try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
+        }
+        saveProgress();
+        if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
+        if (typeof renderSidebars === 'function') renderSidebars();
+        if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
+        if (typeof renderTextbookList === 'function') renderTextbookList();
+        if (typeof renderDseList === 'function') renderDseList();
+        if (typeof loadLevel === 'function' && typeof LEVELS !== 'undefined' && LEVELS.length) loadLevel(state.currentLevelIdx);
       }
+      try { localStorage.setItem(LAST_PROFILE_KEY, JSON.stringify(profile)); } catch (e) {}
+      stEl.classList.add('hidden');
+      document.getElementById('loginModal').classList.add('hidden');
     }
 
     // Anti-AI Telemetry: Track Tab-Switch & Away Seconds (No fullscreen lock)
@@ -1089,7 +1097,7 @@
         }
       } catch (e) {}
       state.currentLevelIdx = 0; state.openChapters = {};
-      document.getElementById('headerStudentLabel').textContent = `${stu.cls}-${stu.no} ${stu.name}`;
+      document.getElementById('headerStudentLabel').textContent = stu.name || (stu.email ? stu.email.split('@')[0] : '已登入');
       syncTeacherUI();
       
       renderProgressWidgets();
@@ -1248,6 +1256,60 @@
       syncDseTopLeftToggle();
     }
 
+
+    // === Silent Auto-Force Update (iPad Home Screen Web App) + Background Cloud Re-Sync ===
+    const APP_VERSION = '2026.11.25-03';
+    let _lastCloudResyncTs = 0;
+    async function silentCheckForNewVersion() {
+      try {
+        if (!/^https?:$/.test(window.location.protocol)) return;
+        const lastReload = Number(sessionStorage.getItem('_app_force_reload_ts') || 0);
+        if (Date.now() - lastReload < 15000) return;
+        const resp = await fetch(`${window.location.pathname}?_v=${Date.now()}`, { method: 'GET', cache: 'no-store' });
+        if (!resp.ok) return;
+        const txt = await resp.text();
+        const m = txt.match(/const APP_VERSION = '([^']+)'/);
+        if (m && m[1] && m[1] !== APP_VERSION) {
+          sessionStorage.setItem('_app_force_reload_ts', String(Date.now()));
+          window.location.replace(`${window.location.pathname}?_v=${Date.now()}${window.location.hash || ''}`);
+        }
+      } catch (e) {}
+    }
+    async function silentResyncCloudProgress() {
+      const now = Date.now();
+      if (now - _lastCloudResyncTs < 4000) return;
+      _lastCloudResyncTs = now;
+      const email = state.student && state.student.email;
+      if (!email) return;
+      const cloud = await loadCloudProgressByEmail(email);
+      if (!cloud) return;
+      state.xp = Number(cloud.xp || 0);
+      state.penalty = Number(cloud.penalty || 0);
+      state.completed = { ...(cloud.completed || {}) };
+      if (typeof tbState !== 'undefined') {
+        tbState.done = { ...(cloud.tbDone || {}) };
+        try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
+      }
+      saveProgress();
+      if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
+      if (typeof renderSidebars === 'function') renderSidebars();
+      if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
+      if (typeof renderTextbookList === 'function') renderTextbookList();
+      if (typeof renderDseList === 'function') renderDseList();
+    }
+    window.addEventListener('pageshow', (e) => {
+      silentCheckForNewVersion();
+      if (e.persisted) silentResyncCloudProgress();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        silentCheckForNewVersion();
+        silentResyncCloudProgress();
+      }
+    });
+    setTimeout(silentCheckForNewVersion, 2500);
+    setInterval(silentCheckForNewVersion, 180000);
+
     function escapeHtml(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
@@ -1301,7 +1363,7 @@ def _hkdse_check_code(code_str, forbidden_calls):
 `;
 
     async function initPyodideEngine() {
-      const statusEl = document.getElementById('headerEngineDot') || { innerHTML: '', className: '' };
+      const statusEl = { innerHTML: '', className: '' };
       try {
         if (typeof loadPyodide !== 'function') throw new Error('Pyodide CDN unavailable');
         state.pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' });
@@ -1357,7 +1419,7 @@ finally:
     _sys.settrace(None)
 _final_out = _buf.getvalue()
 if len(_final_out) > 20000:
-    _final_out = _final_out[:20000] + "\n...（輸出過長已截斷）"
+    _final_out = _final_out[:20000] + "\\n...（輸出過長已截斷）"
 if _check_file and not _err:
     if _os.path.exists(_check_file):
         with open(_check_file, "r", encoding="utf-8") as _cf:
@@ -2862,12 +2924,6 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           document.getElementById('soundToggleBtn').addEventListener('click', (e) => { state.soundOn = !state.soundOn; e.currentTarget.classList.toggle('text-[#10d981]', state.soundOn); });
 
       document.getElementById('studentProfileBtn').addEventListener('click', () => {
-        if (state.student) {
-          document.getElementById('loginClassInput').value = state.student.cls || '';
-          document.getElementById('loginNoInput').value = state.student.no || '';
-          document.getElementById('loginNameInput').value = state.student.name || '';
-          document.getElementById('loginTeacherToggle').checked = Boolean(state.student.teacherMode);
-        }
         document.getElementById('loginErrorMsg').classList.add('hidden');
         document.getElementById('loginCloudStatus').classList.add('hidden');
         updateGmailModalUI();
@@ -2875,82 +2931,13 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       });
       document.getElementById('closeLoginModalBtn').addEventListener('click', () => document.getElementById('loginModal').classList.add('hidden'));
 
-      document.getElementById('saveProfileBtn').addEventListener('click', async () => {
-        const cls = document.getElementById('loginClassInput').value.trim().toUpperCase();
-        const no = document.getElementById('loginNoInput').value.trim().padStart(2, '0');
-        const name = document.getElementById('loginNameInput').value.trim();
-        const loginEmailCheck = (pendingGoogleUser ? pendingGoogleUser.email : (state.student && state.student.email ? state.student.email : '')).trim().toLowerCase();
-        const teacherMode = TEACHER_EMAILS.includes(loginEmailCheck);
-        const err = document.getElementById('loginErrorMsg');
-        const stEl = document.getElementById('loginCloudStatus');
-        const cid = getGoogleClientId();
-        let email = pendingGoogleUser ? pendingGoogleUser.email : (state.student && state.student.email ? state.student.email : '');
-        let verifiedGoogle = pendingGoogleUser ? Boolean(pendingGoogleUser.verifiedGoogle) : Boolean(state.student && state.student.verifiedGoogle);
-        let picture = pendingGoogleUser ? (pendingGoogleUser.picture || '') : (state.student ? (state.student.picture || '') : '');
-
-        if (!verifiedGoogle && !cid) {
-          email = (document.getElementById('loginEmailInput').value || '').trim().toLowerCase();
-        }
-        if (cid && !verifiedGoogle) {
-          err.textContent = '請先點擊上方「使用 Google 帳戶登入」完成 Gmail 身份認證。';
-          err.classList.remove('hidden');
-          return;
-        }
-        if (!email || !email.includes('@')) {
-          err.textContent = '請輸入有效嘅 Gmail／學校電郵地址。';
-          err.classList.remove('hidden');
-          return;
-        }
-        const dom = getAllowedDomain().trim().toLowerCase();
-        if (dom && !email.endsWith('@' + dom) && !teacherMode) {
-          err.textContent = `請使用學校帳戶（@${dom}）登入。`;
-          err.classList.remove('hidden');
-          return;
-        }
-        if (!cls || !no || !name) {
-          err.textContent = '請填妥班別、學號及姓名。';
-          err.classList.remove('hidden');
-          return;
-        }
-        err.classList.add('hidden');
-        stEl.textContent = '正在同步雲端進度...';
-        stEl.classList.remove('hidden');
-
-        const idToken = (pendingGoogleUser && pendingGoogleUser.idToken) ? pendingGoogleUser.idToken : getTeacherIdToken();
-        const profile = { id: email, email, cls, no, name, picture, verifiedGoogle, teacherMode: Boolean(verifiedGoogle && TEACHER_EMAILS.includes(email)), idToken };
-        loadProfile(profile);
-
-        const cloud = await loadCloudProgressByEmail(email);
-        if (cloud) {
-          state.xp = Number(cloud.xp || 0);
-          state.penalty = Number(cloud.penalty || 0);
-          state.completed = { ...(cloud.completed || {}) };
-          if (typeof tbState !== 'undefined') {
-            tbState.done = { ...(cloud.tbDone || {}) };
-            try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
-          }
-          saveProgress();
-          renderProgressWidgets();
-          renderSidebars();
-          renderHomeRoadmap();
-          
-        } else {
-          syncToGoogleSheet({ cls, no, name, email });
-        }
-
-        stEl.classList.add('hidden');
-        document.getElementById('loginModal').classList.add('hidden');
-        playSuccess();
-      });
+      
 
       document.getElementById('gmailSignOutBtn').addEventListener('click', () => {
         pendingGoogleUser = null;
         try { localStorage.removeItem(ACTIVE_USER_KEY); } catch (e) {}
         state.student = null;
         document.getElementById('headerStudentLabel').textContent = 'Gmail 登入';
-        document.getElementById('loginClassInput').value = '';
-        document.getElementById('loginNoInput').value = '';
-        document.getElementById('loginNameInput').value = '';
         updateGmailModalUI();
       });
 
