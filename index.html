@@ -274,7 +274,10 @@
   <header class="sticky top-0 z-30 border-b border-[#1d2b40] bg-[#070b12]/95 backdrop-blur-md">
     <div class="max-w-[1440px] mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
       <div class="flex items-center gap-2.5">
-        
+        <button id="dseSidebarToggleBtn" class="hidden hw-btn h-[32px] px-2.5 rounded-md bg-[#0c2236] border border-[#38bdf8]/60 text-[#38bdf8] hover:text-white hover:border-[#38bdf8] text-xs font-bold items-center gap-1.5 shrink-0 transition" aria-label="收合或展開試題目錄" aria-expanded="true" title="收合或展開試題目錄">
+          <i data-lucide="panel-left" class="w-4 h-4 shrink-0"></i>
+          <span>目錄</span>
+        </button>
         <button id="brandHomeBtn" class="flex items-center gap-2 text-left group">
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#101c2e] border border-[#2c405e] group-hover:border-[#38bdf8] transition">
             <span class="w-2 h-2 rounded-full bg-[#38bdf8] shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
@@ -301,6 +304,7 @@
           <span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
           載入 Python...
         </span>
+        <span id="headerTeacherBadge" class="hidden items-center gap-1 h-[32px] px-2.5 rounded-md bg-[#f59e0b]/15 border border-[#f59e0b]/45 text-[#fbbf24] font-mono-code text-[11px] font-bold whitespace-nowrap">老師模式</span>
         <button id="studentProfileBtn" class="hw-btn h-[34px] px-3 rounded bg-[#0f1d30] hover:bg-[#162943] text-[#bae6fd] border border-[#2c405e] hover:border-[#38bdf8]/70 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#38bdf8]"></i>
           <span id="headerStudentLabel" class="max-w-[110px] truncate">登入</span>
@@ -476,8 +480,8 @@
       <!-- ===================================================================== -->
       <!-- MODE 5: HKDSE PAST PAPER WORKBENCH (2012-2024 PAPER 1B & PAPER 2C)    -->
       <!-- ===================================================================== -->
-      <section id="dseContainer" class="hidden p-4 sm:p-6 bg-[#0e1726]/90 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e2d44] pb-3">
+      <section id="dseContainer" class="hidden p-3 sm:p-5 bg-[#0e1726]/90 space-y-3 sm:space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#1e2d44] pb-2.5">
           <div>
             <h2 class="font-display text-lg sm:text-xl font-bold text-white">DSE 試題（2012–2026）</h2>
           </div>
@@ -486,19 +490,25 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          <!-- Left Selector -->
-          <div class="lg:col-span-4 space-y-2.5 chassis-surface rounded-sm p-3 border-[#1e2d44]">
-            <div id="dsePaperFilters" class="grid grid-cols-3 gap-1 text-[11px] font-bold">
-              <button data-paper="ALL" class="py-1.5 rounded-sm bg-[#2563eb] text-white">全部</button>
-              <button data-paper="卷一乙部 必修D" class="py-1.5 rounded-sm bg-[#132035] text-[#cbd5e1] border border-[#243754]">卷一乙部 D</button>
-              <button data-paper="卷二C 選修C" class="py-1.5 rounded-sm bg-[#132035] text-[#cbd5e1] border border-[#243754]">卷二C 選修</button>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
+          <!-- Left Selector: Collapsible on Desktop + Slide-over Drawer on Narrow Screens -->
+          <div id="dseSidebarBackdrop" class="hidden lg:block lg:col-span-4">
+            <div id="dseSidebarPanel" class="space-y-2.5 chassis-surface rounded-md p-3 border-[#1e2d44]">
+              <div class="flex items-center justify-between pb-1.5 border-b border-[#182438] lg:hidden">
+                <span class="font-mono-code text-[11px] font-bold text-[#38bdf8]">DSE 試題目錄</span>
+                <button id="dseDrawerCloseBtn" class="p-1 rounded-sm bg-[#141b25] text-slate-300"><i data-lucide="x" class="w-4 h-4"></i></button>
+              </div>
+              <div id="dsePaperFilters" class="grid grid-cols-3 gap-1 text-[11px] font-bold">
+                <button data-paper="ALL" class="py-1.5 rounded-sm bg-[#2563eb] text-white">全部</button>
+                <button data-paper="卷一乙部 必修D" class="py-1.5 rounded-sm bg-[#132035] text-[#cbd5e1] border border-[#243754]">卷一乙部 D</button>
+                <button data-paper="卷二C 選修C" class="py-1.5 rounded-sm bg-[#132035] text-[#cbd5e1] border border-[#243754]">卷二C 選修</button>
+              </div>
+              <div id="dseQuestionList" class="space-y-1.5 max-h-[70vh] lg:max-h-[680px] overflow-y-auto pr-1"></div>
             </div>
-            <div id="dseQuestionList" class="space-y-1.5 max-h-[680px] overflow-y-auto pr-1"></div>
           </div>
 
           <!-- Right Practice Frame -->
-          <div class="lg:col-span-8 space-y-4">
+          <div id="dseRightFrame" class="lg:col-span-8 space-y-3 sm:space-y-4">
             <div class="chassis-surface rounded-sm p-4 space-y-3.5 border-[#1e2d44]">
               <div class="flex flex-wrap items-start justify-between gap-2 border-b border-[#1b283d] pb-3">
                 <div class="space-y-1">
@@ -529,9 +539,12 @@
                 <textarea id="dseDryrunInput" rows="3" spellcheck="false" autocomplete="off"
                   class="w-full rounded-sm bg-[#070b13] border border-[#2a3b55] focus:border-[#38bdf8] p-3 text-sm font-mono-code text-white outline-none"
                   placeholder="輸入程式輸出（如有多行請按 Enter 換行）..."></textarea>
-                <button id="dseDryrunCheckBtn" class="hw-btn hw-btn-primary px-5 py-2 rounded-sm font-bold text-xs sm:text-sm flex items-center gap-1.5">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> 提交核對
-                </button>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button id="dseDryrunCheckBtn" class="hw-btn hw-btn-primary px-5 py-2 rounded-sm font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> 提交核對
+                  </button>
+                  <button id="teacherRevealDseDrBtn" type="button" class="hidden hw-btn px-3 py-2 rounded-sm bg-[#f59e0b]/15 hover:bg-[#f59e0b]/25 text-xs font-bold text-[#fbbf24] border border-[#f59e0b]/45">👁️ 老師答案</button>
+                </div>
               </div>
 
               <!-- Mode B: DSE Python Fill-in-the-Blank Coding -->
@@ -550,7 +563,15 @@
                   <button id="dseCheckBtn" class="hw-btn hw-btn-primary px-5 py-2 rounded-sm text-xs font-bold flex items-center gap-1.5">
                     <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> 核對試題輸出
                   </button>
-                  <button id="dseResetBtn" class="hw-btn px-3 py-2 rounded-sm bg-[#132035] border border-[#243754] text-xs font-bold text-[#9aa7b8]">重設挖空</button>
+                  <button id="dseResetBtn" class="hw-btn px-3 py-2 rounded-sm bg-[#132035] border border-[#243754] text-xs font-bold text-[#9aa7b8]">重設程式碼</button>
+                  <button id="teacherRevealDseCodeBtn" type="button" class="hidden hw-btn px-3 py-2 rounded-sm bg-[#f59e0b]/15 hover:bg-[#f59e0b]/25 text-xs font-bold text-[#fbbf24] border border-[#f59e0b]/45">👁️ 老師答案</button>
+                </div>
+                <div id="teacherDseAnsBox" class="hidden rounded-sm bg-[#151208] border border-[#f59e0b]/45 p-3 space-y-2">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="font-mono-code text-[11px] font-bold text-[#fbbf24]">老師參考答案（雲端即時提取）</span>
+                    <button id="teacherFillDseBtn" type="button" class="hw-btn px-2 py-0.5 rounded-sm bg-[#f59e0b] hover:bg-[#fbbf24] text-[#1a1200] text-[11px] font-bold">一鍵填入編輯器</button>
+                  </div>
+                  <pre id="teacherDseAnsPre" class="font-mono-code text-xs text-[#fef3c7] bg-[#090805] border border-[#f59e0b]/25 p-2.5 rounded-sm overflow-x-auto whitespace-pre"></pre>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div class="chassis-well rounded-sm p-3">
@@ -800,7 +821,7 @@
     const LEVELS = [];
     const SPRINT_CARDS = [{"id": "S01", "tier": "運算", "code": "x = 17 // 5\nprint(x)", "q": "輸出？", "h": "70f1cf759ce1d9ef"}, {"id": "S02", "tier": "運算", "code": "y = 17 % 5\nprint(y)", "q": "輸出？", "h": "ca0b2147af9a5fad"}, {"id": "S03", "tier": "運算", "code": "a = 27\nb = 4\nprint(a // b + a % b)", "q": "輸出？", "h": "56875425ee83f7ab"}, {"id": "S04", "tier": "運算", "code": "print(135 % 60)", "q": "輸出？", "h": "60fddce7f974a7e6"}, {"id": "S05", "tier": "運算", "code": "n = 479\nprint((n // 10) % 10)", "q": "輸出？", "h": "218ec255ca9c432f"}, {"id": "S06", "tier": "交換", "code": "a = 8\nb = 12\nt = a\na = b\nb = t\nprint(a)", "q": "輸出？", "h": "d19fae548a97a467"}, {"id": "S07", "tier": "布爾", "code": "A = 5\nB = 8\nprint(B > A and A == 5)", "q": "True / False？", "h": "05ef9d26238603df"}, {"id": "S08", "tier": "布爾", "code": "A = 5\nB = 8\nprint(not (A < B))", "q": "True / False？", "h": "1eb635b8c544c190"}, {"id": "S09", "tier": "選擇", "code": "x = 15\nif x > 20:\n    y = 1\nelif x > 10:\n    y = 2\nelse:\n    y = 3\nprint(y)", "q": "輸出？", "h": "692b0fea799ae9b6"}, {"id": "S10", "tier": "循環", "code": "s = 0\nfor i in range(1, 5):\n    s = s + i\nprint(s)", "q": "輸出？", "h": "a5ca604b695cd25a"}, {"id": "S11", "tier": "循環", "code": "for i in range(2, 9, 2):\n    k = i\nprint(k)", "q": "最終 k？", "h": "cd5409a1d72ce0ef"}, {"id": "S12", "tier": "循環", "code": "c = 0\nfor i in range(9, 2, -2):\n    c = c + 1\nprint(c)", "q": "循環次數？", "h": "8db5450406cc3d44"}, {"id": "S13", "tier": "循環", "code": "x = 15\nwhile x > 3:\n    x = x - 4\nprint(x)", "q": "輸出？", "h": "e94c7416abd6925e"}, {"id": "S14", "tier": "循環", "code": "p = 1\nwhile p < 20:\n    p = p * 3\nprint(p)", "q": "輸出？", "h": "ea6dffe1ab2bfab0"}, {"id": "S15", "tier": "陣列", "code": "A = [10, 20, 30, 40]\nprint(A[len(A) - 2])", "q": "輸出？", "h": "a1da78647b66b46f"}, {"id": "S16", "tier": "陣列", "code": "A = [5, 2, 8, 1]\nm = A[0]\nfor i in range(1, 4):\n    if A[i] < m:\n        m = A[i]\nprint(m)", "q": "輸出？", "h": "de1853b72a2a006d"}, {"id": "S17", "tier": "陣列", "code": "A = [1, 2, 3, 4]\nA[1] = A[3]\nprint(A[1] + A[2])", "q": "輸出？", "h": "b8b04ab6a8441a46"}, {"id": "S18", "tier": "檢索", "code": "A = [79, 50, 85, 64]\n# while 檢索 85 (找到即停)", "q": "比較次數？", "h": "7f118f8bab2a7181"}, {"id": "S19", "tier": "除錯", "code": "01 s = 0\n02 for i in range(1, 5):\n03     s = i\n04 print(s)", "q": "求總和出錯行號？", "h": "eb9551a8f7b8c188"}, {"id": "S20", "tier": "除錯", "code": "01 A = [-5, -2, -9]\n02 hi = 0\n03 for i in range(0, 3):\n04     if A[i] > hi: hi = A[i]", "q": "找最大出錯行號？", "h": "ce485fff1efad191"}, {"id": "S21", "tier": "除錯", "code": "01 n = 10\n02 if n >= 50: print('A')\n03 elif n >= 80: print('B')\n04 else: print('C')", "q": "條件順序出錯行號？", "h": "5fc49abcc12cca08"}, {"id": "S22", "tier": "誤差", "code": "import math\nprint(math.trunc(-3.8))", "q": "輸出？", "h": "93446861b50d0c3c"}, {"id": "S23", "tier": "誤差", "code": "print(round(3.146, 2))", "q": "輸出？", "h": "01e894378492b990"}, {"id": "S24", "tier": "字串", "code": "s = \"HKDSE\"\nprint(len(s))", "q": "輸出？", "h": "ffe48af2bc2cfc06"}, {"id": "S25", "tier": "嵌套", "code": "c = 0\nfor i in range(3):\n    for j in range(4):\n        c = c + 1\nprint(c)", "q": "輸出？", "h": "718fc0e1ba831614"}, {"id": "S26", "tier": "二維", "code": "M = [[1, 2, 3], [4, 5, 6]]\nprint(M[1][2])", "q": "輸出？", "h": "a36365a5d12a1467"}, {"id": "S27", "tier": "二維", "code": "M = [[2, 4], [6, 8]]\nprint(M[0][1] + M[1][0])", "q": "輸出？", "h": "3965ca91bf4f3dcc"}, {"id": "S28", "tier": "子程式", "code": "def f(x):\n    return x * 2 + 1\nprint(f(4))", "q": "輸出？", "h": "f089ae52a80e39f6"}, {"id": "S29", "tier": "範圍", "code": "x = 5\ndef g():\n    x = 99\ng()\nprint(x)", "q": "輸出？", "h": "8805f2811e1c8b47"}, {"id": "S30", "tier": "堆疊", "code": "Push(4), Push(9), Pop(), Push(2), Pop()", "q": "第2次 Pop 傳回？", "h": "bf1a372a07d58472"}, {"id": "S31", "tier": "隊列", "code": "Enq(4), Enq(9), Deq(), Enq(2), Deq()", "q": "第2次 Deq 傳回？", "h": "22b172d46aefdb4c"}, {"id": "S32", "tier": "循環隊列", "code": "size = 4\nrear = 3\nrear = (rear + 1) % size\nprint(rear)", "q": "輸出？", "h": "8a352d120b71269e"}, {"id": "S33", "tier": "對分檢索", "code": "s = [10, 20, 30, 40, 50]\nstart = 0\nend = 4\nmid = (start + end) // 2\nprint(s[mid])", "q": "首個檢查值？", "h": "64d170c470bad3fb"}, {"id": "S34", "tier": "排序", "code": "A = [9, 4, 7]\n# 冒泡遞升第1輪後 A[2]=?", "q": "尾項值？", "h": "e2b64c134a4649f1"}, {"id": "S35", "tier": "編碼", "code": "print(chr(ord(\"A\") + 2))", "q": "輸出？", "h": "794dd8060c8b0082"}, {"id": "S36", "tier": "檔案", "code": "s = \"A,B,C\"\np = s.split(\",\")\nprint(p[1])", "q": "輸出？", "h": "04d1caf01415f1c4"}, {"id": "S37", "tier": "運算", "code": "print(-5 ** 2)", "q": "輸出？", "h": "2bdc3f270f301b7f"}, {"id": "S38", "tier": "運算", "code": "print(2 ** 3 ** 2)", "q": "輸出？", "h": "0e8c7a0c5395a38e"}, {"id": "S39", "tier": "二維", "code": "A = [[0, 1, 2], [3, 4, 5]]\nA[0][2] = 8\nprint(A[0][2] + A[1][0])", "q": "輸出？", "h": "9c23b0bfed4371fa"}, {"id": "S40", "tier": "字串", "code": "s = \"This is a string\"\nprint(s.find(\"is\", 3))", "q": "輸出？", "h": "c202921c224f5330"}, {"id": "S41", "tier": "字串", "code": "s = \"cat#dog#bird\"\nw = s.split(\"#\")\nprint(w[1])", "q": "輸出？", "h": "1704daf2145679d0"}, {"id": "S42", "tier": "字串", "code": "s = \"one two two\"\nprint(s.replace(\"two\", \"2\", 1))", "q": "輸出？", "h": "a97d59ad7dce4a59"}, {"id": "S43", "tier": "子程式", "code": "def f(x):\n    x = x + 5\nn = 10\nf(n)\nprint(n)", "q": "不可變參數輸出？", "h": "453915abfb5e8292"}, {"id": "S44", "tier": "子程式", "code": "def f(a):\n    a[0] = a[0] + 5\nL = [10]\nf(L)\nprint(L[0])", "q": "可變列表輸出？", "h": "6bf95b2b124a84ba"}, {"id": "S45", "tier": "結構", "code": "st = []\nst.append(3)\nst.append(7)\nst.append(9)\nprint(st.pop())", "q": "堆疊彈出輸出？", "h": "acce61ff328f1bd9"}, {"id": "S46", "tier": "結構", "code": "q = ['A', 'B', 'C']\nq.pop(0)\nq.append('D')\nprint(q[0])", "q": "隊列首位輸出？", "h": "9fe7133f0fa5b985"}, {"id": "S47", "tier": "檢索", "code": "A = [10, 20, 30, 40, 50]\n# 對分檢索找 30\nprint((0 + 4) // 2)", "q": "首次 mid 索引？", "h": "7ee962eca5bb5f78"}, {"id": "S48", "tier": "排序", "code": "A = [73, 85, 62, 96, 61]\n# 升序冒泡首輪後 A[4]？", "q": "A[4] 的值？", "h": "1dce0d521c2e1429"}];
     const TEXTBOOK_EXAMPLES = [];
-    const DSE_PAPERS = [{"id": "DSE-2012-1B-Q3", "year": "2012", "paper": "卷一乙部 必修D", "topic": "循環與追蹤", "mode": "dryrun", "title": "2012 Q3：費氏數列循環與計數器 N", "prompt": "空運行以下 HKDSE 2012 Q3 算法（已轉為標準 Python），寫出程式的完整輸出（每行一個數值，最後一行為輸出次數 N）：", "code": "A = 1\nB = 1\nN = 0\nwhile B < 20:\n    A = A + B\n    B = A - B\n    print(B)\n    N = N + 1\nprint(N)", "stdin": "", "vizLink": ""}, {"id": "DSE-2013-1B-Q5", "year": "2013", "paper": "卷一乙部 必修D", "topic": "陣列與極值", "mode": "code", "title": "2013 Q5：優惠卡 10 項交易免最低價（ALG1 + ALG2 + ALG3）", "prompt": "百貨公司優惠卡記錄了小芬 10 項交易金額 T。補全程式計算總金額 TOTAL、找出最低交易金額的索引 M，並輸出實際應付金額 PAYMENT = TOTAL - T[M]。", "blankLines": [4, 7, 8, 9], "stdin": "", "vizLink": "", "starter": "T = [120, 85, 240, 60, 150, 95, 310, 75, 180, 110]\nTOTAL = 0\nfor i in range(0, len(T)):\n    # ___ 請補全此行 ___\nM = 0\nfor j in range(1, len(T)):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n# ___ 請補全此行 ___\nprint(TOTAL, T[M], PAYMENT)"}, {"id": "DSE-2014-1B-Q3", "year": "2014", "paper": "卷一乙部 必修D", "topic": "循環與追蹤", "mode": "dryrun", "title": "2014 Q3：數字序列比較（ALG1 while vs ALG2 for）", "prompt": "空運行以下 HKDSE 2014 Q3 算法 ALG1（P = 10），寫出程式的完整輸出（每行一個數值）：", "code": "A = 0\nB = 1\nP = 10\nwhile A <= P:\n    print(A)\n    temp = A + B\n    A = B\n    B = temp", "stdin": "", "vizLink": ""}, {"id": "DSE-2015-1B-Q4", "year": "2015", "paper": "卷一乙部 必修D", "topic": "陣列與旗標", "mode": "code", "title": "2015 Q4：自動販賣機售罄檢查（ALG2 提早停止）", "prompt": "陣列 P 儲存自動販賣機各產品餘下數量。補全 ALG2 的 while 循環，只要發現任何產品 P[i] > 0 便把 FLAG 設為 True 並立即停止循環，最後輸出 FLAG 與比較次數 steps。", "blankLines": [5, 7, 8], "stdin": "", "vizLink": "search_race", "starter": "P = [0, 0, 3, 0, 5, 0, 0, 2]\nFLAG = False\ni = 0\nsteps = 0\n# ___ 請補全此行 ___\n    steps = steps + 1\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n    i = i + 1\nprint(FLAG, steps)"}, {"id": "DSE-2016-1B-Q2", "year": "2016", "paper": "卷一乙部 必修D", "topic": "線性檢索", "mode": "code", "title": "2016 Q2：電郵濫發字串檢索（ALG2 提早停止）", "prompt": "陣列 ST 儲存濫發郵件關鍵詞（1-based，索引 0 留空）。補全 ALG2 的 while 循環，當找到 check_ST 時把索引存入 FOUND 並立即停止檢索，最後輸出 FOUND 及比較次數 steps。", "blankLines": [6, 8, 9], "stdin": "", "vizLink": "search_race", "starter": "ST = [\"\", \"恭喜\", \"中獎\", \"免費\", \"得獎者\"]\ncheck_ST = \"中獎\"\nFOUND = -1\ni = 1\nsteps = 0\n# ___ 請補全此行 ___\n    steps = steps + 1\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n    i = i + 1\nprint(FOUND, steps)"}, {"id": "DSE-2017-1B-Q3", "year": "2017", "paper": "卷一乙部 必修D", "topic": "陣列區間累加", "mode": "code", "title": "2017 Q3：鐵路車站相鄰行車時間區間計算", "prompt": "陣列 W 儲存 9 段相鄰車站行車時間（W[0] 為 A→B，W[1] 為 B→C，如此類推）。讀入起始段索引 X 與結束段索引 Y（包含 Y），計算並輸出總行車時間 T。", "blankLines": [5, 6], "stdin": "3\n5\n", "vizLink": "", "starter": "W = [2, 5, 3, 4, 6, 2, 3, 5, 4]\nX = int(input())\nY = int(input())\nT = 0\n# ___ 請補全此行 ___\n    # ___ 請補全此行 ___\nprint(T)"}, {"id": "DSE-2018-1B-Q5", "year": "2018", "paper": "卷一乙部 必修D", "topic": "循環與驗證", "mode": "code", "title": "2018 Q5：猜數字遊戲（太小／太大與最多猜 5 次）", "prompt": "秘密答案 ANSWER = 19，玩家最多可猜 5 次。補全條件分支：超出 1–100 輸出 Out of range，小於答案輸出 Too small，大於答案輸出 Too large；若猜中則結束循環並輸出 Bingo。", "blankLines": [4, 7, 9, 13], "stdin": "120\n10\n25\n19\n", "vizLink": "", "starter": "ANSWER = 19\nK = 0\nGUESS = -1\n# ___ 請補全此行 ___\n    GUESS = int(input())\n    K = K + 1\n    # ___ 請補全此行 ___\n        print(\"Out of range\")\n    # ___ 請補全此行 ___\n        print(\"Too small\")\n    elif GUESS > ANSWER:\n        print(\"Too large\")\n# ___ 請補全此行 ___\n    print(\"Bingo\")\nelse:\n    print(\"Game over\")"}, {"id": "DSE-2019-1B-Q5", "year": "2019", "paper": "卷一乙部 必修D", "topic": "二進制與旗標", "mode": "dryrun", "title": "2019 Q5：二進制陣列旗標反轉（首個 1 之後取反）", "prompt": "空運行以下 HKDSE 2019 Q5(b) 算法，寫出執行一次後陣列 A 的內容（以 Python 列表格式輸出，例如 [0, 1, 0, 0, 1, 0]）：", "code": "A = [0, 0, 1, 0, 1, 1]\nK = 2\nfor i in range(0, len(A)):\n    if K == 1:\n        A[i] = 1 - A[i]\n    if A[i] == 1:\n        K = 1\nprint(A)", "stdin": "", "vizLink": ""}, {"id": "DSE-2020-1B-Q2", "year": "2020", "paper": "卷一乙部 必修D", "topic": "交換與循環", "mode": "dryrun", "title": "2020 Q2：輾轉相減法求最大公因數（A=9, B=15）", "prompt": "空運行以下 HKDSE 2020 Q2 算法（輸入 A=9, B=15），寫出每次執行減法後輸出的 A 和 B（每行一對，最後一行是離開循環時的最終結果）：", "code": "A = 9\nB = 15\nwhile A != B:\n    if A < B:\n        T = A\n        A = B\n        B = T\n    A = A - B\n    print(A, B)", "stdin": "", "vizLink": ""}, {"id": "DSE-2021-1B-Q3", "year": "2021", "paper": "卷一乙部 必修D", "topic": "二進制陣列", "mode": "dryrun", "title": "2021 Q3：二進制陣列由右至左加一（Flag 版本）", "prompt": "空運行以下 HKDSE 2021 Q3(b) 算法，寫出執行後陣列 A 的內容（以 Python 列表格式輸出）：", "code": "A = [0, 1, 0, 1, 1]\nFlag = 1\nfor i in range(4, -1, -1):\n    if Flag == 1:\n        A[i] = 1 - A[i]\n        if A[i] == 1:\n            Flag = 0\nprint(A)", "stdin": "", "vizLink": ""}, {"id": "DSE-2022-1B-Q5", "year": "2022", "paper": "卷一乙部 必修D", "topic": "陣列點算與效率", "mode": "dryrun", "title": "2022 Q5：二進制陣列過半點算（ALG1）", "prompt": "空運行以下 HKDSE 2022 Q5(a) 算法 ALG1（N = 6，A = [1, 0, 1, 0, 0, 0]），寫出最終輸出的 B 及 ch（以單一空格分隔）：", "code": "A = [1, 0, 1, 0, 0, 0]\nN = 6\nB = 0\nfor i in range(0, N):\n    if A[i] == 1:\n        B = B + 1\nif B >= N / 2:\n    ch = 'X'\nelse:\n    ch = 'Y'\nprint(B, ch)", "stdin": "", "vizLink": ""}, {"id": "DSE-2023-1B-Q3", "year": "2023", "paper": "卷一乙部 必修D", "topic": "排序追蹤", "mode": "code", "title": "2023 Q3：陣列排序子程式（標準交換與追蹤）", "prompt": "HKDSE 2023 Q3 排序算法以暫存變量 TEMP 交換 A[i] 與 A[i-1]。補全交換語句及迴圈控制，並輸出排序後的陣列 A 及總交換次數 swaps。", "blankLines": [10, 11, 12, 15], "stdin": "", "vizLink": "insertion_sort", "starter": "A = [4, 3, 1, 8, 6]\ni = 1\nj = 2\nswaps = 0\nwhile i < 5:\n    if A[i] >= A[i - 1]:\n        i = j\n        j = j + 1\n    else:\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        swaps = swaps + 1\n        i = i - 1\n        # ___ 請補全此行 ___\n            i = 1\nprint(A, swaps)"}, {"id": "DSE-2024-1B-Q5", "year": "2024", "paper": "卷一乙部 必修D", "topic": "陣列驗證", "mode": "code", "title": "2024 Q5：驗證全正數（ALG1）與升序排列（ALG2）", "prompt": "陣列 A 儲存 6 個整數。補全 ALG1 檢查是否全部為正數（P），再補全 ALG2 檢查是否以升序排列（S，即每對相鄰元素滿足 A[i] <= A[i+1]），最後輸出 P 及 S。", "blankLines": [4, 7, 8], "stdin": "", "vizLink": "bubble_sort", "starter": "A = [2, 5, 5, 9, 12, 18]\nP = True\nfor i in range(0, len(A)):\n    # ___ 請補全此行 ___\n        P = False\nS = True\n# ___ 請補全此行 ___\n    # ___ 請補全此行 ___\n        S = False\nprint(P, S)"}, {"id": "DSE-2C-SEARCH", "year": "2023", "paper": "卷二C 選修C", "topic": "對分檢索", "mode": "code", "title": "選修 C 經典題：遞降陣列對分檢索子程式", "prompt": "陣列 age 已由大至小（遞降）排序。補全對分檢索子程式 SearchByBinary(target)，找到時傳回索引，找不到時傳回 -1。（注意遞降排序時左右收窄方向與遞升相反！）", "blankLines": [6, 9, 10, 12], "stdin": "", "vizLink": "binary_search", "starter": "age = [50, 48, 43, 38, 38, 29, 25, 19]\ndef SearchByBinary(target):\n    start = 0\n    end = len(age) - 1\n    while start <= end:\n        # ___ 請補全此行 ___\n        if age[mid] == target:\n            return mid\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n        else:\n            # ___ 請補全此行 ___\n    return -1\nprint(SearchByBinary(25), SearchByBinary(40))"}, {"id": "DSE-2C-SORT", "year": "2023", "paper": "卷二C 選修C", "topic": "排序與平行陣列", "mode": "code", "title": "選修 C 經典題：平行陣列選擇排序（姓名與分數同步）", "prompt": "陣列 name 與 score 平行對應。補全選擇排序程式，將分數由高至低排序，同時確保 name 與 score 同步交換，最後輸出最高分的三名學生姓名。", "blankLines": [6, 7, 11, 12], "stdin": "", "vizLink": "selection_sort", "starter": "name = [\"Amy\", \"Ben\", \"Cathy\", \"David\", \"Eva\"]\nscore = [72, 91, 84, 65, 88]\nfor i in range(0, len(score) - 1):\n    max_idx = i\n    for j in range(i + 1, len(score)):\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n    t1 = score[i]\n    score[i] = score[max_idx]\n    score[max_idx] = t1\n    # ___ 請補全此行 ___\n    # ___ 請補全此行 ___\n    name[max_idx] = t2\nprint(name[0], name[1], name[2])"}, {"id": "DSE-2C-LINKED", "year": "2024", "paper": "卷二C 選修C", "topic": "線性鏈表", "mode": "dryrun", "title": "選修 C 經典題：陣列模擬鏈表順序追蹤", "prompt": "以下程式以陣列 D 儲存節點內容、陣列 NP 儲存下一個節點的索引（-1 代表空指示標）。空運行程式並寫出完整輸出（每行一個名稱）：", "code": "D = [\"Start\", \"Kowloon\", \"YauMaTei\", \"Whampoa\", \"HoManTin\", \"MongKok\"]\nNP = [3, -1, 5, 4, 2, 1]\ncur = 0\nwhile cur != -1:\n    print(D[cur])\n    cur = NP[cur]", "stdin": "", "vizLink": "linked_list"}, {"id": "DSE-2025-1B-Q6", "year": "2025", "paper": "卷一乙部 必修D", "topic": "陣列反轉與移位", "mode": "dryrun", "title": "2025 Q6：陣列 STEAM 反轉與左移一格", "prompt": "空運行 HKDSE 2025 1B Q6(a) 與 (b) 的 Python 程式段，寫出兩行輸出（第一行為反轉後的 s2，第二行為左移一格後的 s2）：", "code": "s1 = [\"S\", \"T\", \"E\", \"A\", \"M\"]\ns2 = [\"\", \"\", \"\", \"\", \"\"]\nfor i in range(0, 5):\n    s2[4 - i] = s1[i]\nprint(s2)\nch = s1[0]\nfor i in range(0, 4):\n    s2[i] = s1[i + 1]\ns2[4] = ch\nprint(s2)", "stdin": "", "vizLink": ""}, {"id": "DSE-2025-1B-Q8c", "year": "2025", "paper": "卷一乙部 必修D", "topic": "極值與輸入驗證", "mode": "code", "title": "2025 Q8(c)：五評判分數去極值求平均 FS 與驗證", "prompt": "五名評判給予的分數儲存在 JS[1..5]（索引 0 留空）。補全程式找出最高分 Smax、最低分 Smin，並計算扣去最高及最低分後其餘 3 個分數的平均值 FS（(總和 - Smax - Smin) / 3）。", "blankLines": [7, 9, 11], "stdin": "", "vizLink": "", "starter": "JS = [0, 82, 95, 76, 88, 91]\nSmax = JS[1]\nSmin = JS[1]\ntotal = 0\nfor i in range(1, 6):\n    total = total + JS[i]\n    # ___ 請補全此行 ___\n        Smax = JS[i]\n    # ___ 請補全此行 ___\n        Smin = JS[i]\n# ___ 請補全此行 ___\nprint(Smax, Smin, round(FS, 1))"}, {"id": "DSE-2025-2C-Q10", "year": "2025", "paper": "卷二C 選修C", "topic": "選擇排序", "mode": "dryrun", "title": "2025 2C Q10：選擇排序每輪追蹤（X=[12,6,15,9]）", "prompt": "空運行 HKDSE 2025 2C Q10 選擇排序算法（N=4），程式在每次交換後輸出 i、s 與陣列 X，寫出完整的 3 行輸出：", "code": "X = [12, 6, 15, 9]\nN = 4\nfor i in range(0, N - 1):\n    s = i\n    for j in range(i + 1, N):\n        if X[j] < X[s]:\n            s = j\n    t = X[i]\n    X[i] = X[s]\n    X[s] = t\n    print(i, s, X)", "stdin": "", "vizLink": "selection_sort"}, {"id": "DSE-2025-2C-Q12", "year": "2025", "paper": "卷二C 選修C", "topic": "二維陣列", "mode": "code", "title": "2025 2C Q12：猜數字遊戲核對子程式 check(t)", "prompt": "ANS 儲存 3 位答案數字，二維陣列 trial[t][k] 儲存第 t 次嘗試的第 k 位數字。補全子程式 check(t)，逐位比較並把 'T' 或 'F' 填入二維陣列 result[t][k]。", "blankLines": [7, 8, 9], "stdin": "", "vizLink": "array_2d", "starter": "N = 3\nANS = [3, 7, 8]\ntrial = [[7, 7, 9], [8, 8, 4], [3, 8, 4], [3, 7, 8]]\nresult = [[\"\", \"\", \"\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"]]\ndef check(t):\n    k = 0\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n        else:\n            result[t][k] = \"F\"\n        k = k + 1\nfor r in range(0, 4):\n    check(r)\nprint(result[0], result[3])"}, {"id": "DSE-2026-1B-Q4", "year": "2026", "paper": "卷一乙部 必修D", "topic": "頻數陣列與極值", "mode": "code", "title": "2026 Q4：十首歌曲投票頻數點算與最高票歌曲 m", "prompt": "陣列 ch[0..9] 初始值為 0，記錄十首歌曲（編號 0–9）的票數。補全程式讀入 8 筆測試投票紀錄累加至 ch[vote]，再找出最多票數的歌曲編號存入 m 並輸出。", "blankLines": [4, 7, 8], "stdin": "3\n7\n3\n2\n7\n3\n0\n3\n", "vizLink": "", "starter": "ch = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\nfor j in range(0, 8):\n    vote = int(input())\n    # ___ 請補全此行 ___\nm = 0\nfor j in range(1, 10):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\nprint(m, ch[m])"}, {"id": "DSE-2026-1B-Q5", "year": "2026", "paper": "卷一乙部 必修D", "topic": "陣列雙重索引", "mode": "dryrun", "title": "2026 Q5：陣列相鄰求和與雙重索引 A[A[i]+A[i+1]-1]", "prompt": "空運行 HKDSE 2026 1B Q5(a) 與 (b) 的 Python 程式段（A = [2, 0, 2, 6, 0, 4, 2, 4]），寫出兩行陣列 B 的輸出：", "code": "A = [2, 0, 2, 6, 0, 4, 2, 4]\nB = [0, 0, 0, 0]\nfor i in range(0, 4):\n    B[i] = A[i] + A[i + 1]\nprint(B)\nfor i in range(0, 4):\n    B[i] = A[A[i] + A[i + 1] - 1]\nprint(B)", "stdin": "", "vizLink": ""}, {"id": "DSE-2026-1B-Q7c", "year": "2026", "paper": "卷一乙部 必修D", "topic": "平行陣列條件平均", "mode": "code", "title": "2026 Q7(c)：平行陣列求科目 ICT 平均耗時", "prompt": "三個平行陣列 SID、SJ、TS 儲存 N 筆測驗紀錄（學號、科目、耗時）。補全程式只累加科目為 'ICT' 的耗時 total 與筆數 cnt，並輸出平均耗時。", "blankLines": [8, 9, 10], "stdin": "", "vizLink": "", "starter": "SID = [2510, 2511, 2512, 2513, 2514]\nSJ = [\"ICT\", \"ENG\", \"ICT\", \"MATH\", \"ICT\"]\nTS = [20, 35, 30, 40, 25]\nN = len(SID)\ntotal = 0\ncnt = 0\nfor i in range(0, N):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\nprint(total / cnt)"}, {"id": "DSE-2026-2C-Q8", "year": "2026", "paper": "卷二C 選修C", "topic": "線性鏈表插入", "mode": "code", "title": "2026 2C Q8：陣列鏈表插入節點子程式 ap(st, new)", "prompt": "陣列 n 與 nxt 模擬單向鏈表（head = 5，-1 為空指示標）。補全子程式 ap(st, new) 於節點 st（'Mia'）之後插入新節點 n[8] = 'Fan'，並順序輸出插入後的鏈表內容。", "blankLines": [9, 10], "stdin": "", "vizLink": "linked_list", "starter": "n = [\"Ben\", \"Ava\", \"Mia\", \"Pam\", \"Max\", \"Sam\", \"Ian\", \"Sue\", \"Fan\"]\nnxt = [3, 0, 6, 5, 2, 7, -1, 4, -1]\nhead = 5\ndef ap(st, new):\n    ptr = head\n    found = False\n    while ptr != -1 and found == False:\n        if n[ptr] == st:\n            # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n            found = True\n        ptr = nxt[ptr]\nap(\"Mia\", 8)\np = head\nout = []\nwhile p != -1:\n    out.append(n[p])\n    p = nxt[p]\nprint(nxt[2], nxt[8], out)"}, {"id": "DSE-2026-2C-Q9", "year": "2026", "paper": "卷二C 選修C", "topic": "二維陣列視覺點", "mode": "code", "title": "2026 2C Q9：海岸線大廈高度二維陣列計算 sv[i]", "prompt": "二維陣列 ht[j][i]（4 列 × 5 欄）儲存各位置大廈高度。補全雙層嵌套循環，對每一個海岸線視覺點（欄 i = 0..4）找出該欄最高大廈高度存入 sv[i]，再輸出 sv 及最高值。", "blankLines": [8, 11, 13], "stdin": "", "vizLink": "array_2d", "starter": "ht = [\n    [5, 1, 0, 7, 7],\n    [5, 1, 6, 0, 0],\n    [4, 8, 6, 5, 4],\n    [9, 1, 2, 5, 4]\n]\nsv = [0, 0, 0, 0, 0]\n# ___ 請補全此行 ___\n    hi = ht[0][i]\n    for j in range(1, 4):\n        # ___ 請補全此行 ___\n            hi = ht[j][i]\n    # ___ 請補全此行 ___\nprint(sv, max(sv))"}];
+    const DSE_PAPERS = [{"id": "DSE-2012-1B-Q3", "year": "2012", "paper": "卷一乙部 必修D", "topic": "循環與追蹤", "mode": "dryrun", "title": "2012 Q3：費氏數列循環與計數器 N", "prompt": "空運行以下 HKDSE 2012 Q3 算法（已轉為標準 Python），寫出程式的完整輸出（每行一個數值，最後一行為輸出次數 N）：", "code": "A = 1\nB = 1\nN = 0\nwhile B < 20:\n    A = A + B\n    B = A - B\n    print(B)\n    N = N + 1\nprint(N)", "stdin": "", "vizLink": ""}, {"id": "DSE-2013-1B-Q5", "year": "2013", "paper": "卷一乙部 必修D", "topic": "陣列與極值", "mode": "code", "title": "2013 Q5：優惠卡 10 項交易免最低價（ALG1 + ALG2 + ALG3）", "prompt": "百貨公司優惠卡記錄了小芬 10 項交易金額 T。補全程式計算總金額 TOTAL、找出最低交易金額的索引 M，並輸出實際應付金額 PAYMENT = TOTAL - T[M]。", "blankLines": [4, 7, 8, 9], "stdin": "", "vizLink": "", "starter": "T = [120, 85, 240, 60, 150, 95, 310, 75, 180, 110]\nTOTAL = 0\nfor i in range(0, len(T)):\n    # ___ 請補全此行 ___\nM = 0\nfor j in range(1, len(T)):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n# ___ 請補全此行 ___\nprint(TOTAL, T[M], PAYMENT)", "expected": "1425 60 1365"}, {"id": "DSE-2014-1B-Q3", "year": "2014", "paper": "卷一乙部 必修D", "topic": "循環與追蹤", "mode": "dryrun", "title": "2014 Q3：數字序列比較（ALG1 while vs ALG2 for）", "prompt": "空運行以下 HKDSE 2014 Q3 算法 ALG1（P = 10），寫出程式的完整輸出（每行一個數值）：", "code": "A = 0\nB = 1\nP = 10\nwhile A <= P:\n    print(A)\n    temp = A + B\n    A = B\n    B = temp", "stdin": "", "vizLink": ""}, {"id": "DSE-2015-1B-Q4", "year": "2015", "paper": "卷一乙部 必修D", "topic": "陣列與旗標", "mode": "code", "title": "2015 Q4：自動販賣機售罄檢查（ALG2 提早停止）", "prompt": "陣列 P 儲存自動販賣機各產品餘下數量。補全 ALG2 的 while 循環，只要發現任何產品 P[i] > 0 便把 FLAG 設為 True 並立即停止循環，最後輸出 FLAG 與比較次數 steps。", "blankLines": [5, 7, 8], "stdin": "", "vizLink": "search_race", "starter": "P = [0, 0, 3, 0, 5, 0, 0, 2]\nFLAG = False\ni = 0\nsteps = 0\n# ___ 請補全此行 ___\n    steps = steps + 1\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n    i = i + 1\nprint(FLAG, steps)", "expected": "True 3"}, {"id": "DSE-2016-1B-Q2", "year": "2016", "paper": "卷一乙部 必修D", "topic": "線性檢索", "mode": "code", "title": "2016 Q2：電郵濫發字串檢索（ALG2 提早停止）", "prompt": "陣列 ST 儲存濫發郵件關鍵詞（1-based，索引 0 留空）。補全 ALG2 的 while 循環，當找到 check_ST 時把索引存入 FOUND 並立即停止檢索，最後輸出 FOUND 及比較次數 steps。", "blankLines": [6, 8, 9], "stdin": "", "vizLink": "search_race", "starter": "ST = [\"\", \"恭喜\", \"中獎\", \"免費\", \"得獎者\"]\ncheck_ST = \"中獎\"\nFOUND = -1\ni = 1\nsteps = 0\n# ___ 請補全此行 ___\n    steps = steps + 1\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n    i = i + 1\nprint(FOUND, steps)", "expected": "2 2"}, {"id": "DSE-2017-1B-Q3", "year": "2017", "paper": "卷一乙部 必修D", "topic": "陣列區間累加", "mode": "code", "title": "2017 Q3：鐵路車站相鄰行車時間區間計算", "prompt": "陣列 W 儲存 9 段相鄰車站行車時間（W[0] 為 A→B，W[1] 為 B→C，如此類推）。讀入起始段索引 X 與結束段索引 Y（包含 Y），計算並輸出總行車時間 T。", "blankLines": [5, 6], "stdin": "3\n5\n", "vizLink": "", "starter": "W = [2, 5, 3, 4, 6, 2, 3, 5, 4]\nX = int(input())\nY = int(input())\nT = 0\n# ___ 請補全此行 ___\n    # ___ 請補全此行 ___\nprint(T)", "expected": "12"}, {"id": "DSE-2018-1B-Q5", "year": "2018", "paper": "卷一乙部 必修D", "topic": "循環與驗證", "mode": "code", "title": "2018 Q5：猜數字遊戲（太小／太大與最多猜 5 次）", "prompt": "秘密答案 ANSWER = 19，玩家最多可猜 5 次。補全條件分支：超出 1–100 輸出 Out of range，小於答案輸出 Too small，大於答案輸出 Too large；若猜中則結束循環並輸出 Bingo。", "blankLines": [4, 7, 9, 13], "stdin": "120\n10\n25\n19\n", "vizLink": "", "starter": "ANSWER = 19\nK = 0\nGUESS = -1\n# ___ 請補全此行 ___\n    GUESS = int(input())\n    K = K + 1\n    # ___ 請補全此行 ___\n        print(\"Out of range\")\n    # ___ 請補全此行 ___\n        print(\"Too small\")\n    elif GUESS > ANSWER:\n        print(\"Too large\")\n# ___ 請補全此行 ___\n    print(\"Bingo\")\nelse:\n    print(\"Game over\")", "expected": "Out of range\nToo small\nToo large\nBingo"}, {"id": "DSE-2019-1B-Q5", "year": "2019", "paper": "卷一乙部 必修D", "topic": "二進制與旗標", "mode": "dryrun", "title": "2019 Q5：二進制陣列旗標反轉（首個 1 之後取反）", "prompt": "空運行以下 HKDSE 2019 Q5(b) 算法，寫出執行一次後陣列 A 的內容（以 Python 列表格式輸出，例如 [0, 1, 0, 0, 1, 0]）：", "code": "A = [0, 0, 1, 0, 1, 1]\nK = 2\nfor i in range(0, len(A)):\n    if K == 1:\n        A[i] = 1 - A[i]\n    if A[i] == 1:\n        K = 1\nprint(A)", "stdin": "", "vizLink": ""}, {"id": "DSE-2020-1B-Q2", "year": "2020", "paper": "卷一乙部 必修D", "topic": "交換與循環", "mode": "dryrun", "title": "2020 Q2：輾轉相減法求最大公因數（A=9, B=15）", "prompt": "空運行以下 HKDSE 2020 Q2 算法（輸入 A=9, B=15），寫出每次執行減法後輸出的 A 和 B（每行一對，最後一行是離開循環時的最終結果）：", "code": "A = 9\nB = 15\nwhile A != B:\n    if A < B:\n        T = A\n        A = B\n        B = T\n    A = A - B\n    print(A, B)", "stdin": "", "vizLink": ""}, {"id": "DSE-2021-1B-Q3", "year": "2021", "paper": "卷一乙部 必修D", "topic": "二進制陣列", "mode": "dryrun", "title": "2021 Q3：二進制陣列由右至左加一（Flag 版本）", "prompt": "空運行以下 HKDSE 2021 Q3(b) 算法，寫出執行後陣列 A 的內容（以 Python 列表格式輸出）：", "code": "A = [0, 1, 0, 1, 1]\nFlag = 1\nfor i in range(4, -1, -1):\n    if Flag == 1:\n        A[i] = 1 - A[i]\n        if A[i] == 1:\n            Flag = 0\nprint(A)", "stdin": "", "vizLink": ""}, {"id": "DSE-2022-1B-Q5", "year": "2022", "paper": "卷一乙部 必修D", "topic": "陣列點算與效率", "mode": "dryrun", "title": "2022 Q5：二進制陣列過半點算（ALG1）", "prompt": "空運行以下 HKDSE 2022 Q5(a) 算法 ALG1（N = 6，A = [1, 0, 1, 0, 0, 0]），寫出最終輸出的 B 及 ch（以單一空格分隔）：", "code": "A = [1, 0, 1, 0, 0, 0]\nN = 6\nB = 0\nfor i in range(0, N):\n    if A[i] == 1:\n        B = B + 1\nif B >= N / 2:\n    ch = 'X'\nelse:\n    ch = 'Y'\nprint(B, ch)", "stdin": "", "vizLink": ""}, {"id": "DSE-2023-1B-Q3", "year": "2023", "paper": "卷一乙部 必修D", "topic": "排序追蹤", "mode": "code", "title": "2023 Q3：陣列排序子程式（標準交換與追蹤）", "prompt": "HKDSE 2023 Q3 排序算法以暫存變量 TEMP 交換 A[i] 與 A[i-1]。補全交換語句及迴圈控制，並輸出排序後的陣列 A 及總交換次數 swaps。", "blankLines": [10, 11, 12, 15], "stdin": "", "vizLink": "insertion_sort", "starter": "A = [4, 3, 1, 8, 6]\ni = 1\nj = 2\nswaps = 0\nwhile i < 5:\n    if A[i] >= A[i - 1]:\n        i = j\n        j = j + 1\n    else:\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        swaps = swaps + 1\n        i = i - 1\n        # ___ 請補全此行 ___\n            i = 1\nprint(A, swaps)", "expected": "[1, 3, 4, 6, 8] 4"}, {"id": "DSE-2024-1B-Q5", "year": "2024", "paper": "卷一乙部 必修D", "topic": "陣列驗證", "mode": "code", "title": "2024 Q5：驗證全正數（ALG1）與升序排列（ALG2）", "prompt": "陣列 A 儲存 6 個整數。補全 ALG1 檢查是否全部為正數（P），再補全 ALG2 檢查是否以升序排列（S，即每對相鄰元素滿足 A[i] <= A[i+1]），最後輸出 P 及 S。", "blankLines": [4, 7, 8], "stdin": "", "vizLink": "bubble_sort", "starter": "A = [2, 5, 5, 9, 12, 18]\nP = True\nfor i in range(0, len(A)):\n    # ___ 請補全此行 ___\n        P = False\nS = True\n# ___ 請補全此行 ___\n    # ___ 請補全此行 ___\n        S = False\nprint(P, S)", "expected": "True True"}, {"id": "DSE-2C-SEARCH", "year": "2023", "paper": "卷二C 選修C", "topic": "對分檢索", "mode": "code", "title": "選修 C 經典題：遞降陣列對分檢索子程式", "prompt": "陣列 age 已由大至小（遞降）排序。補全對分檢索子程式 SearchByBinary(target)，找到時傳回索引，找不到時傳回 -1。（注意遞降排序時左右收窄方向與遞升相反！）", "blankLines": [6, 9, 10, 12], "stdin": "", "vizLink": "binary_search", "starter": "age = [50, 48, 43, 38, 38, 29, 25, 19]\ndef SearchByBinary(target):\n    start = 0\n    end = len(age) - 1\n    while start <= end:\n        # ___ 請補全此行 ___\n        if age[mid] == target:\n            return mid\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n        else:\n            # ___ 請補全此行 ___\n    return -1\nprint(SearchByBinary(25), SearchByBinary(40))", "expected": "6 -1"}, {"id": "DSE-2C-SORT", "year": "2023", "paper": "卷二C 選修C", "topic": "排序與平行陣列", "mode": "code", "title": "選修 C 經典題：平行陣列選擇排序（姓名與分數同步）", "prompt": "陣列 name 與 score 平行對應。補全選擇排序程式，將分數由高至低排序，同時確保 name 與 score 同步交換，最後輸出最高分的三名學生姓名。", "blankLines": [6, 7, 11, 12], "stdin": "", "vizLink": "selection_sort", "starter": "name = [\"Amy\", \"Ben\", \"Cathy\", \"David\", \"Eva\"]\nscore = [72, 91, 84, 65, 88]\nfor i in range(0, len(score) - 1):\n    max_idx = i\n    for j in range(i + 1, len(score)):\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n    t1 = score[i]\n    score[i] = score[max_idx]\n    score[max_idx] = t1\n    # ___ 請補全此行 ___\n    # ___ 請補全此行 ___\n    name[max_idx] = t2\nprint(name[0], name[1], name[2])", "expected": "Ben Eva Cathy"}, {"id": "DSE-2C-LINKED", "year": "2024", "paper": "卷二C 選修C", "topic": "線性鏈表", "mode": "dryrun", "title": "選修 C 經典題：陣列模擬鏈表順序追蹤", "prompt": "以下程式以陣列 D 儲存節點內容、陣列 NP 儲存下一個節點的索引（-1 代表空指示標）。空運行程式並寫出完整輸出（每行一個名稱）：", "code": "D = [\"Start\", \"Kowloon\", \"YauMaTei\", \"Whampoa\", \"HoManTin\", \"MongKok\"]\nNP = [3, -1, 5, 4, 2, 1]\ncur = 0\nwhile cur != -1:\n    print(D[cur])\n    cur = NP[cur]", "stdin": "", "vizLink": "linked_list"}, {"id": "DSE-2025-1B-Q6", "year": "2025", "paper": "卷一乙部 必修D", "topic": "陣列反轉與移位", "mode": "dryrun", "title": "2025 Q6：陣列 STEAM 反轉與左移一格", "prompt": "空運行 HKDSE 2025 1B Q6(a) 與 (b) 的 Python 程式段，寫出兩行輸出（第一行為反轉後的 s2，第二行為左移一格後的 s2）：", "code": "s1 = [\"S\", \"T\", \"E\", \"A\", \"M\"]\ns2 = [\"\", \"\", \"\", \"\", \"\"]\nfor i in range(0, 5):\n    s2[4 - i] = s1[i]\nprint(s2)\nch = s1[0]\nfor i in range(0, 4):\n    s2[i] = s1[i + 1]\ns2[4] = ch\nprint(s2)", "stdin": "", "vizLink": ""}, {"id": "DSE-2025-1B-Q8c", "year": "2025", "paper": "卷一乙部 必修D", "topic": "極值與輸入驗證", "mode": "code", "title": "2025 Q8(c)：五評判分數去極值求平均 FS 與驗證", "prompt": "五名評判給予的分數儲存在 JS[1..5]（索引 0 留空）。補全程式找出最高分 Smax、最低分 Smin，並計算扣去最高及最低分後其餘 3 個分數的平均值 FS（(總和 - Smax - Smin) / 3）。", "blankLines": [7, 9, 11], "stdin": "", "vizLink": "", "starter": "JS = [0, 82, 95, 76, 88, 91]\nSmax = JS[1]\nSmin = JS[1]\ntotal = 0\nfor i in range(1, 6):\n    total = total + JS[i]\n    # ___ 請補全此行 ___\n        Smax = JS[i]\n    # ___ 請補全此行 ___\n        Smin = JS[i]\n# ___ 請補全此行 ___\nprint(Smax, Smin, round(FS, 1))", "expected": "95 76 87.0"}, {"id": "DSE-2025-2C-Q10", "year": "2025", "paper": "卷二C 選修C", "topic": "選擇排序", "mode": "dryrun", "title": "2025 2C Q10：選擇排序每輪追蹤（X=[12,6,15,9]）", "prompt": "空運行 HKDSE 2025 2C Q10 選擇排序算法（N=4），程式在每次交換後輸出 i、s 與陣列 X，寫出完整的 3 行輸出：", "code": "X = [12, 6, 15, 9]\nN = 4\nfor i in range(0, N - 1):\n    s = i\n    for j in range(i + 1, N):\n        if X[j] < X[s]:\n            s = j\n    t = X[i]\n    X[i] = X[s]\n    X[s] = t\n    print(i, s, X)", "stdin": "", "vizLink": "selection_sort"}, {"id": "DSE-2025-2C-Q12", "year": "2025", "paper": "卷二C 選修C", "topic": "二維陣列", "mode": "code", "title": "2025 2C Q12：猜數字遊戲核對子程式 check(t)", "prompt": "ANS 儲存 3 位答案數字，二維陣列 trial[t][k] 儲存第 t 次嘗試的第 k 位數字。補全子程式 check(t)，逐位比較並把 'T' 或 'F' 填入二維陣列 result[t][k]。", "blankLines": [7, 8, 9], "stdin": "", "vizLink": "array_2d", "starter": "N = 3\nANS = [3, 7, 8]\ntrial = [[7, 7, 9], [8, 8, 4], [3, 8, 4], [3, 7, 8]]\nresult = [[\"\", \"\", \"\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"]]\ndef check(t):\n    k = 0\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n        else:\n            result[t][k] = \"F\"\n        k = k + 1\nfor r in range(0, 4):\n    check(r)\nprint(result[0], result[3])", "expected": "['F', 'T', 'F'] ['T', 'T', 'T']"}, {"id": "DSE-2026-1B-Q4", "year": "2026", "paper": "卷一乙部 必修D", "topic": "頻數陣列與極值", "mode": "code", "title": "2026 Q4：十首歌曲投票頻數點算與最高票歌曲 m", "prompt": "陣列 ch[0..9] 初始值為 0，記錄十首歌曲（編號 0–9）的票數。補全程式讀入 8 筆測試投票紀錄累加至 ch[vote]，再找出最多票數的歌曲編號存入 m 並輸出。", "blankLines": [4, 7, 8], "stdin": "3\n7\n3\n2\n7\n3\n0\n3\n", "vizLink": "", "starter": "ch = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\nfor j in range(0, 8):\n    vote = int(input())\n    # ___ 請補全此行 ___\nm = 0\nfor j in range(1, 10):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\nprint(m, ch[m])", "expected": "3 4"}, {"id": "DSE-2026-1B-Q5", "year": "2026", "paper": "卷一乙部 必修D", "topic": "陣列雙重索引", "mode": "dryrun", "title": "2026 Q5：陣列相鄰求和與雙重索引 A[A[i]+A[i+1]-1]", "prompt": "空運行 HKDSE 2026 1B Q5(a) 與 (b) 的 Python 程式段（A = [2, 0, 2, 6, 0, 4, 2, 4]），寫出兩行陣列 B 的輸出：", "code": "A = [2, 0, 2, 6, 0, 4, 2, 4]\nB = [0, 0, 0, 0]\nfor i in range(0, 4):\n    B[i] = A[i] + A[i + 1]\nprint(B)\nfor i in range(0, 4):\n    B[i] = A[A[i] + A[i + 1] - 1]\nprint(B)", "stdin": "", "vizLink": ""}, {"id": "DSE-2026-1B-Q7c", "year": "2026", "paper": "卷一乙部 必修D", "topic": "平行陣列條件平均", "mode": "code", "title": "2026 Q7(c)：平行陣列求科目 ICT 平均耗時", "prompt": "三個平行陣列 SID、SJ、TS 儲存 N 筆測驗紀錄（學號、科目、耗時）。補全程式只累加科目為 'ICT' 的耗時 total 與筆數 cnt，並輸出平均耗時。", "blankLines": [8, 9, 10], "stdin": "", "vizLink": "", "starter": "SID = [2510, 2511, 2512, 2513, 2514]\nSJ = [\"ICT\", \"ENG\", \"ICT\", \"MATH\", \"ICT\"]\nTS = [20, 35, 30, 40, 25]\nN = len(SID)\ntotal = 0\ncnt = 0\nfor i in range(0, N):\n    # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\n        # ___ 請補全此行 ___\nprint(total / cnt)", "expected": "25.0"}, {"id": "DSE-2026-2C-Q8", "year": "2026", "paper": "卷二C 選修C", "topic": "線性鏈表插入", "mode": "code", "title": "2026 2C Q8：陣列鏈表插入節點子程式 ap(st, new)", "prompt": "陣列 n 與 nxt 模擬單向鏈表（head = 5，-1 為空指示標）。補全子程式 ap(st, new) 於節點 st（'Mia'）之後插入新節點 n[8] = 'Fan'，並順序輸出插入後的鏈表內容。", "blankLines": [9, 10], "stdin": "", "vizLink": "linked_list", "starter": "n = [\"Ben\", \"Ava\", \"Mia\", \"Pam\", \"Max\", \"Sam\", \"Ian\", \"Sue\", \"Fan\"]\nnxt = [3, 0, 6, 5, 2, 7, -1, 4, -1]\nhead = 5\ndef ap(st, new):\n    ptr = head\n    found = False\n    while ptr != -1 and found == False:\n        if n[ptr] == st:\n            # ___ 請補全此行 ___\n            # ___ 請補全此行 ___\n            found = True\n        ptr = nxt[ptr]\nap(\"Mia\", 8)\np = head\nout = []\nwhile p != -1:\n    out.append(n[p])\n    p = nxt[p]\nprint(nxt[2], nxt[8], out)", "expected": "8 6 ['Sam', 'Sue', 'Max', 'Mia', 'Fan', 'Ian']"}, {"id": "DSE-2026-2C-Q9", "year": "2026", "paper": "卷二C 選修C", "topic": "二維陣列視覺點", "mode": "code", "title": "2026 2C Q9：海岸線大廈高度二維陣列計算 sv[i]", "prompt": "二維陣列 ht[j][i]（4 列 × 5 欄）儲存各位置大廈高度。補全雙層嵌套循環，對每一個海岸線視覺點（欄 i = 0..4）找出該欄最高大廈高度存入 sv[i]，再輸出 sv 及最高值。", "blankLines": [8, 11, 13], "stdin": "", "vizLink": "array_2d", "starter": "ht = [\n    [5, 1, 0, 7, 7],\n    [5, 1, 6, 0, 0],\n    [4, 8, 6, 5, 4],\n    [9, 1, 2, 5, 4]\n]\nsv = [0, 0, 0, 0, 0]\n# ___ 請補全此行 ___\n    hi = ht[0][i]\n    for j in range(1, 4):\n        # ___ 請補全此行 ___\n            hi = ht[j][i]\n    # ___ 請補全此行 ___\nprint(sv, max(sv))", "expected": "[9, 8, 6, 7, 7] 9"}];
     const DRY_RUN_DEMOS = {"swap": {"title": "L01 變量交換（temp 暫存原則）", "code": ["A = 10", "B = 25", "temp = A", "A = B", "B = temp", "print(A, B)"], "steps": [{"line": 0, "vars": {"A": 10, "B": "-", "temp": "-"}, "arr": null, "note": "初始化變量 A = 10。"}, {"line": 1, "vars": {"A": 10, "B": 25, "temp": "-"}, "arr": null, "note": "初始化變量 B = 25。"}, {"line": 2, "vars": {"A": 10, "B": 25, "temp": 10}, "arr": null, "note": "先用暫存變量 temp 備份 A 原值 10，避免被覆蓋！"}, {"line": 3, "vars": {"A": 25, "B": 25, "temp": 10}, "arr": null, "note": "將 B 的值（25）賦值予 A；此時 A 與 B 暫時皆為 25，但 10 已安全存于 temp。"}, {"line": 4, "vars": {"A": 25, "B": 10, "temp": 10}, "arr": null, "note": "將 temp（10）賦值予 B，完成交換！"}, {"line": 5, "vars": {"A": 25, "B": 10, "temp": 10}, "arr": null, "note": "最終輸出：25 10。"}]}, "while_end": {"title": "L08 while 結束值（-1）累加", "code": ["total = 0", "n = int(input())", "while n != -1:", "    total = total + n", "    n = int(input())", "print(total)"], "steps": [{"line": 0, "vars": {"total": 0, "n": "-"}, "arr": null, "note": "循環前先將累加器 total 設為 0。"}, {"line": 1, "vars": {"total": 0, "n": 10}, "arr": null, "note": "進入循環前先讀取首個輸入（假設輸入 10）。"}, {"line": 2, "vars": {"total": 0, "n": 10}, "arr": null, "note": "檢查 n != -1（10 != -1 為 True），進入循環體。"}, {"line": 3, "vars": {"total": 10, "n": 10}, "arr": null, "note": "累加：total = 0 + 10 = 10。"}, {"line": 4, "vars": {"total": 10, "n": 20}, "arr": null, "note": "讀取下一個輸入（假設輸入 20）。"}, {"line": 3, "vars": {"total": 30, "n": 20}, "arr": null, "note": "20 != -1 成立，再累加：total = 10 + 20 = 30。"}, {"line": 4, "vars": {"total": 30, "n": -1}, "arr": null, "note": "讀取結束值 -1。"}, {"line": 2, "vars": {"total": 30, "n": -1}, "arr": null, "note": "檢查 -1 != -1 為 False，立即離開循環，不會把 -1 計入 total！"}, {"line": 5, "vars": {"total": 30, "n": -1}, "arr": null, "note": "最終輸出：30。"}]}, "reverse": {"title": "L14 陣列原地反轉（只需走前半部）", "code": ["A = [2, 4, 6, 8, 10, 12]", "for i in range(0, 3):", "    temp = A[i]", "    A[i] = A[5 - i]", "    A[5 - i] = temp"], "steps": [{"line": 0, "vars": {"i": "-", "temp": "-"}, "arr": [2, 4, 6, 8, 10, 12], "hl": [], "note": "初始 6 個元素陣列（索引 0 至 5）。"}, {"line": 1, "vars": {"i": 0, "temp": 2}, "arr": [2, 4, 6, 8, 10, 12], "hl": [0, 5], "note": "i = 0：準備對調首尾兩項 A[0] 與 A[5]。"}, {"line": 4, "vars": {"i": 0, "temp": 2}, "arr": [12, 4, 6, 8, 10, 2], "hl": [0, 5], "note": "完成對調 A[0] ↔ A[5]（12 與 2 互換）。"}, {"line": 4, "vars": {"i": 1, "temp": 4}, "arr": [12, 10, 6, 8, 4, 2], "hl": [1, 4], "note": "i = 1：完成對調 A[1] ↔ A[4]（10 與 4 互換）。"}, {"line": 4, "vars": {"i": 2, "temp": 6}, "arr": [12, 10, 8, 6, 4, 2], "hl": [2, 3], "note": "i = 2：完成對調 A[2] ↔ A[3]（8 與 6 互換），循環結束！若再跑 i = 3..5 會調回原樣。"}]}, "insert": {"title": "L26 陣列插入（必須逆序後移！）", "code": ["A = [10, 20, 30, 40, 0]", "pos = 1", "for i in range(4, pos, -1):", "    A[i] = A[i - 1]", "A[pos] = 99"], "steps": [{"line": 0, "vars": {"pos": 1, "i": "-"}, "arr": [10, 20, 30, 40, 0], "hl": [1], "note": "目標：在索引 pos = 1 插入 99，尾格 0 為預留空位。"}, {"line": 3, "vars": {"pos": 1, "i": 4}, "arr": [10, 20, 30, 40, 40], "hl": [3, 4], "note": "i = 4（逆序開始）：A[4] = A[3]，把 40 向右移入空位。"}, {"line": 3, "vars": {"pos": 1, "i": 3}, "arr": [10, 20, 30, 30, 40], "hl": [2, 3], "note": "i = 3：A[3] = A[2]，把 30 向右移一格。"}, {"line": 3, "vars": {"pos": 1, "i": 2}, "arr": [10, 20, 20, 30, 40], "hl": [1, 2], "note": "i = 2：A[2] = A[1]，把 20 向右移一格，成功騰出索引 1！"}, {"line": 6, "vars": {"pos": 2, "val": 30, "i": 2}, "arr": [10, 20, 30, 40, 50], "hl": [2], "note": "循環結束，寫入 A[2] = 30，無任何原值遺失！"}]}, "stack": {"title": "L52 堆疊 Push / Pop（後進先出 LIFO）", "code": ["S = [\"\", \"\", \"\", \"\"]", "top = -1", "top = top + 1; S[top] = 'A'  # Push A", "top = top + 1; S[top] = 'B'  # Push B", "val = S[top]; top = top - 1  # Pop", "top = top + 1; S[top] = 'C'  # Push C"], "steps": [{"line": 0, "vars": {"top": -1, "val": "-"}, "arr": ["_", "_", "_", "_"], "hl": [], "note": "建立容量 4 的空堆疊，頂端指示標 top = -1。"}, {"line": 2, "vars": {"top": 0, "val": "-"}, "arr": ["A", "_", "_", "_"], "hl": [0], "note": "Push('A')：先將 top 加 1 變為 0，再寫入 S[0] = 'A'。"}, {"line": 3, "vars": {"top": 1, "val": "-"}, "arr": ["A", "B", "_", "_"], "hl": [1], "note": "Push('B')：top 加 1 變為 1，寫入 S[1] = 'B'。"}, {"line": 4, "vars": {"top": 0, "val": "B"}, "arr": ["A", "B", "_", "_"], "hl": [0], "note": "Pop()：取出頂端 'B' 後只須 top = top - 1，陣列舊值無須清除。"}, {"line": 5, "vars": {"top": 1, "val": "B"}, "arr": ["A", "C", "_", "_"], "hl": [1], "note": "Push('C')：top 加 1 至 1，新項目 'C' 自動覆寫舊值 'B'。"}]}, "bsearch": {"title": "L62 對分檢索 Binary Search（目標 79）", "code": ["s = [50, 64, 75, 79, 85, 97]", "start = 0; end = 5; target = 79", "mid = (start + end) // 2", "if s[mid] == target: found = True", "elif target < s[mid]: end = mid - 1", "else: start = mid + 1"], "steps": [{"line": 1, "vars": {"start": 0, "mid": "-", "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [0, 5], "note": "初始化搜尋範圍 start = 0，end = 5。"}, {"line": 2, "vars": {"start": 0, "mid": 2, "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [2], "note": "第 1 步：mid = (0 + 5) // 2 = 2，s[2] = 75 < 79。"}, {"line": 5, "vars": {"start": 3, "mid": 2, "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [3, 4, 5], "note": "目標較大，排除左半邊，更新 start = mid + 1 = 3。"}, {"line": 2, "vars": {"start": 3, "mid": 4, "end": 5, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [4], "note": "第 2 步：mid = (3 + 5) // 2 = 4，s[4] = 85 > 79。"}, {"line": 4, "vars": {"start": 3, "mid": 4, "end": 3, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [3], "note": "目標較小，排除右半邊，更新 end = mid - 1 = 3。"}, {"line": 3, "vars": {"start": 3, "mid": 3, "end": 3, "target": 79}, "arr": [50, 64, 75, 79, 85, 97], "hl": [3], "note": "第 3 步：mid = 3，s[3] == 79，成功找到！僅比較 3 次。"}]}, "bubble": {"title": "L65 冒泡排序第 1 輪（遞升）", "code": ["A = [70, 55, 82, 60]", "for j in range(0, 3):", "    if A[j] > A[j + 1]:", "        temp = A[j]", "        A[j] = A[j + 1]", "        A[j + 1] = temp"], "steps": [{"line": 0, "vars": {"j": "-", "比較": "-"}, "arr": [70, 55, 82, 60], "hl": [], "note": "初始未排序陣列 [70, 55, 82, 60]。"}, {"line": 2, "vars": {"j": 0, "比較": "70 > 55 (交換)"}, "arr": [55, 70, 82, 60], "hl": [0, 1], "note": "j = 0：70 > 55，交換索引 0 與 1。"}, {"line": 2, "vars": {"j": 1, "比較": "70 > 82 (不換)"}, "arr": [55, 70, 82, 60], "hl": [1, 2], "note": "j = 1：70 < 82，次序正確不交換。"}, {"line": 2, "vars": {"j": 2, "比較": "82 > 60 (交換)"}, "arr": [55, 70, 60, 82], "hl": [2, 3], "note": "j = 2：82 > 60，交換！最大值 82 已浮到最右端。"}]}};
 
     const ACTIVE_USER_KEY = 'hkdse_py_practice_v1_user';
@@ -996,8 +1017,14 @@
         errEl.classList.remove('hidden');
         return;
       }
-      pendingGoogleUser = { email, name: info.name || '', picture: info.picture || '', verifiedGoogle: true };
+      const isTeacherEmail = TEACHER_EMAILS.includes(email);
+      try { sessionStorage.setItem('hkdse_py_dse_id_token', response.credential || ''); } catch (e) {}
+      pendingGoogleUser = { email, name: info.name || '', picture: info.picture || '', verifiedGoogle: true, idToken: response.credential || '', teacherMode: isTeacherEmail };
       document.getElementById('loginNameInput').value = info.name || document.getElementById('loginNameInput').value;
+      if (isTeacherEmail) {
+        if (!document.getElementById('loginClassInput').value.trim()) document.getElementById('loginClassInput').value = 'TEACHER';
+        if (!document.getElementById('loginNoInput').value.trim()) document.getElementById('loginNoInput').value = '00';
+      }
       updateGmailModalUI();
 
       // Auto-load cloud progress from Google Sheet!
@@ -1058,6 +1085,7 @@
       } catch (e) {}
       state.currentLevelIdx = 0; state.openChapters = {};
       document.getElementById('headerStudentLabel').textContent = `${stu.cls}-${stu.no} ${stu.name}`;
+      syncTeacherUI();
       
       renderProgressWidgets();
       renderSidebars();
@@ -1093,6 +1121,127 @@
     }
     function playSuccess() { playTone(523, 0.08, 'triangle', 0.07); setTimeout(() => playTone(659, 0.08, 'triangle', 0.07), 80); setTimeout(() => playTone(784, 0.14, 'triangle', 0.08), 160); }
     function playError() { playTone(180, 0.12, 'sawtooth', 0.05); setTimeout(() => playTone(140, 0.14, 'sawtooth', 0.05), 100); }
+
+
+    const TEACHER_EMAILS = ['cot@frcss.edu.hk'];
+    function isTeacherUser() {
+      return Boolean(
+        state.student &&
+        state.student.verifiedGoogle &&
+        TEACHER_EMAILS.includes(String(state.student.email || '').trim().toLowerCase())
+      );
+    }
+    function getTeacherIdToken() {
+      if (state.student && state.student.idToken) return state.student.idToken;
+      try { return sessionStorage.getItem('hkdse_py_dse_id_token') || ''; } catch (e) { return ''; }
+    }
+    function syncTeacherUI() {
+      const isT = isTeacherUser();
+      const hb = document.getElementById('headerTeacherBadge');
+      if (hb) { hb.classList.toggle('hidden', !isT); hb.classList.toggle('inline-flex', isT); }
+      ['teacherRevealDseDrBtn', 'teacherRevealDseCodeBtn'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !isT);
+      });
+      if (!isT) {
+        const box = document.getElementById('teacherDseAnsBox');
+        if (box) box.classList.add('hidden');
+      }
+    }
+    async function fetchTeacherDseAnswer(id) {
+      const idToken = getTeacherIdToken();
+      if (!idToken) return { status: 'error', message: '請先按右上角重新以老師 Google 帳戶登入以驗證身分。' };
+      return await callCloudGrader({ action: 'teacher_answer', id, idToken });
+    }
+
+    // Auto-Save Draft Cache (localStorage)
+    const DSE_DRAFT_PREFIX = 'hkdse_py_dse_draft_v1_';
+    function dseDraftKey(scope, id) {
+      const uid = (state.student && state.student.email) ? state.student.email : 'guest';
+      return `${DSE_DRAFT_PREFIX}${uid}_${scope}_${id}`;
+    }
+    function saveDraft(scope, id, val) {
+      if (!id) return;
+      try { localStorage.setItem(dseDraftKey(scope, id), String(val ?? '')); } catch (e) {}
+    }
+    function loadDraft(scope, id) {
+      if (!id) return null;
+      try { return localStorage.getItem(dseDraftKey(scope, id)); } catch (e) { return null; }
+    }
+    function clearDraft(scope, id) {
+      if (!id) return;
+      try { localStorage.removeItem(dseDraftKey(scope, id)); } catch (e) {}
+    }
+
+    // Instant Paste/Drop Blocking -> Immediate Apps Script Log
+    let _lastPasteLogTs = 0;
+    function logBlockedPasteInstant(contextLabel, itemId) {
+      if (isTeacherUser()) return;
+      state.lastPasteBlocked = true;
+      playError();
+      const now = Date.now();
+      if (now - _lastPasteLogTs < 2500) return;
+      _lastPasteLogTs = now;
+      const stu = state.student || {};
+      syncToGoogleSheet({
+        cls: stu.cls || '',
+        no: stu.no || '',
+        name: stu.name || '',
+        lesson: contextLabel || 'DSE試題',
+        levelId: itemId || 'DSE',
+        tier: '防貼上警告',
+        passed: false,
+        xp: state.xp || 0,
+        penalty: state.penalty || 0,
+        attempts: 0,
+        tabSwitches: state.tabSwitches || 0,
+        awaySeconds: state.awaySeconds || 0,
+        aiFlags: ['嘗試複製貼上(已攔截並即時紀錄)'],
+        code: '[BLOCKED_PASTE_ATTEMPT]'
+      });
+    }
+
+    // Fixed Top-Left 0px-Shift Sidebar Layout for DSE Mode
+    let dseSidebarCollapsed = false;
+    function syncDseTopLeftToggle() {
+      const btn = document.getElementById('dseSidebarToggleBtn');
+      if (!btn) return;
+      const isDse = state.mode === 'dse';
+      if (!isDse) {
+        btn.classList.add('hidden');
+        btn.classList.remove('inline-flex');
+        return;
+      }
+      btn.classList.remove('hidden');
+      btn.classList.add('inline-flex');
+      const isExpandedDesktop = window.innerWidth >= 1024 && !dseSidebarCollapsed;
+      btn.setAttribute('aria-expanded', isExpandedDesktop ? 'true' : 'false');
+      btn.title = isExpandedDesktop ? '收合試題目錄' : '展開試題目錄';
+      btn.className = isExpandedDesktop
+        ? 'inline-flex hw-btn h-[32px] px-2.5 rounded-md bg-[#0c2236] border border-[#38bdf8]/60 text-[#38bdf8] hover:text-white hover:border-[#38bdf8] text-xs font-bold items-center gap-1.5 shrink-0 transition'
+        : 'inline-flex hw-btn h-[32px] px-2.5 rounded-md bg-[#101a2a] border border-[#243754] text-slate-300 hover:text-white hover:border-[#38bdf8]/60 text-xs font-bold items-center gap-1.5 shrink-0 transition';
+    }
+    function applyDseSidebarLayout(openMobileDrawer = false) {
+      const bd = document.getElementById('dseSidebarBackdrop');
+      const panel = document.getElementById('dseSidebarPanel');
+      const rf = document.getElementById('dseRightFrame');
+      if (!bd || !rf) return;
+      if (openMobileDrawer && window.innerWidth < 1024) {
+        bd.className = 'fixed inset-0 z-40 bg-black/75 backdrop-blur-sm p-3 flex items-start';
+        panel.className = 'w-80 max-w-[86vw] max-h-[94dvh] overflow-y-auto space-y-2.5 chassis-surface rounded-md p-3 border-[#243754] shadow-2xl';
+        syncDseTopLeftToggle();
+        return;
+      }
+      panel.className = 'space-y-2.5 chassis-surface rounded-md p-3 border-[#1e2d44]';
+      if (!dseSidebarCollapsed) {
+        bd.className = 'hidden lg:block lg:col-span-4';
+        rf.className = 'lg:col-span-8 space-y-3 sm:space-y-4';
+      } else {
+        bd.className = 'hidden';
+        rf.className = 'lg:col-span-12 space-y-3 sm:space-y-4';
+      }
+      syncDseTopLeftToggle();
+    }
 
     function escapeHtml(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -1167,23 +1316,43 @@ def _hkdse_check_code(code_str, forbidden_calls):
       state.pyodide.globals.set('_user_stdin', stdinStr || '');
       state.pyodide.globals.set('_check_file', checkFile || '');
       const runner = `
-import io, os as _os, contextlib, traceback
+import io, os as _os, sys as _sys, time as _time, contextlib
 _lines = _user_stdin.splitlines()
 _it = iter(_lines)
+_eof_cnt = 0
 def _fake_input(prompt=""):
+    global _eof_cnt
     try:
         return next(_it)
     except StopIteration:
+        _eof_cnt += 1
+        if _eof_cnt > 3:
+            raise EOFError("測試輸入已用盡（請檢查 input() 次數或 while 終止條件，避免無限循環）。")
         return ""
 _buf = io.StringIO()
 _err = ""
+_steps = 0
+_MAX_STEPS = 25000
+_t0 = _time.monotonic()
+def _loop_guard(frame, event, arg):
+    global _steps
+    if event == "line":
+        _steps += 1
+        if _steps > _MAX_STEPS or (_steps % 500 == 0 and (_time.monotonic() - _t0) > 2.0):
+            raise RuntimeError("程式執行步數超過安全上限（疑似無限循環 Infinite Loop），已自動中止！請檢查 while 條件及變量更新。")
+    return _loop_guard
 try:
     _ns = {"input": _fake_input}
+    _sys.settrace(_loop_guard)
     with contextlib.redirect_stdout(_buf):
         exec(compile(_user_code, "<student.py>", "exec"), _ns)
 except Exception as e:
     _err = f"{type(e).__name__}: {e}"
+finally:
+    _sys.settrace(None)
 _final_out = _buf.getvalue()
+if len(_final_out) > 20000:
+    _final_out = _final_out[:20000] + "\n...（輸出過長已截斷）"
 if _check_file and not _err:
     if _os.path.exists(_check_file):
         with open(_check_file, "r", encoding="utf-8") as _cf:
@@ -1393,6 +1562,8 @@ sorted([fn for fn in os.listdir(".") if fn.endswith(".txt")])
       if (mode !== 'viz' && typeof stopVizTimer === 'function') stopVizTimer();
       const mw = document.getElementById('mainWorkbench');
       if (mw) { mw.classList.remove('lg:col-span-9'); mw.classList.add('lg:col-span-12'); }
+      if (mode === 'dse') applyDseSidebarLayout(false);
+      else syncDseTopLeftToggle();
       const activeTabCls = 'bg-[#38bdf8] text-[#04131e] font-bold shadow-[0_0_12px_rgba(56,189,248,0.22)]';
       const setBtn = (id, on) => {
         const el = document.getElementById(id);
@@ -1639,6 +1810,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           dseState.activeId = b.getAttribute('data-dseid');
           loadDseQuestion(dseState.activeId);
           renderDseList();
+          if (window.innerWidth < 1024) applyDseSidebarLayout(false);
         });
       });
     }
@@ -1669,15 +1841,20 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       const isDry = q.mode === 'dryrun';
       document.getElementById('dseDryrunPanel').classList.toggle('hidden', !isDry);
       document.getElementById('dseCodePanel').classList.toggle('hidden', isDry);
+      const tAnsBox = document.getElementById('teacherDseAnsBox');
+      if (tAnsBox) tAnsBox.classList.add('hidden');
+      syncTeacherUI();
       if (isDry) {
         const numbered = (q.code || '').split('\n').map((ln, i) => `${String(i + 1).padStart(2, '0')}  ${ln}`).join('\n');
         document.getElementById('dseDryrunCode').textContent = numbered;
-        document.getElementById('dseDryrunInput').value = '';
+        const cachedDr = loadDraft('dse_dr', q.id);
+        document.getElementById('dseDryrunInput').value = (cachedDr !== null) ? cachedDr : '';
       } else {
         const ed = document.getElementById('dseCodeInput');
-        ed.value = q.starter || '';
+        const cachedCode = loadDraft('dse_code', q.id);
+        ed.value = (cachedCode !== null) ? cachedCode : (q.starter || '');
         updateLineGutter(ed, document.getElementById('dseLineGutter'));
-        document.getElementById('dseExpectedPre').textContent = dseState.done[q.id] ? '✓ 已通過雲端輸出核對' : '（提交後由雲端即時核對 HKDSE 標準輸出）';
+        document.getElementById('dseExpectedPre').textContent = q.expected || '（無預期輸出）';
         document.getElementById('dseOutputPre').textContent = '按「執行測試」或「核對試題輸出」...';
       }
     }
@@ -2452,9 +2629,122 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       document.getElementById('dseDryrunCheckBtn').addEventListener('click', checkDseDryrun);
       document.getElementById('dseRunBtn').addEventListener('click', () => checkDseCode(false));
       document.getElementById('dseCheckBtn').addEventListener('click', () => checkDseCode(true));
-      document.getElementById('dseResetBtn').addEventListener('click', () => loadDseQuestion(dseState.activeId));
+      document.getElementById('dseResetBtn').addEventListener('click', () => {
+        clearDraft('dse_code', dseState.activeId);
+        loadDseQuestion(dseState.activeId);
+      });
       const dseEd = document.getElementById('dseCodeInput');
-      if (dseEd) dseEd.addEventListener('input', () => updateLineGutter(dseEd, document.getElementById('dseLineGutter')));
+      if (dseEd) {
+        dseEd.addEventListener('input', () => {
+          updateLineGutter(dseEd, document.getElementById('dseLineGutter'));
+          if (dseState.activeId) saveDraft('dse_code', dseState.activeId, dseEd.value);
+        });
+        const blockDsePaste = (e) => {
+          if (isTeacherUser()) return;
+          e.preventDefault();
+          const fb = document.getElementById('dseFeedback');
+          fb.className = 'px-3.5 py-2.5 text-xs font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+          fb.textContent = '已攔截複製貼上（已即時記錄至老師進度表），請親手逐行輸入程式碼。';
+          fb.classList.remove('hidden');
+          logBlockedPasteInstant('DSE試題', dseState.activeId || 'DSE');
+        };
+        dseEd.addEventListener('paste', blockDsePaste);
+        dseEd.addEventListener('drop', blockDsePaste);
+      }
+      const dseDrIn = document.getElementById('dseDryrunInput');
+      if (dseDrIn) {
+        dseDrIn.addEventListener('input', () => {
+          if (dseState.activeId) saveDraft('dse_dr', dseState.activeId, dseDrIn.value);
+        });
+        dseDrIn.addEventListener('paste', (e) => {
+          if (isTeacherUser()) return;
+          e.preventDefault();
+          const fb = document.getElementById('dseFeedback');
+          fb.className = 'px-3.5 py-2.5 text-xs font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+          fb.textContent = '已攔截複製貼上（已即時記錄至老師進度表），請親手輸入追蹤輸出。';
+          fb.classList.remove('hidden');
+          logBlockedPasteInstant('DSE空運行', dseState.activeId || 'DSE');
+        });
+      }
+
+      // Wire Fixed Top-Left 0px-Shift Sidebar Toggle for DSE
+      const dseToggleBtn = document.getElementById('dseSidebarToggleBtn');
+      if (dseToggleBtn) {
+        dseToggleBtn.addEventListener('click', () => {
+          if (state.mode !== 'dse') return;
+          if (window.innerWidth >= 1024) {
+            dseSidebarCollapsed = !dseSidebarCollapsed;
+            applyDseSidebarLayout(false);
+          } else {
+            const bd = document.getElementById('dseSidebarBackdrop');
+            const isOpen = bd && bd.classList.contains('fixed');
+            applyDseSidebarLayout(!isOpen);
+          }
+        });
+      }
+      const dseCloseBtn = document.getElementById('dseDrawerCloseBtn');
+      if (dseCloseBtn) dseCloseBtn.addEventListener('click', () => applyDseSidebarLayout(false));
+      const dseBd = document.getElementById('dseSidebarBackdrop');
+      if (dseBd) dseBd.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget && window.innerWidth < 1024) applyDseSidebarLayout(false);
+      });
+      window.addEventListener('resize', () => {
+        if (state.mode === 'dse') applyDseSidebarLayout(false);
+        else syncDseTopLeftToggle();
+      });
+
+      // Wire Teacher Mode On-Demand Cloud Answer Reveal for DSE
+      let lastTeacherDseSol = '';
+      const tDseCodeBtn = document.getElementById('teacherRevealDseCodeBtn');
+      if (tDseCodeBtn) {
+        tDseCodeBtn.addEventListener('click', async () => {
+          const box = document.getElementById('teacherDseAnsBox');
+          const pre = document.getElementById('teacherDseAnsPre');
+          if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
+          if (!dseState.activeId) return;
+          pre.textContent = '正在從雲端驗證老師身分並載入答案...';
+          box.classList.remove('hidden');
+          const res = await fetchTeacherDseAnswer(dseState.activeId);
+          if (res.status === 'ok' && res.data && res.data.solution) {
+            lastTeacherDseSol = res.data.solution;
+            pre.textContent = res.data.solution;
+            if (res.data.explain) {
+              document.getElementById('dseExplainText').textContent = res.data.explain;
+              document.getElementById('dseExplainBox').classList.remove('hidden');
+            }
+          } else {
+            lastTeacherDseSol = '';
+            pre.textContent = res.message || '未能載入參考答案，請重新登入老師 Google 帳戶。';
+          }
+        });
+      }
+      const tFillDseBtn = document.getElementById('teacherFillDseBtn');
+      if (tFillDseBtn) {
+        tFillDseBtn.addEventListener('click', () => {
+          if (!lastTeacherDseSol || !dseEd) return;
+          dseEd.value = lastTeacherDseSol;
+          updateLineGutter(dseEd, document.getElementById('dseLineGutter'));
+        });
+      }
+      const tDseDrBtn = document.getElementById('teacherRevealDseDrBtn');
+      if (tDseDrBtn) {
+        tDseDrBtn.addEventListener('click', async () => {
+          const box = document.getElementById('dseExplainBox');
+          if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
+          if (!dseState.activeId) return;
+          const res = await fetchTeacherDseAnswer(dseState.activeId);
+          if (res.status === 'ok' && res.data) {
+            document.getElementById('dseExplainText').textContent = `【標準輸出】\n${res.data.expected || ''}\n\n【評卷解說】\n${res.data.explain || ''}`;
+            document.getElementById('dseExplainText').classList.add('whitespace-pre-wrap');
+            box.classList.remove('hidden');
+          } else {
+            const fb = document.getElementById('dseFeedback');
+            fb.className = 'px-3.5 py-2.5 text-xs font-bold rounded-sm bg-[#f5a623]/15 border border-[#f5a623]/40 text-[#fde68a]';
+            fb.textContent = res.message || '未能載入參考答案，請重新登入老師 Google 帳戶。';
+            fb.classList.remove('hidden');
+          }
+        });
+      }
       const wireExtraTrace = (slot, pfx) => {
         document.getElementById(`${pfx}TracePrevBtn`).addEventListener('click', () => {
           const tr = liveTraces[slot]; if (tr.idx > 0) { tr.idx -= 1; renderLiveTracePanel(slot); }
@@ -2549,8 +2839,13 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       // Sandbox listeners
       const sbInput = document.getElementById('sbInput');
       const sbGutter = document.getElementById('sbLineGutter');
+      const cachedSb = loadDraft('sandbox', 'main');
+      if (cachedSb !== null && cachedSb.trim()) sbInput.value = cachedSb;
       updateLineGutter(sbInput, sbGutter);
-      sbInput.addEventListener('input', () => updateLineGutter(sbInput, sbGutter));
+      sbInput.addEventListener('input', () => {
+        updateLineGutter(sbInput, sbGutter);
+        saveDraft('sandbox', 'main', sbInput.value);
+      });
       document.getElementById('sbRunBtn').addEventListener('click', async () => {
         const res = await runPythonCode(sbInput.value, document.getElementById('sbStdin').value.replace(/\\n/g, '\n'));
         document.getElementById('sbOutput').textContent = res.ok ? (res.output || '（執行成功）') : `錯誤：${res.error}`;
@@ -2579,7 +2874,8 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         const cls = document.getElementById('loginClassInput').value.trim().toUpperCase();
         const no = document.getElementById('loginNoInput').value.trim().padStart(2, '0');
         const name = document.getElementById('loginNameInput').value.trim();
-        const teacherMode = document.getElementById('loginTeacherToggle').checked || cls === 'TEACHER';
+        const loginEmailCheck = (pendingGoogleUser ? pendingGoogleUser.email : (state.student && state.student.email ? state.student.email : '')).trim().toLowerCase();
+        const teacherMode = TEACHER_EMAILS.includes(loginEmailCheck);
         const err = document.getElementById('loginErrorMsg');
         const stEl = document.getElementById('loginCloudStatus');
         const cid = getGoogleClientId();
@@ -2615,7 +2911,8 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         stEl.textContent = '正在同步雲端進度...';
         stEl.classList.remove('hidden');
 
-        const profile = { id: email, email, cls, no, name, picture, verifiedGoogle, teacherMode };
+        const idToken = (pendingGoogleUser && pendingGoogleUser.idToken) ? pendingGoogleUser.idToken : getTeacherIdToken();
+        const profile = { id: email, email, cls, no, name, picture, verifiedGoogle, teacherMode: Boolean(verifiedGoogle && TEACHER_EMAILS.includes(email)), idToken };
         loadProfile(profile);
 
         const cloud = await loadCloudProgressByEmail(email);
