@@ -758,7 +758,10 @@
                     <span>HKDSE 空運行追蹤（不設執行掣）</span>
                     <span>請逐行追蹤並輸入準確輸出</span>
                   </div>
-                  <pre id="dseDryrunCode" class="p-3.5 text-xs sm:text-sm font-mono-code text-[#e2e8f0] overflow-x-auto leading-relaxed"></pre>
+                  <div class="code-editor-wrap border-0 rounded-none">
+                    <div id="dseDryrunLineGutter" class="line-gutter">1</div>
+                    <pre id="dseDryrunCode" class="py-editor m-0 overflow-x-auto" style="resize:none;"></pre>
+                  </div>
                 </div>
                 <textarea id="dseDryrunInput" rows="3" spellcheck="false" autocomplete="off"
                   class="w-full rounded-sm bg-[#070b13] border border-[#2a3b55] focus:border-[#38bdf8] p-3 text-sm font-mono-code text-white outline-none"
@@ -2208,8 +2211,10 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       if (tAnsBox) tAnsBox.classList.add('hidden');
       syncTeacherUI();
       if (isDry) {
-        const numbered = (q.code || '').split('\n').map((ln, i) => `${String(i + 1).padStart(2, '0')}  ${ln}`).join('\n');
-        document.getElementById('dseDryrunCode').textContent = numbered;
+        const rawLines = (q.code || '').split('\n');
+        const drGutter = document.getElementById('dseDryrunLineGutter');
+        if (drGutter) drGutter.textContent = rawLines.map((_, i) => String(i + 1)).join('\n');
+        document.getElementById('dseDryrunCode').textContent = q.code || '';
         const cachedDr = loadDraft('dse_dr', q.id);
         document.getElementById('dseDryrunInput').value = (cachedDr !== null) ? cachedDr : '';
       } else {
