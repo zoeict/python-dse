@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>ICT - Python DSE 操練與工具</title>
+  <title>ICT DSE</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
@@ -14,7 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --chassis-void: #070b12;
@@ -269,6 +269,218 @@
     .viz-cell {
       transition: all 0.22s ease;
     }
+  
+    /* === Cyberpunk Glassmorphism × 3Blue1Brown Manim Visualizer (.cm-*) === */
+    .cm-root {
+      background: radial-gradient(circle at 50% 42%, #0c142a 0%, #050814 68%, #03050c 100%);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+      border-radius: 10px;
+      padding: 16px;
+      color: #f1f5f9;
+      position: relative;
+      overflow: hidden;
+    }
+    .cm-glass {
+      background: rgba(12, 18, 36, 0.62);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(34, 211, 238, 0.34);
+      box-shadow: inset 0 0 28px rgba(34, 211, 238, 0.05), 0 12px 36px rgba(0, 0, 0, 0.45);
+      border-radius: 10px;
+    }
+    .cm-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      padding-bottom: 6px;
+    }
+    .cm-tab-btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      padding: 7px 12px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif;
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      transition: all 0.16s ease;
+    }
+    .cm-tab-btn:hover {
+      color: #ffffff;
+      border-color: rgba(34, 211, 238, 0.65);
+      background: rgba(19, 32, 58, 0.85);
+    }
+    .cm-tab-btn.cm-tab-active {
+      color: #030712;
+      border-color: transparent;
+      background: linear-gradient(135deg, #22d3ee 0%, #818cf8 55%, #c084fc 100%);
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.36);
+    }
+    .cm-layout {
+      display: grid;
+      grid-template-columns: 1.58fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    @media (max-width: 1023px) {
+      .cm-layout {
+        grid-template-columns: 1fr;
+      }
+      .cm-root {
+        padding: 12px;
+      }
+    }
+    .cm-stage-box {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 42%, #0c142a 0%, #050814 68%, #03050c 100%);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      min-height: 310px;
+    }
+    .cm-cyber-floor {
+      position: absolute;
+      left: -20%; right: -20%; bottom: -38%; height: 75%;
+      background-image:
+        linear-gradient(rgba(34, 211, 238, 0.11) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(192, 132, 252, 0.11) 1px, transparent 1px);
+      background-size: 38px 38px;
+      transform: perspective(460px) rotateX(62deg);
+      mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9) 15%, transparent 95%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9) 15%, transparent 95%);
+      pointer-events: none;
+    }
+    .cm-legend {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 4;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .cm-legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #e2e8f0;
+      background: rgba(5, 8, 20, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      backdrop-filter: blur(8px);
+    }
+    .cm-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 9999px;
+      display: inline-block;
+    }
+    .cm-svg {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .cm-formula-text {
+      font-family: 'Cormorant Garamond', 'Noto Sans TC', serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 25px;
+      fill: #f8fafc;
+    }
+    .cm-val-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      fill: #ffffff;
+    }
+    .cm-mono-text {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .cm-code-line {
+      display: flex;
+      align-items: flex-start;
+      padding: 2px 10px;
+      border-left: 3px solid transparent;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      line-height: 1.65;
+      color: #94a3b8;
+      white-space: pre;
+      transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+    }
+    .cm-code-line.cm-active {
+      border-left-color: #22d3ee;
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.22) 0%, rgba(192, 132, 252, 0.08) 70%, transparent 100%);
+      color: #f8fafc;
+      font-weight: 600;
+    }
+    .cm-var-card {
+      background: rgba(5, 8, 20, 0.85);
+      border: 1px solid rgba(34, 211, 238, 0.34);
+      border-radius: 7px;
+      padding: 6px 9px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .cm-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(34, 211, 238, 0.34);
+      background: rgba(12, 22, 44, 0.78);
+      color: #e2e8f0;
+      transition: all 0.14s ease;
+      cursor: pointer;
+    }
+    .cm-btn:hover {
+      border-color: #22d3ee;
+      color: #ffffff;
+      background: rgba(18, 36, 68, 0.92);
+    }
+    .cm-btn-primary {
+      background: linear-gradient(135deg, #22d3ee 0%, #34d399 100%);
+      color: #031510;
+      border-color: transparent;
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.3);
+    }
+    .cm-btn-primary:hover {
+      filter: brightness(1.08);
+      color: #020b08;
+    }
+    .cm-btn-amber {
+      border-color: rgba(250, 204, 21, 0.45);
+      color: #fef08a;
+      background: rgba(250, 204, 21, 0.12);
+    }
+    .cm-btn-rose {
+      border-color: rgba(251, 113, 133, 0.45);
+      color: #fecdd3;
+      background: rgba(251, 113, 133, 0.12);
+    }
+    .cm-btn-purple {
+      border-color: rgba(192, 132, 252, 0.45);
+      color: #e9d5ff;
+      background: rgba(192, 132, 252, 0.12);
+    }
+    .cm-scrubber {
+      accent-color: #22d3ee;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body class="antialiased selection:bg-[#38bdf8] selection:text-[#04131e]">
@@ -632,76 +844,136 @@
       <!-- ===================================================================== -->
       <!-- MODE 6: HKDSE ALGORITHM ANIMATION STUDIO (SVG + OPERATION STREAM)     -->
       <!-- ===================================================================== -->
-      <section id="vizContainer" class="hidden p-4 sm:p-6 bg-[#0e1726]/90 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#1e2d44] pb-3">
-          <div>
-            <h2 class="font-display text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-              <i data-lucide="sparkles" class="w-5 h-5 text-[#38bdf8]"></i> HKDSE 算法動畫圖解室
-            </h2>
+            <section id="vizContainer" class="hidden p-3 sm:p-5 bg-[#050814]">
+        <div class="cm-root space-y-3.5">
+          <!-- Top Bar: Title + Audio Toggle -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-cyan-400/20">
+            <div>
+              <h2 class="font-display text-base sm:text-lg font-bold text-white tracking-tight">HKDSE 算法動畫圖解室</h2>
+            </div>
+            <button id="cmAudioToggleBtn" type="button" class="cm-btn text-[11px]">
+              <svg class="w-3.5 h-3.5 text-[#22d3ee]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              <span id="cmAudioToggleLabel">音高音效：開</span>
+            </button>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="vizSpeedSelect" class="rounded-sm bg-[#070b13] border border-[#243754] px-2.5 py-1.5 text-xs font-bold text-[#fbbf24] outline-none">
-              <option value="1200">速度：0.5× 慢速講解</option>
-              <option value="700" selected>速度：1× 標準</option>
-              <option value="320">速度：2× 快速</option>
-            </select>
+
+          <!-- 9-Algorithm Single-Line Horizontally Scrollable Tab Bar -->
+          <div id="vizAlgoTabs" class="cm-tabs">
+            <button data-viz="binary_search" class="cm-tab-btn cm-tab-active">01 對分檢索</button>
+            <button data-viz="search_race" class="cm-tab-btn">02 線性 vs 對分賽跑</button>
+            <button data-viz="bubble_sort" class="cm-tab-btn">03 冒泡排序</button>
+            <button data-viz="selection_sort" class="cm-tab-btn">04 選擇排序</button>
+            <button data-viz="insertion_sort" class="cm-tab-btn">05 插入排序</button>
+            <button data-viz="merge_lists" class="cm-tab-btn">06 合併已排序列表</button>
+            <button data-viz="stack_queue" class="cm-tab-btn">07 堆疊 &amp; 循環隊列</button>
+            <button data-viz="linked_list" class="cm-tab-btn">08 陣列線性鏈表</button>
+            <button data-viz="array_2d" class="cm-tab-btn">09 二維陣列掃描</button>
           </div>
-        </div>
 
-        <!-- 8 HKDSE Algorithm Selector Pills (Horizontally scrollable on iPad) -->
-        <div id="vizAlgoTabs" class="touch-scroll-x flex items-center gap-1.5 pb-1">
-          <button data-viz="binary_search" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#2563eb] text-white">對分檢索</button>
-          <button data-viz="search_race" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">線性 vs 對分賽跑</button>
-          <button data-viz="bubble_sort" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">冒泡排序</button>
-          <button data-viz="selection_sort" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">選擇排序</button>
-          <button data-viz="insertion_sort" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">插入排序</button>
-          <button data-viz="merge_lists" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">合併已排序列表</button>
-          <button data-viz="stack_queue" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">堆疊 &amp; 循環隊列</button>
-          <button data-viz="linked_list" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">陣列線性鏈表</button>
-          <button data-viz="array_2d" class="shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]">二維陣列掃描</button>
-        </div>
-
-        <!-- Custom Input / Interactive Controls Bar -->
-        <div id="vizControlsBar" class="chassis-surface rounded-sm p-3 border-[#1e2d44] flex flex-wrap items-center justify-between gap-2.5 text-xs">
-          <div id="vizInputsWrap" class="flex flex-wrap items-center gap-2"></div>
-          <div class="flex flex-wrap items-center gap-3 font-mono-code text-[11px]">
-            <span class="px-2 py-1 rounded-sm bg-[#080d16] border border-[#1e2d44] text-[#38bdf8]">比較：<b id="vizCmpCount">0</b></span>
-            <span class="px-2 py-1 rounded-sm bg-[#080d16] border border-[#1e2d44] text-[#fbbf24]">交換／移動：<b id="vizSwapCount">0</b></span>
-            <span class="px-2 py-1 rounded-sm bg-[#080d16] border border-[#1e2d44] text-[#34d399]">步驟：<b id="vizStepLabel">0 / 0</b></span>
-          </div>
-        </div>
-
-        <!-- Main Stage (Left 8 cols Visual Stage + Right 4 cols Synchronized Python Code) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-          <div class="lg:col-span-8 flex flex-col gap-3">
-            <div id="vizStage" class="viz-stage p-4 sm:p-5 flex flex-col justify-center"></div>
-
-            <!-- Narration + Operation Stream Scrubber -->
-            <div class="chassis-surface rounded-sm p-3.5 border-[#1e2d44] space-y-3">
-              <div id="vizNarration" class="text-xs sm:text-sm font-bold text-[#e2e8f0] min-h-[22px] leading-relaxed"></div>
-              <div class="flex items-center gap-2.5">
-                <input id="vizScrubber" type="range" min="0" max="0" value="0" class="flex-1 accent-[#38bdf8] cursor-pointer h-2" />
-              </div>
+          <!-- 2-Column Glassmorphic Workspace (1.58fr : 1fr) -->
+          <div class="cm-layout">
+            <!-- Left Column: Cyber-Manim Stage -->
+            <div class="cm-glass p-3.5 sm:p-4 flex flex-col gap-3">
+              <!-- Algo Header + 3 Live Status Badges -->
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <button id="vizResetBtn" class="hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1e3252] border border-[#243754] text-xs font-bold text-[#cbd5e1]">↺ 重播</button>
-                  <button id="vizPrevBtn" class="hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1e3252] border border-[#243754] text-xs font-bold text-white">◀ 上一步</button>
-                  <button id="vizPlayBtn" class="hw-btn hw-btn-primary px-4 py-1.5 rounded-sm text-xs font-bold flex items-center gap-1.5">▶ 自動播放</button>
-                  <button id="vizNextBtn" class="hw-btn px-3 py-1.5 rounded-sm bg-[#132035] hover:bg-[#1e3252] border border-[#243754] text-xs font-bold text-white">下一步 ▶</button>
+                <div>
+                  <div id="cmAlgoTitle" class="font-display text-sm sm:text-base font-bold text-white">對分檢索（Binary Search）</div>
+                  <div id="cmAlgoSub" class="font-mono-code text-[11px] text-[#22d3ee]">Binary Search · O(log₂ N)</div>
                 </div>
-                <div id="vizLegend" class="flex flex-wrap items-center gap-3 text-[11px] text-[#9aa7b8]"></div>
+                <div class="flex flex-wrap items-center gap-1.5 font-mono-code text-[11px] font-bold">
+                  <span class="px-2 py-0.5 rounded bg-yellow-400/15 border border-yellow-400/40 text-yellow-300">比較 <span id="cmStatCmp">0</span></span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-400/15 border border-emerald-400/40 text-emerald-300">交換/移動 <span id="cmStatSwp">0</span></span>
+                  <span class="px-2 py-0.5 rounded bg-cyan-400/15 border border-cyan-400/40 text-cyan-300">步驟 <span id="cmStatStep">1/1</span></span>
+                </div>
+              </div>
+
+              <!-- Dynamic Custom Input / Interactive Controls Bar -->
+              <div id="cmInputsWrap" class="flex flex-wrap items-center gap-2 text-xs"></div>
+
+              <!-- 3D Cyber Floor + SVG Vector Cinema Stage -->
+              <div class="cm-stage-box">
+                <div id="cmLegendBar" class="cm-legend"></div>
+                <div class="cm-cyber-floor"></div>
+                <svg id="cmSvg" class="cm-svg" viewBox="0 0 920 420" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+                      <feGaussianBlur stdDeviation="4" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    <linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.48" />
+                      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.14" />
+                    </linearGradient>
+                    <linearGradient id="gAmber" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#facc15" stop-opacity="0.56" />
+                      <stop offset="100%" stop-color="#d97706" stop-opacity="0.18" />
+                    </linearGradient>
+                    <linearGradient id="gRose" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#fb7185" stop-opacity="0.58" />
+                      <stop offset="100%" stop-color="#e11d48" stop-opacity="0.18" />
+                    </linearGradient>
+                    <linearGradient id="gEmerald" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#34d399" stop-opacity="0.54" />
+                      <stop offset="100%" stop-color="#059669" stop-opacity="0.16" />
+                    </linearGradient>
+                    <linearGradient id="gPurple" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.52" />
+                      <stop offset="100%" stop-color="#7e22ce" stop-opacity="0.16" />
+                    </linearGradient>
+                    <marker id="arrCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#22d3ee" />
+                    </marker>
+                    <marker id="arrGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#facc15" />
+                    </marker>
+                    <marker id="arrEmerald" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#34d399" />
+                    </marker>
+                  </defs>
+                  <g id="cmSvgContent"></g>
+                </svg>
+              </div>
+
+              <!-- Linked-List Parallel Array Table (Only shown on 08 linked_list) -->
+              <div id="cmLinkedTableWrap" class="hidden overflow-x-auto rounded-md bg-[#050814]/80 border border-cyan-400/25 p-2.5"></div>
+
+              <!-- Step Teaching Narration Bar -->
+              <div class="flex items-start gap-2.5 rounded-md bg-[#050814]/80 border border-cyan-400/25 px-3 py-2.5 text-xs sm:text-[13px]">
+                <span id="cmStepBadge" class="shrink-0 px-2 py-0.5 rounded bg-cyan-400/20 border border-cyan-400/45 font-mono-code text-[10px] font-bold text-[#22d3ee]">STEP 1</span>
+                <div id="cmStepNote" class="text-[#e2e8f0] leading-relaxed"></div>
+              </div>
+
+              <!-- Playback Control Bar (Hidden on 07 stack_queue live interactive mode) -->
+              <div id="cmPlaybackBar" class="flex flex-wrap items-center gap-2 pt-1">
+                <button id="vizResetBtn" type="button" class="cm-btn" title="重播">↺ 重播</button>
+                <button id="vizPrevBtn" type="button" class="cm-btn" title="上一步">◀ 上一步</button>
+                <button id="vizPlayBtn" type="button" class="cm-btn cm-btn-primary">▶ 自動播放</button>
+                <button id="vizNextBtn" type="button" class="cm-btn" title="下一步">下一步 ▶</button>
+                <input id="vizScrubber" type="range" min="0" max="0" value="0" class="cm-scrubber flex-1 min-w-[90px]" />
+                <select id="vizSpeedSelect" class="rounded-md bg-[#050814] border border-cyan-400/35 px-2 py-1.5 text-xs font-mono-code text-cyan-200 outline-none">
+                  <option value="1150">0.7x 慢速</option>
+                  <option value="820" selected>1.0x 標準</option>
+                  <option value="520">1.6x 快速</option>
+                  <option value="320">2.5x 極速</option>
+                </select>
               </div>
             </div>
-          </div>
 
-          <!-- Synchronized Python Code Panel -->
-          <div class="lg:col-span-4 chassis-surface rounded-sm border-[#1e2d44] flex flex-col overflow-hidden">
-            <div class="px-3.5 py-2 bg-[#0c1320] border-b border-[#1e2d44] flex items-center justify-between font-mono-code text-[11px]">
-              <span id="vizCodeTitle" class="text-[#38bdf8] font-bold">標準 Python 對照</span>
-              <span class="text-[#64748b]">同步高亮</span>
+            <!-- Right Column: Synced HKDSE Python Code + Live Variables -->
+            <div class="cm-glass flex flex-col overflow-hidden">
+              <div class="px-3.5 py-2.5 border-b border-cyan-400/20 flex items-center justify-between bg-[#050814]/55">
+                <span class="font-mono-code text-[11px] font-bold text-[#22d3ee]">HKDSE 標準 Python 同步追蹤</span>
+                <span id="cmCodeLineTag" class="font-mono-code text-[10px] text-[#94a3b8]">Line 1</span>
+              </div>
+              <div id="vizCodeBox" class="py-2.5 overflow-x-auto flex-1 bg-[#040711]/70"></div>
+              <div class="p-3 border-t border-cyan-400/20 bg-[#050814]/70 space-y-2">
+                <div class="font-mono-code text-[10px] font-bold text-[#c084fc] tracking-wider uppercase">即時變數追蹤（Live Variables）</div>
+                <div id="vizVarsBox" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+              </div>
             </div>
-            <div id="vizCodeBox" class="p-3 font-mono-code text-xs text-[#94a3b8] overflow-x-auto flex-1 leading-6 bg-[#070b13]"></div>
-            <div id="vizVarsBox" class="p-3 bg-[#0c1320] border-t border-[#1e2d44] font-mono-code text-xs text-[#e2e8f0] space-y-1"></div>
           </div>
         </div>
       </section>
@@ -1265,7 +1537,7 @@
 
 
     // === Silent Auto-Force Update (iPad Home Screen Web App) + Background Cloud Re-Sync ===
-    const APP_VERSION = '2026.11.25-06';
+    const APP_VERSION = '2026.11.25-08';
     let _lastCloudResyncTs = 0;
     async function silentCheckForNewVersion() {
       try {
@@ -2032,20 +2304,112 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
     // =========================================================================
     // BESPOKE HKDSE ALGORITHM ANIMATION STUDIO (OPERATION-STREAM ENGINE)
     // =========================================================================
+    // =========================================================================
+    // CYBERPUNK GLASSMORPHISM × 3BLUE1BROWN MANIM VISUALIZER ENGINE (ALL 9 ALGOS)
+    // =========================================================================
     const vizState = {
       algo: 'binary_search',
       frames: [],
       step: 0,
       timer: null,
+      rafId: null,
+      animT: 1,
+      animStart: 0,
       codeLines: [],
-      // Live interactive state for Stack & Circular Queue
+      audioOn: true,
+      // Custom inputs
+      bsTarget: 80,
+      raceTarget: 80,
+      sortInput: [73, 85, 62, 96, 61, 48],
+      arr2dOrder: 'row', // 'row' | 'col'
+      // Live interactive state for 07 Stack & Circular Queue
       stackArr: ['A', 'B', 'C'],
-      cqArr: ['', '', '', '', '', '', 'A', 'B'],
-      cqHead: 6,
-      cqTail: 7,
-      cqN: 2,
-      cqNextChar: 67
+      stackNextChar: 68, // 'D'
+      cqArr: ['P1', 'P2', '', '', '', '', '', ''],
+      cqHead: 0,
+      cqTail: 2,
+      cqCount: 2,
+      cqNextId: 3,
+      sqMsg: '請點擊上方按鈕即時操作堆疊（LIFO）或循環隊列（FIFO）。',
+      sqLine: 1
     };
+
+    const CM_META = {
+      binary_search: {
+        title: '01 對分檢索（Binary Search）',
+        sub: 'Binary Search · O(log₂ N)',
+        legend: [['#22d3ee', '有效範圍'], ['#facc15', '中點 MID'], ['#34d399', '命中目標'], ['#475569', '已排除半區']]
+      },
+      search_race: {
+        title: '02 線性 vs 對分賽跑（Search Race）',
+        sub: 'Linear O(N) vs Binary O(log₂ N)',
+        legend: [['#facc15', '線性檢索 O(N)'], ['#22d3ee', '對分檢索 O(log₂ N)'], ['#34d399', '命中目標']]
+      },
+      bubble_sort: {
+        title: '03 冒泡排序（Bubble Sort）',
+        sub: 'Bubble Sort · O(N²)',
+        legend: [['#22d3ee', '未排序'], ['#facc15', '比較中'], ['#fb7185', '交換中'], ['#34d399', '已就位']]
+      },
+      selection_sort: {
+        title: '04 選擇排序（Selection Sort）',
+        sub: 'Selection Sort · O(N²)',
+        legend: [['#34d399', '已排序左區'], ['#facc15', '最小值 min_idx'], ['#c084fc', '掃描指標 j'], ['#fb7185', '交換中']]
+      },
+      insertion_sort: {
+        title: '05 插入排序（Insertion Sort）',
+        sub: 'Insertion Sort · O(N²)',
+        legend: [['#34d399', '已排序左區'], ['#facc15', '懸浮 key'], ['#22d3ee', '未排序']]
+      },
+      merge_lists: {
+        title: '06 合併已排序列表（Merge Lists）',
+        sub: 'Two-Pointer Merge · O(N + M)',
+        legend: [['#22d3ee', 'List A'], ['#c084fc', 'List B'], ['#facc15', '當前指標 i / j'], ['#34d399', 'merged[]']]
+      },
+      stack_queue: {
+        title: '07 堆疊 & 循環隊列（Stack & Circular Queue）',
+        sub: 'LIFO Stack (max=5) & FIFO Circular Queue (N=8)',
+        legend: [['#34d399', 'TOP / 入隊'], ['#22d3ee', 'HEAD 隊首'], ['#facc15', 'TAIL 隊尾']]
+      },
+      linked_list: {
+        title: '08 陣列線性鏈表（Array-based Linked List）',
+        sub: 'Linked List delete(3) · O(N)',
+        legend: [['#22d3ee', '正常節點'], ['#facc15', '前驅 prev'], ['#fb7185', '刪除目標 current'], ['#34d399', '新連線 NP[prev]']]
+      },
+      array_2d: {
+        title: '09 二維陣列掃描（2D Array Traversal）',
+        sub: '3×5 Matrix Traversal · O(R × C)',
+        legend: [['#facc15', '當前格 B[i][j]'], ['#34d399', '已累加格'], ['#22d3ee', '列索引 i / 軌跡'], ['#c084fc', '欄索引 j']]
+      }
+    };
+
+    function easeInOutQuint(t) {
+      t = Math.min(1, Math.max(0, t));
+      return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+    }
+
+    function playCmPitch(val, kind = 'compare') {
+      if (!vizState.audioOn) return;
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!audioCtx) audioCtx = new AC();
+        if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+        const num = Number.isFinite(Number(val)) ? Math.max(0, Math.min(100, Number(val))) : 50;
+        const freq = kind === 'warn' ? 165 : (230 + (num / 100) * 560);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = (kind === 'swap' || kind === 'hit') ? 'triangle' : (kind === 'warn' ? 'sawtooth' : 'sine');
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        const dur = kind === 'hit' ? 0.18 : 0.085;
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(kind === 'hit' ? 0.075 : 0.045, audioCtx.currentTime + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur + 0.02);
+      } catch (e) {}
+    }
 
     function stopVizTimer() {
       if (vizState.timer) { clearInterval(vizState.timer); vizState.timer = null; }
@@ -2055,88 +2419,162 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
 
     function setVizCode(lines) {
       vizState.codeLines = lines;
-      document.getElementById('vizCodeBox').innerHTML = lines.map((ln, idx) =>
-        `<div class="viz-code-line" data-vcl="${idx + 1}"><span class="text-[#475569] mr-2 select-none">${String(idx + 1).padStart(2, '0')}</span>${escapeHtml(ln)}</div>`
+      const box = document.getElementById('vizCodeBox');
+      if (!box) return;
+      box.innerHTML = lines.map((ln, idx) =>
+        `<div class="cm-code-line" data-vcl="${idx + 1}"><span class="text-[#475569] mr-3 select-none w-5 text-right inline-block">${String(idx + 1).padStart(2, '0')}</span><span>${escapeHtml(ln)}</span></div>`
       ).join('');
     }
 
+    function updateCmCodeAndVars(lineNum, varsObj) {
+      const tag = document.getElementById('cmCodeLineTag');
+      if (tag) tag.textContent = lineNum ? `Line ${lineNum}` : '-';
+      document.querySelectorAll('#vizCodeBox .cm-code-line').forEach((el) => {
+        el.classList.toggle('cm-active', Number(el.getAttribute('data-vcl')) === Number(lineNum));
+      });
+      const vBox = document.getElementById('vizVarsBox');
+      if (vBox) {
+        const entries = Object.entries(varsObj || {});
+        vBox.innerHTML = entries.map(([k, v]) => `
+          <div class="cm-var-card">
+            <div class="text-[10px] text-[#22d3ee] font-bold">${escapeHtml(k)}</div>
+            <div class="text-xs font-bold text-white truncate">${escapeHtml(String(v))}</div>
+          </div>`).join('');
+      }
+    }
+
+    // --- Frame Generators for All 9 Algorithms (100% HKDSE Standard Non-Shorthand Python) ---
     function buildBinarySearchFrames(arr, target) {
-      const code = [
+      setVizCode([
         'start = 0',
-        'end = len(mark) - 1',
+        'end = len(A) - 1',
         'found = False',
         'while start <= end and found == False:',
         '    mid = (start + end) // 2',
-        '    if mark[mid] == target:',
+        '    if A[mid] == target:',
         '        found = True',
-        '    elif target < mark[mid]:',
+        '    elif target < A[mid]:',
         '        end = mid - 1',
         '    else:',
         '        start = mid + 1'
-      ];
-      setVizCode(code);
+      ]);
       const frames = [];
       let s = 0, e = arr.length - 1, found = false, cmp = 0;
-      frames.push({ arr, s, e, mid: -1, found, line: 1, cmp, swp: 0, note: `初始化：搜尋目標 ${target}，範圍 start = 0 至 end = ${e}。`, vars: { target, start: s, end: e, mid: '-', found: 'False' } });
+      frames.push({
+        arr: [...arr], target, s, e, mid: -1, found, line: 1, cmp, swp: 0,
+        formula: `target = ${target},  range = [0 .. ${e}]`,
+        note: `初始化搜尋範圍：start = 0，end = ${e}，準備尋找目標值 ${target}。`,
+        vars: { target, start: s, end: e, mid: '-', found: 'False' }
+      });
       while (s <= e && !found) {
         const mid = Math.floor((s + e) / 2);
-        cmp += 1;
-        frames.push({ arr, s, e, mid, found, line: 5, cmp, swp: 0, note: `計算中間索引 mid = (${s} + ${e}) // 2 = ${mid}，比較 mark[${mid}] = ${arr[mid]} 與目標 ${target}。`, vars: { target, start: s, end: e, mid, 'mark[mid]': arr[mid], found: 'False' } });
+        cmp = cmp + 1;
+        frames.push({
+          arr: [...arr], target, s, e, mid, found: false, line: 5, cmp, swp: 0,
+          soundVal: arr[mid], soundKind: 'compare',
+          formula: `mid = (${s} + ${e}) // 2 = ${mid}   →   A[${mid}] = ${arr[mid]}`,
+          note: `計算中點 mid = (${s} + ${e}) // 2 = ${mid}，比較 A[${mid}] (${arr[mid]}) 與目標 ${target}。`,
+          vars: { target, start: s, end: e, mid, found: 'False' }
+        });
         if (arr[mid] === target) {
           found = true;
-          frames.push({ arr, s, e, mid, found: true, line: 7, cmp, swp: 0, note: `🎉 找到目標！mark[${mid}] == ${target}，共比較 ${cmp} 次！`, vars: { target, start: s, end: e, mid, found: 'True' } });
+          frames.push({
+            arr: [...arr], target, s, e, mid, found: true, line: 7, cmp, swp: 0,
+            soundVal: 95, soundKind: 'hit',
+            formula: `A[${mid}] == ${target}  ✓  found = True`,
+            note: `命中！A[${mid}] 等於目標值 ${target}，設 found = True 並提早結束循環（共比較 ${cmp} 次）。`,
+            vars: { target, start: s, end: e, mid, found: 'True' }
+          });
         } else if (target < arr[mid]) {
+          const oldE = e;
           e = mid - 1;
-          frames.push({ arr, s, e, mid, found: false, line: 9, cmp, swp: 0, note: `${target} < ${arr[mid]}，目標只可能在左半邊 → 淘汰右半邊，更新 end = ${e}。`, vars: { target, start: s, end: e, mid, found: 'False' } });
+          frames.push({
+            arr: [...arr], target, s, e, mid, found: false, line: 9, cmp, swp: 0,
+            formula: `${target} < A[${mid}] (${arr[mid]})  ⇒  end = ${mid} - 1 = ${e}`,
+            note: `目標 ${target} 較小，淘汰右半區 [${mid}..${oldE}]，更新 end = ${e}。`,
+            vars: { target, start: s, end: e, mid, found: 'False' }
+          });
         } else {
+          const oldS = s;
           s = mid + 1;
-          frames.push({ arr, s, e, mid, found: false, line: 11, cmp, swp: 0, note: `${target} > ${arr[mid]}，目標只可能在右半邊 → 淘汰左半邊，更新 start = ${s}。`, vars: { target, start: s, end: e, mid, found: 'False' } });
+          frames.push({
+            arr: [...arr], target, s, e, mid, found: false, line: 11, cmp, swp: 0,
+            formula: `${target} > A[${mid}] (${arr[mid]})  ⇒  start = ${mid} + 1 = ${s}`,
+            note: `目標 ${target} 較大，淘汰左半區 [${oldS}..${mid}]，更新 start = ${s}。`,
+            vars: { target, start: s, end: e, mid, found: 'False' }
+          });
         }
       }
       if (!found) {
-        frames.push({ arr, s, e, mid: -1, found: false, line: 4, cmp, swp: 0, note: `start (${s}) > end (${e})，搜尋結束：目標 ${target} 不存在於列表（共比較 ${cmp} 次）。`, vars: { target, start: s, end: e, found: 'False' } });
+        frames.push({
+          arr: [...arr], target, s, e, mid: -1, found: false, line: 4, cmp, swp: 0,
+          soundVal: 20, soundKind: 'warn',
+          formula: `start (${s}) > end (${e})  ⇒  Not Found`,
+          note: `start 已大於 end，搜尋範圍為空，確認目標 ${target} 不在陣列中（共比較 ${cmp} 次）。`,
+          vars: { target, start: s, end: e, mid: '-', found: 'False' }
+        });
       }
       return frames;
     }
 
     function buildSearchRaceFrames(arr, target) {
       setVizCode([
-        '# 線性檢索 O(N)',
+        '# 線性檢索 O(N) vs 對分檢索 O(log₂ N)',
         'i = 0',
-        'while i < len(A) and A[i] != target:',
-        '    i = i + 1',
-        '',
-        '# 對分檢索 O(log2 N)',
-        'start = 0; end = len(A) - 1',
-        'while start <= end:',
-        '    mid = (start + end) // 2'
+        'lin_found = False',
+        'while i < len(A) and lin_found == False:',
+        '    if A[i] == target:',
+        '        lin_found = True',
+        '    else:',
+        '        i = i + 1',
+        '# 同步執行對分檢索：',
+        'mid = (start + end) // 2',
+        'if A[mid] == target: bin_found = True'
       ]);
       const frames = [];
-      let li = 0, lDone = false, lFound = false, lSteps = 0;
-      let bs = 0, be = arr.length - 1, bMid = -1, bDone = false, bFound = false, bSteps = 0;
-      frames.push({ arr, target, li: -1, lFound, lDone, lSteps, bs, be, bMid, bFound, bDone, bSteps, line: 2, cmp: 0, swp: 0, note: `同場賽跑：於 ${arr.length} 項已排序列表中尋找 ${target}！按播放觀察線性檢索與對分檢索的步數差距。`, vars: { target, '線性步數': 0, '對分步數': 0 } });
-      while (!lDone || !bDone) {
-        if (!lDone) {
-          lSteps += 1;
-          if (arr[li] === target) { lFound = true; lDone = true; }
-          else { li += 1; if (li >= arr.length) lDone = true; }
+      let li = 0, linDone = false, linFound = false, linCmp = 0;
+      let bs = 0, be = arr.length - 1, binDone = false, binFound = false, binCmp = 0, bMid = -1;
+      frames.push({
+        arr: [...arr], target, li: -1, linFound, linDone, linCmp, bs, be, bMid: -1, binFound, binDone, binCmp,
+        line: 1, cmp: 0, swp: 0,
+        formula: `Linear: 0 次比較   vs   Binary: 0 次比較`,
+        note: `比賽開始！兩組演算法同時在 10 個已排序元素中搜尋目標 ${target}。`,
+        vars: { target, '線性步數': 0, '對分步數': 0 }
+      });
+      while (!linDone || !binDone) {
+        let curLi = li;
+        if (!linDone) {
+          linCmp = linCmp + 1;
+          if (arr[li] === target) { linFound = true; linDone = true; }
+          else { li = li + 1; if (li >= arr.length) linDone = true; }
         }
-        if (!bDone) {
-          if (bs > be) { bDone = true; bMid = -1; }
-          else {
-            bSteps += 1;
+        if (!binDone) {
+          if (bs <= be) {
             bMid = Math.floor((bs + be) / 2);
-            if (arr[bMid] === target) { bFound = true; bDone = true; }
-            else if (target < arr[bMid]) be = bMid - 1;
-            else bs = bMid + 1;
-            if (bs > be && !bFound) bDone = true;
+            binCmp = binCmp + 1;
+            if (arr[bMid] === target) { binFound = true; binDone = true; }
+            else if (target < arr[bMid]) { be = bMid - 1; }
+            else { bs = bMid + 1; }
+            if (!binFound && bs > be) binDone = true;
+          } else {
+            binDone = true;
           }
         }
         frames.push({
-          arr, target, li: Math.min(li, arr.length - 1), lFound, lDone, lSteps,
-          bs, be, bMid, bFound, bDone, bSteps, line: bDone ? 3 : 9, cmp: lSteps, swp: bSteps,
-          note: `第 ${Math.max(lSteps, bSteps)} 拍 — 線性檢索：${lDone ? (lFound ? '已找到 (' + lSteps + '步)' : '找不到 (' + lSteps + '步)') : '檢查索引 ' + li} ｜ 對分檢索：${bDone ? (bFound ? '已找到 (' + bSteps + '步)' : '找不到 (' + bSteps + '步)') : '檢查 mid=' + bMid}`,
-          vars: { target, '線性比較': lSteps, '對分比較': bSteps }
+          arr: [...arr], target,
+          li: curLi < arr.length ? curLi : arr.length - 1, linFound, linDone, linCmp,
+          bs, be, bMid, binFound, binDone, binCmp,
+          line: binFound && !linFound ? 11 : 5,
+          cmp: linCmp + binCmp, swp: 0,
+          soundVal: binFound ? 95 : arr[Math.min(curLi, arr.length - 1)],
+          soundKind: (binFound || linFound) ? 'hit' : 'compare',
+          formula: `Linear: ${linCmp} 次比較   vs   Binary: ${binCmp} 次比較`,
+          note: (binFound && !linFound)
+            ? `對分檢索只用 ${binCmp} 次比較就已經命中目標！線性檢索仍在第 ${linCmp} 次逐步掃描。`
+            : (linFound && binFound)
+              ? `兩者均完成！對分檢索總比較 ${binCmp} 次，線性檢索總比較 ${linCmp} 次。`
+              : `線性檢查索引 ${curLi} (${arr[Math.min(curLi, arr.length - 1)]})；對分檢查中點索引 ${bMid} (${arr[Math.max(0, bMid)]})。`,
+          vars: { target, '線性步數': linCmp, '對分步數': binCmp }
         });
       }
       return frames;
@@ -2144,67 +2582,127 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
 
     function buildBubbleSortFrames(initArr) {
       setVizCode([
-        'for i in range(0, len(A) - 1):',
-        '    for j in range(0, len(A) - 1 - i):',
+        'n = len(A)',
+        'for i in range(0, n - 1):',
+        '    for j in range(0, n - 1 - i):',
         '        if A[j] > A[j + 1]:',
         '            temp = A[j]',
         '            A[j] = A[j + 1]',
         '            A[j + 1] = temp'
       ]);
-      const a = [...initArr];
-      const n = a.length;
-      const frames = [];
+      const A = [...initArr], n = A.length, frames = [];
       let cmp = 0, swp = 0;
-      frames.push({ arr: [...a], hi: [], sortedFrom: n, line: 1, cmp, swp, note: `初始未排序列表：[${a.join(', ')}]，準備進行升序冒泡排序。`, vars: { i: '-', j: '-', cmp, swp } });
+      frames.push({
+        arr: [...A], sortedFrom: n, cmpPair: null, swapPair: null, line: 1, cmp, swp,
+        formula: `Bubble Sort   (n = ${n})`,
+        note: `初始陣列 [${A.join(', ')}]，準備執行 ${n - 1} 輪相鄰比較。`,
+        vars: { i: '-', j: '-', cmp, swp }
+      });
       for (let i = 0; i < n - 1; i++) {
         for (let j = 0; j < n - 1 - i; j++) {
-          cmp += 1;
-          frames.push({ arr: [...a], hi: [j, j + 1], swapPair: false, sortedFrom: n - i, line: 3, cmp, swp, note: `第 ${i + 1} 輪：比較相鄰項目 A[${j}]=${a[j]} 與 A[${j + 1}]=${a[j + 1]}。`, vars: { i, j, 'A[j]': a[j], 'A[j+1]': a[j + 1] } });
-          if (a[j] > a[j + 1]) {
-            const t = a[j]; a[j] = a[j + 1]; a[j + 1] = t;
-            swp += 1;
-            frames.push({ arr: [...a], hi: [j, j + 1], swapPair: true, sortedFrom: n - i, line: 5, cmp, swp, note: `${a[j + 1]} > ${a[j]}，透過暫存變量 temp 交換 A[${j}] 與 A[${j + 1}]！`, vars: { i, j, temp: t, swp } });
+          cmp = cmp + 1;
+          frames.push({
+            arr: [...A], sortedFrom: n - i, cmpPair: [j, j + 1], swapPair: null, line: 4, cmp, swp,
+            soundVal: A[j], soundKind: 'compare',
+            formula: `A[${j}] (${A[j]}) > A[${j + 1}] (${A[j + 1]}) ?`,
+            note: `第 ${i + 1} 輪：比較相鄰元素 A[${j}] = ${A[j]} 與 A[${j + 1}] = ${A[j + 1]}。`,
+            vars: { i, j, cmp, swp }
+          });
+          if (A[j] > A[j + 1]) {
+            const pre = [...A];
+            const temp = A[j]; A[j] = A[j + 1]; A[j + 1] = temp;
+            swp = swp + 1;
+            frames.push({
+              arr: [...A], prevArr: pre, sortedFrom: n - i, cmpPair: null, swapPair: [j, j + 1], line: 6, cmp, swp,
+              soundVal: A[j + 1], soundKind: 'swap',
+              formula: `swap( A[${j}], A[${j + 1}] )   via temp`,
+              note: `因為 ${pre[j]} > ${pre[j + 1]}，利用暫存變數 temp 交換 A[${j}] 與 A[${j + 1}]。`,
+              vars: { i, j, cmp, swp }
+            });
           }
         }
-        frames.push({ arr: [...a], hi: [], sortedFrom: n - 1 - i, line: 1, cmp, swp, note: `第 ${i + 1} 輪完成！最大值 ${a[n - 1 - i]} 已浮升定位至索引 ${n - 1 - i}。`, vars: { i, '已定位置': n - 1 - i } });
+        frames.push({
+          arr: [...A], sortedFrom: n - 1 - i, cmpPair: null, swapPair: null, line: 2, cmp, swp,
+          soundVal: 90, soundKind: 'hit',
+          formula: `Pass ${i + 1} Done  ⇒  A[${n - 1 - i}] = ${A[n - 1 - i]} locked`,
+          note: `第 ${i + 1} 輪結束，最大值 ${A[n - 1 - i]} 已浮至右側並鎖定於索引 ${n - 1 - i}。`,
+          vars: { i, j: '-', cmp, swp }
+        });
       }
-      frames.push({ arr: [...a], hi: [], sortedFrom: 0, line: 1, cmp, swp, note: `🎉 冒泡排序完成：[${a.join(', ')}]（共比較 ${cmp} 次、交換 ${swp} 次）。`, vars: { '比較次數': cmp, '交換次數': swp } });
+      frames.push({
+        arr: [...A], sortedFrom: 0, cmpPair: null, swapPair: null, line: 1, cmp, swp,
+        soundVal: 100, soundKind: 'hit',
+        formula: `Sorted  ✓  [${A.join(', ')}]`,
+        note: `冒泡排序完成！共比較 ${cmp} 次、交換 ${swp} 次。`,
+        vars: { i: n - 2, j: '-', cmp, swp }
+      });
       return frames;
     }
 
     function buildSelectionSortFrames(initArr) {
       setVizCode([
-        'for i in range(0, len(A) - 1):',
+        'n = len(A)',
+        'for i in range(0, n - 1):',
         '    min_idx = i',
-        '    for j in range(i + 1, len(A)):',
+        '    for j in range(i + 1, n):',
         '        if A[j] < A[min_idx]:',
         '            min_idx = j',
         '    temp = A[i]',
         '    A[i] = A[min_idx]',
         '    A[min_idx] = temp'
       ]);
-      const a = [...initArr];
-      const n = a.length;
-      const frames = [];
+      const A = [...initArr], n = A.length, frames = [];
       let cmp = 0, swp = 0;
-      frames.push({ arr: [...a], sortedTo: -1, curI: -1, curJ: -1, minIdx: -1, line: 1, cmp, swp, note: `選擇排序：每輪在未排序區找出最小值，與首項 A[i] 交換。`, vars: { i: '-', min_idx: '-' } });
+      frames.push({
+        arr: [...A], sortedCount: 0, i: -1, minIdx: -1, j: -1, swapPair: null, line: 1, cmp, swp,
+        formula: `Selection Sort   (n = ${n})`,
+        note: `每輪從右側未排序區找出最小值索引 min_idx，再與前端 A[i] 交換一次。`,
+        vars: { i: '-', min_idx: '-', j: '-' }
+      });
       for (let i = 0; i < n - 1; i++) {
         let minIdx = i;
-        frames.push({ arr: [...a], sortedTo: i - 1, curI: i, curJ: -1, minIdx, line: 2, cmp, swp, note: `第 ${i + 1} 輪：先假設最小值索引 min_idx = ${i}（值為 ${a[i]}）。`, vars: { i, min_idx: minIdx, 'A[min_idx]': a[minIdx] } });
+        frames.push({
+          arr: [...A], sortedCount: i, i, minIdx, j: -1, swapPair: null, line: 3, cmp, swp,
+          formula: `i = ${i},  min_idx = ${minIdx}  (A[${minIdx}] = ${A[minIdx]})`,
+          note: `第 ${i + 1} 輪開始：暫設最小值位於索引 ${minIdx}（數值 ${A[minIdx]}）。`,
+          vars: { i, min_idx: minIdx, j: '-' }
+        });
         for (let j = i + 1; j < n; j++) {
-          cmp += 1;
-          if (a[j] < a[minIdx]) {
-            minIdx = j;
-            frames.push({ arr: [...a], sortedTo: i - 1, curI: i, curJ: j, minIdx, line: 5, cmp, swp, note: `發現更小值 A[${j}] = ${a[j]}，更新 min_idx = ${j}！`, vars: { i, j, min_idx: minIdx, 'A[min_idx]': a[minIdx] } });
-          } else {
-            frames.push({ arr: [...a], sortedTo: i - 1, curI: i, curJ: j, minIdx, line: 4, cmp, swp, note: `檢查 A[${j}] = ${a[j]} >= A[${minIdx}] = ${a[minIdx]}，min_idx 保持 ${minIdx}。`, vars: { i, j, min_idx: minIdx } });
-          }
+          cmp = cmp + 1;
+          const isSmaller = A[j] < A[minIdx];
+          if (isSmaller) minIdx = j;
+          frames.push({
+            arr: [...A], sortedCount: i, i, minIdx, j, swapPair: null, line: isSmaller ? 6 : 5, cmp, swp,
+            soundVal: A[j], soundKind: isSmaller ? 'swap' : 'compare',
+            formula: `A[${j}] (${A[j]}) < A[min_idx] ?  ${isSmaller ? 'Yes → min_idx = ' + j : 'No'}`,
+            note: isSmaller
+              ? `發現更小數值 A[${j}] = ${A[j]}，更新 min_idx = ${j}。`
+              : `掃描 j = ${j}（${A[j]}）並未小於目前最小值 ${A[minIdx]}。`,
+            vars: { i, min_idx: minIdx, j }
+          });
         }
-        const t = a[i]; a[i] = a[minIdx]; a[minIdx] = t;
-        swp += 1;
-        frames.push({ arr: [...a], sortedTo: i, curI: i, curJ: -1, minIdx, swapped: true, line: 7, cmp, swp, note: `交換 A[${i}] 與 A[${minIdx}] → ${a[i]} 已固定在已排序區索引 ${i}！`, vars: { i, min_idx: minIdx, swp } });
+        const pre = [...A];
+        if (minIdx !== i) {
+          const temp = A[i]; A[i] = A[minIdx]; A[minIdx] = temp;
+          swp = swp + 1;
+        }
+        frames.push({
+          arr: [...A], prevArr: pre, sortedCount: i + 1, i, minIdx, j: -1, swapPair: minIdx !== i ? [i, minIdx] : null,
+          line: 8, cmp, swp, soundVal: 88, soundKind: 'hit',
+          formula: minIdx !== i ? `swap( A[${i}], A[${minIdx}] )  ⇒  A[${i}] = ${A[i]}` : `A[${i}] (${A[i]}) 已是最小值`,
+          note: minIdx !== i
+            ? `將找到的最小值 A[${minIdx}] (${pre[minIdx]}) 與 A[${i}] (${pre[i]}) 交換，左側已排序區增至 ${i + 1} 項。`
+            : `索引 ${i} 本身已是最小值，毋須交換，直接鎖定為已排序。`,
+          vars: { i, min_idx: minIdx, j: '-' }
+        });
       }
-      frames.push({ arr: [...a], sortedTo: n - 1, curI: -1, curJ: -1, minIdx: -1, line: 1, cmp, swp, note: `🎉 選擇排序完成：[${a.join(', ')}]（共比較 ${cmp} 次、交換 ${swp} 次）。`, vars: { '比較次數': cmp, '交換次數': swp } });
+      frames.push({
+        arr: [...A], sortedCount: n, i: n - 1, minIdx: -1, j: -1, swapPair: null, line: 1, cmp, swp,
+        soundVal: 100, soundKind: 'hit',
+        formula: `Sorted  ✓  [${A.join(', ')}]`,
+        note: `選擇排序完成！共比較 ${cmp} 次、只交換 ${swp} 次。`,
+        vars: { i: n - 2, min_idx: '-', j: '-' }
+      });
       return frames;
     }
 
@@ -2213,470 +2711,792 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         'for i in range(1, len(A)):',
         '    key = A[i]',
         '    j = i - 1',
-        '    while j >= 0 and key < A[j]:',
+        '    while j >= 0 and A[j] > key:',
         '        A[j + 1] = A[j]',
         '        j = j - 1',
         '    A[j + 1] = key'
       ]);
-      const a = [...initArr];
-      const n = a.length;
-      const frames = [];
+      const A = [...initArr], n = A.length, frames = [];
       let cmp = 0, swp = 0;
-      frames.push({ arr: [...a], sortedTo: 0, keyVal: null, hole: -1, scanJ: -1, line: 1, cmp, swp, note: `插入排序：先視首項 A[0]=${a[0]} 為已排序區，再逐一抽出關鍵值 key 插入正確位置。`, vars: { i: '-', key: '-', j: '-' } });
+      frames.push({
+        arr: [...A], sortedCount: 1, key: null, hole: -1, j: -1, insertedAt: -1, line: 1, cmp, swp,
+        formula: `Insertion Sort   (A[0] = ${A[0]} sorted)`,
+        note: `首項 A[0] 視為已排序區，由索引 i = 1 開始逐項抽出 key 插入左側適當位置。`,
+        vars: { i: 1, key: '-', j: '-' }
+      });
       for (let i = 1; i < n; i++) {
-        const key = a[i];
+        const key = A[i];
         let j = i - 1;
-        frames.push({ arr: [...a], sortedTo: i - 1, keyVal: key, hole: i, scanJ: j, line: 2, cmp, swp, note: `抽出關鍵值 key = A[${i}] = ${key}，向左與已排序區逐一比較。`, vars: { i, key, j } });
-        while (j >= 0) {
-          cmp += 1;
-          if (key < a[j]) {
-            a[j + 1] = a[j];
-            swp += 1;
-            frames.push({ arr: [...a], sortedTo: i, keyVal: key, hole: j, scanJ: j, line: 5, cmp, swp, note: `key (${key}) < A[${j}] (${a[j]}) → 將 ${a[j]} 右移一格至 A[${j + 1}]！`, vars: { i, key, j } });
-            j -= 1;
-          } else {
-            frames.push({ arr: [...a], sortedTo: i, keyVal: key, hole: j + 1, scanJ: j, line: 4, cmp, swp, note: `key (${key}) >= A[${j}] (${a[j]})，停止左移，找到插入位置！`, vars: { i, key, j } });
-            break;
-          }
+        frames.push({
+          arr: [...A], sortedCount: i, key, hole: i, j, insertedAt: -1, line: 2, cmp, swp,
+          soundVal: key, soundKind: 'compare',
+          formula: `key = A[${i}] = ${key},   j = ${j}`,
+          note: `抽出 key = ${key} 懸浮於上方，原位置索引 ${i} 騰出空槽。`,
+          vars: { i, key, j }
+        });
+        while (j >= 0 && A[j] > key) {
+          cmp = cmp + 1;
+          const pre = [...A];
+          A[j + 1] = A[j];
+          swp = swp + 1;
+          frames.push({
+            arr: [...A], prevArr: pre, sortedCount: i + 1, key, hole: j, j, shiftFrom: j, insertedAt: -1, line: 5, cmp, swp,
+            soundVal: A[j + 1], soundKind: 'swap',
+            formula: `A[${j}] (${pre[j]}) > key (${key})  ⇒  A[${j + 1}] = A[${j}]`,
+            note: `因 A[${j}] (${pre[j]}) 大於 key (${key})，將其向右平移一格至索引 ${j + 1}。`,
+            vars: { i, key, j }
+          });
+          j = j - 1;
         }
-        a[j + 1] = key;
-        frames.push({ arr: [...a], sortedTo: i, keyVal: null, hole: j + 1, scanJ: -1, inserted: true, line: 7, cmp, swp, note: `將 key (${key}) 插入至 A[${j + 1}]！目前前 ${i + 1} 項已排序。`, vars: { i, '插入位置': j + 1, key } });
+        if (j >= 0) cmp = cmp + 1;
+        A[j + 1] = key;
+        frames.push({
+          arr: [...A], sortedCount: i + 1, key: null, hole: -1, j, insertedAt: j + 1, line: 7, cmp, swp,
+          soundVal: 92, soundKind: 'hit',
+          formula: `A[${j + 1}] = key (${key})  ✓`,
+          note: `將懸浮的 key (${key}) 插入空槽索引 ${j + 1}，左側已排序區增至 ${i + 1} 項。`,
+          vars: { i, key, j }
+        });
       }
-      frames.push({ arr: [...a], sortedTo: n - 1, keyVal: null, hole: -1, scanJ: -1, line: 1, cmp, swp, note: `🎉 插入排序完成：[${a.join(', ')}]（比較 ${cmp} 次、右移 ${swp} 次）。`, vars: { '比較次數': cmp, '移動次數': swp } });
+      frames.push({
+        arr: [...A], sortedCount: n, key: null, hole: -1, j: -1, insertedAt: -1, line: 1, cmp, swp,
+        soundVal: 100, soundKind: 'hit',
+        formula: `Sorted  ✓  [${A.join(', ')}]`,
+        note: `插入排序完成！共比較 ${cmp} 次、元素右移 ${swp} 次。`,
+        vars: { i: n - 1, key: '-', j: '-' }
+      });
       return frames;
     }
 
-    function buildMergeFrames(A, B) {
+    function buildMergeListsFrames() {
       setVizCode([
-        'i = 0; j = 0',
-        'for k in range(0, len(A) + len(B)):',
-        '    if i < len(A) and (j == len(B) or A[i] < B[j]):',
-        '        merged[k] = A[i]',
+        'i = 0',
+        'j = 0',
+        'merged = []',
+        'while i < len(A) and j < len(B):',
+        '    if A[i] <= B[j]:',
+        '        merged.append(A[i])',
         '        i = i + 1',
         '    else:',
-        '        merged[k] = B[j]',
-        '        j = j + 1'
+        '        merged.append(B[j])',
+        '        j = j + 1',
+        'while i < len(A):',
+        '    merged.append(A[i]); i = i + 1',
+        'while j < len(B):',
+        '    merged.append(B[j]); j = j + 1'
       ]);
-      const merged = new Array(A.length + B.length).fill('');
-      const frames = [];
-      let i = 0, j = 0, cmp = 0;
-      frames.push({ A, B, merged: [...merged], i, j, k: -1, pick: '', line: 1, cmp, swp: 0, note: `雙指針合併：比較兩個已排序列表的當前首項 A[i] 與 B[j]，較小者放入 merged[k]。`, vars: { i, j, k: '-' } });
-      for (let k = 0; k < merged.length; k++) {
-        cmp += 1;
-        if (i < A.length && (j === B.length || A[i] < B[j])) {
-          const val = A[i];
-          merged[k] = val;
-          frames.push({ A, B, merged: [...merged], i, j, k, pick: 'A', line: 4, cmp, swp: k + 1, note: j === B.length ? `B 已取完 → 直接複製 A[${i}] = ${val} 至 merged[${k}]。` : `A[${i}] (${val}) < B[${j}] (${B[j]}) → 複製 ${val} 至 merged[${k}]，i 前進。`, vars: { i: i + 1, j, k } });
-          i += 1;
+      const A = [14, 32, 55, 78], B = [21, 39, 64, 85];
+      const merged = [], frames = [];
+      let i = 0, j = 0, cmp = 0, swp = 0;
+      frames.push({
+        A, B, merged: [...merged], i, j, k: 0, pickFrom: null, pickIdx: -1, line: 1, cmp, swp,
+        formula: `Merge  class4A (4)  +  class4B (4)`,
+        note: `初始化雙指標 i = 0（指向 List A）、j = 0（指向 List B）與空列表 merged[]。`,
+        vars: { i, j, k: 0 }
+      });
+      while (i < A.length && j < B.length) {
+        cmp = cmp + 1;
+        if (A[i] <= B[j]) {
+          const val = A[i], srcIdx = i;
+          merged.push(val);
+          swp = swp + 1;
+          frames.push({
+            A, B, merged: [...merged], i, j, k: merged.length - 1, pickFrom: 'A', pickIdx: srcIdx, line: 6, cmp, swp,
+            soundVal: val, soundKind: 'swap',
+            formula: `A[${srcIdx}] (${val}) <= B[${j}] (${B[j]})  ⇒  merged[${merged.length - 1}] = ${val}`,
+            note: `比較 A[${srcIdx}] (${val}) <= B[${j}] (${B[j]})，取 List A 的 ${val} 放入 merged[${merged.length - 1}]，i 加 1。`,
+            vars: { i: i + 1, j, k: merged.length }
+          });
+          i = i + 1;
         } else {
-          const val = B[j];
-          merged[k] = val;
-          frames.push({ A, B, merged: [...merged], i, j, k, pick: 'B', line: 7, cmp, swp: k + 1, note: i === A.length ? `A 已取完 → 直接複製 B[${j}] = ${val} 至 merged[${k}]。` : `B[${j}] (${val}) <= A[${i}] (${A[i]}) → 複製 ${val} 至 merged[${k}]，j 前進。`, vars: { i, j: j + 1, k } });
-          j += 1;
+          const val = B[j], srcIdx = j;
+          merged.push(val);
+          swp = swp + 1;
+          frames.push({
+            A, B, merged: [...merged], i, j, k: merged.length - 1, pickFrom: 'B', pickIdx: srcIdx, line: 9, cmp, swp,
+            soundVal: val, soundKind: 'swap',
+            formula: `B[${srcIdx}] (${val}) < A[${i}] (${A[i]})  ⇒  merged[${merged.length - 1}] = ${val}`,
+            note: `比較 B[${srcIdx}] (${val}) 較小，取 List B 的 ${val} 放入 merged[${merged.length - 1}]，j 加 1。`,
+            vars: { i, j: j + 1, k: merged.length }
+          });
+          j = j + 1;
         }
       }
-      frames.push({ A, B, merged: [...merged], i, j, k: -1, pick: '', line: 2, cmp, swp: merged.length, note: `🎉 合併完成：[${merged.join(', ')}]（線性時間 O(N+M) 完成！）。`, vars: { '總複製次數': merged.length } });
+      while (i < A.length) {
+        const val = A[i], srcIdx = i;
+        merged.push(val); swp = swp + 1;
+        frames.push({
+          A, B, merged: [...merged], i, j, k: merged.length - 1, pickFrom: 'A', pickIdx: srcIdx, line: 12, cmp, swp,
+          soundVal: val, soundKind: 'hit',
+          formula: `Append remaining A[${srcIdx}] (${val})  ⇒  merged[${merged.length - 1}]`,
+          note: `List B 已取完，將 List A 餘下的 ${val} 直接補入 merged[${merged.length - 1}]。`,
+          vars: { i: i + 1, j, k: merged.length }
+        });
+        i = i + 1;
+      }
+      while (j < B.length) {
+        const val = B[j], srcIdx = j;
+        merged.push(val); swp = swp + 1;
+        frames.push({
+          A, B, merged: [...merged], i, j, k: merged.length - 1, pickFrom: 'B', pickIdx: srcIdx, line: 14, cmp, swp,
+          soundVal: val, soundKind: 'hit',
+          formula: `Append remaining B[${srcIdx}] (${val})  ⇒  merged[${merged.length - 1}]`,
+          note: `List A 已取完，將 List B 餘下的 ${val} 直接補入 merged[${merged.length - 1}]。`,
+          vars: { i, j: j + 1, k: merged.length }
+        });
+        j = j + 1;
+      }
+      frames.push({
+        A, B, merged: [...merged], i, j, k: merged.length, pickFrom: null, pickIdx: -1, line: 3, cmp, swp,
+        soundVal: 100, soundKind: 'hit',
+        formula: `Merged  ✓  [${merged.join(', ')}]`,
+        note: `合併完成！單次線性掃描即合成 8 個已排序元素（共比較 ${cmp} 次）。`,
+        vars: { i, j, k: merged.length }
+      });
       return frames;
     }
 
     function buildLinkedListFrames() {
       setVizCode([
-        'D  = ["", "Iris", "Ada", "Peter", "", "Ben"]',
-        'NP = [0,   2,      10,    1,       0,  3]',
-        'start = 5  # Ben -> Peter -> Iris -> Ada',
-        '# 刪除第 3 個節點 (Iris, 索引 1)',
-        'prev = start          # 5 (Ben)',
-        'current = NP[start]   # 3 (Peter)',
-        'prev = current        # 3 (Peter)',
-        'current = NP[current] # 1 (Iris)',
-        'NP[prev] = NP[current]# NP[3] = 2 (Ada)'
+        'D = ["A1", "B2", "C3", "D4", "E5"]',
+        'NP = [2, 4, 1, -1, 3]',
+        'start = 0',
+        'prev = start',
+        'current = NP[start]',
+        'count = 2',
+        'while count < 3:',
+        '    prev = current',
+        '    current = NP[current]',
+        '    count = count + 1',
+        'NP[prev] = NP[current]'
       ]);
-      const baseD = ['', 'Iris', 'Ada', 'Peter', '', 'Ben'];
-      const baseNP = [0, 2, 10, 1, 0, 3];
-      const frames = [
-        { D: [...baseD], NP: [...baseNP], start: 5, prev: -1, cur: 5, delNode: -1, line: 3, cmp: 0, swp: 0, note: '初始鏈表：由 start=5 出發，順序為 Ben(5) → Peter(3) → Iris(1) → Ada(2) → NULL(10)。', vars: { start: 5, prev: '-', current: '-' } },
-        { D: [...baseD], NP: [...baseNP], start: 5, prev: 5, cur: 3, delNode: -1, line: 6, cmp: 1, swp: 0, note: '準備刪除第 3 個節點（Iris）：設定 prev = 5 (Ben)、current = NP[5] = 3 (Peter)。', vars: { start: 5, prev: '5 (Ben)', current: '3 (Peter)' } },
-        { D: [...baseD], NP: [...baseNP], start: 5, prev: 3, cur: 1, delNode: -1, line: 8, cmp: 2, swp: 0, note: '指示標各前進一步：prev = 3 (Peter)、current = NP[3] = 1 (Iris)，已鎖定目標節點！', vars: { start: 5, prev: '3 (Peter)', current: '1 (Iris)' } },
-        { D: [...baseD], NP: [0, 2, 10, 2, 0, 3], start: 5, prev: 3, cur: 1, delNode: 1, line: 9, cmp: 2, swp: 1, note: '🎯 關鍵一步：NP[3] = NP[1] = 2！Peter 直接指向 Ada(2)，跳過並刪除 Iris(1)（無須搬移其他數據）！', vars: { 'NP[3]': '1 → 2', '新順序': 'Ben → Peter → Ada' } }
+      const D = ['A1', 'B2', 'C3', 'D4', 'E5'];
+      const order = [0, 2, 1, 4, 3]; // A1 -> C3 -> B2 -> E5 -> D4
+      const np0 = [2, 4, 1, -1, 3];
+      const np1 = [2, 4, 4, -1, 3]; // NP[2] rewritten from 1 to 4 (skipping index 1 = B2)
+      return [
+        {
+          D, NP: [...np0], order, start: 0, prev: -1, current: -1, deleted: false, count: 0, modifiedIdx: -1,
+          line: 3, cmp: 0, swp: 0,
+          formula: `start = 0  ⇒  A1 → C3 → B2 → E5 → D4`,
+          note: `平行陣列 D[] 與 NP[] 構成邏輯順序 A1 → C3 → B2 → E5 → D4，目標執行 delete(3) 刪除第 3 個節點 B2。`,
+          vars: { start: 0, prev: '-', current: '-', count: 0 }
+        },
+        {
+          D, NP: [...np0], order, start: 0, prev: 0, current: 2, deleted: false, count: 2, modifiedIdx: -1,
+          line: 6, cmp: 1, swp: 0, soundVal: 45, soundKind: 'compare',
+          formula: `prev = 0 (A1),  current = NP[0] = 2 (C3),  count = 2`,
+          note: `初始化雙指標：prev 指向第 1 個節點 [0] A1，current 指向第 2 個節點 [2] C3。`,
+          vars: { start: 0, prev: 0, current: 2, count: 2 }
+        },
+        {
+          D, NP: [...np0], order, start: 0, prev: 2, current: 1, deleted: false, count: 3, modifiedIdx: -1,
+          line: 9, cmp: 2, swp: 0, soundVal: 65, soundKind: 'compare',
+          formula: `prev = 2 (C3),  current = NP[2] = 1 (B2),  count = 3`,
+          note: `指標同步前進一步：prev 停在前驅節點 [2] C3，current 鎖定要刪除的第 3 個節點 [1] B2。`,
+          vars: { start: 0, prev: 2, current: 1, count: 3 }
+        },
+        {
+          D, NP: [...np1], order, start: 0, prev: 2, current: 1, deleted: true, count: 3, modifiedIdx: 2,
+          line: 11, cmp: 2, swp: 1, soundVal: 95, soundKind: 'hit',
+          formula: `NP[2] = NP[1] = 4   (C3 跨過 B2 直連 E5)`,
+          note: `關鍵一步！只改寫 NP[2] = 4，C3 隨即越過 B2 直接連向 [4] E5，毋須搬移任何陣列資料。`,
+          vars: { start: 0, prev: 2, current: 1, count: 3 }
+        }
       ];
-      return frames;
     }
 
-    function buildArray2DFrames(rowMajor) {
-      const grid = [
-        [5, 9, 6, 5, 3],
-        [2, 3, 8, 2, 6],
-        [8, 3, 5, 3, 9]
-      ];
-      setVizCode(rowMajor ? [
+    function buildArray2DFrames(orderMode) {
+      const isRow = orderMode !== 'col';
+      setVizCode(isRow ? [
         'total = 0',
-        'for i in range(0, 3):     # 外循環：列 (Row)',
-        '    for j in range(0, 5): # 內循環：欄 (Col)',
+        'for i in range(0, 3):',
+        '    for j in range(0, 5):',
         '        total = total + B[i][j]',
         'print(total)'
       ] : [
         'total = 0',
-        'for j in range(0, 5):     # 外循環：欄 (Col)',
-        '    for i in range(0, 3): # 內循環：列 (Row)',
+        'for j in range(0, 5):',
+        '    for i in range(0, 3):',
         '        total = total + B[i][j]',
         'print(total)'
       ]);
-      const frames = [];
-      let total = 0, visited = [], step = 0;
-      frames.push({ grid, curI: -1, curJ: -1, visited: [], total: 0, rowMajor, line: 1, cmp: 0, swp: 0, note: rowMajor ? '逐列掃描（Row-major）：外循環固定列 i，內循環由左至右掃描欄 j。' : '逐欄掃描（Col-major）：外循環固定欄 j，內循環由上至下掃描列 i。', vars: { i: '-', j: '-', total: 0 } });
-      if (rowMajor) {
+      const M = [
+        [12, 18, 25, 31, 40],
+        [15, 22, 28, 36, 44],
+        [19, 27, 33, 41, 50]
+      ];
+      const frames = [], visited = [];
+      let total = 0, stepCnt = 0;
+      frames.push({
+        M, isRow, cur: null, visited: [], total: 0, line: 1, cmp: 0, swp: 0,
+        formula: isRow ? `Row-Major:  for i in 0..2 → for j in 0..4` : `Col-Major:  for j in 0..4 → for i in 0..2`,
+        note: isRow ? `逐列掃描（外層列 i、內層欄 j），沿橫向逐行累加 3×5 矩陣。` : `逐欄掃描（外層欄 j、內層列 i），沿縱向逐欄累加 3×5 矩陣。`,
+        vars: { i: '-', j: '-', total: 0 }
+      });
+      if (isRow) {
         for (let i = 0; i < 3; i++) {
           for (let j = 0; j < 5; j++) {
-            step += 1; total += grid[i][j]; visited = [...visited, `${i},${j}`];
-            frames.push({ grid, curI: i, curJ: j, visited, total, rowMajor, line: 4, cmp: step, swp: total, note: `存取 B[${i}][${j}] = ${grid[i][j]} → total 累加至 ${total}。`, vars: { i, j, 'B[i][j]': grid[i][j], total } });
+            total = total + M[i][j];
+            stepCnt = stepCnt + 1;
+            visited.push([i, j]);
+            frames.push({
+              M, isRow, cur: [i, j], visited: visited.map(x => [...x]), total, line: 4, cmp: stepCnt, swp: 0,
+              soundVal: M[i][j] * 1.8, soundKind: 'compare',
+              formula: `total = total + B[${i}][${j}] (${M[i][j]})  =  ${total}`,
+              note: `讀取第 ${i} 列、第 ${j} 欄元素 B[${i}][${j}] = ${M[i][j]}，目前總和 total = ${total}。`,
+              vars: { i, j, total }
+            });
           }
         }
       } else {
         for (let j = 0; j < 5; j++) {
           for (let i = 0; i < 3; i++) {
-            step += 1; total += grid[i][j]; visited = [...visited, `${i},${j}`];
-            frames.push({ grid, curI: i, curJ: j, visited, total, rowMajor, line: 4, cmp: step, swp: total, note: `存取 B[${i}][${j}] = ${grid[i][j]} → total 累加至 ${total}。`, vars: { j, i, 'B[i][j]': grid[i][j], total } });
+            total = total + M[i][j];
+            stepCnt = stepCnt + 1;
+            visited.push([i, j]);
+            frames.push({
+              M, isRow, cur: [i, j], visited: visited.map(x => [...x]), total, line: 4, cmp: stepCnt, swp: 0,
+              soundVal: M[i][j] * 1.8, soundKind: 'compare',
+              formula: `total = total + B[${i}][${j}] (${M[i][j]})  =  ${total}`,
+              note: `讀取第 ${j} 欄、第 ${i} 列元素 B[${i}][${j}] = ${M[i][j]}，目前總和 total = ${total}。`,
+              vars: { i, j, total }
+            });
           }
         }
       }
-      frames.push({ grid, curI: -1, curJ: -1, visited, total, rowMajor, line: 5, cmp: step, swp: total, note: `🎉 掃描完畢！共存取 ${step} 格，總和 total = ${total}。`, vars: { '總格數': step, total } });
+      frames.push({
+        M, isRow, cur: null, visited: visited.map(x => [...x]), total, line: 5, cmp: stepCnt, swp: 0,
+        soundVal: 100, soundKind: 'hit',
+        formula: `print(total)  ⇒  ${total}`,
+        note: `3×5 二維陣列掃描完成！總和 total = ${total}（逐列與逐欄結果相同，但走訪軌跡截然不同）。`,
+        vars: { i: 2, j: 4, total }
+      });
       return frames;
     }
 
-    function renderStackQueueInteractive() {
-      setVizCode([
-        '# 堆疊 (LIFO) — 頂端推入/彈出',
-        'stack.append(item)   # Push',
-        'stack.pop()          # Pop',
-        '',
-        '# 循環隊列 (FIFO) — 大小 N=8',
-        'tail = (tail + 1) % 8',
-        'cir_queue[tail] = item',
-        'head = (head + 1) % 8'
-      ]);
-      const stage = document.getElementById('vizStage');
-      const stHtml = [4, 3, 2, 1, 0].map((idx) => {
-        const val = vizState.stackArr[idx];
-        const isTop = idx === vizState.stackArr.length - 1;
-        return `<div class="h-10 rounded-sm border flex items-center justify-between px-3 font-mono-code text-xs transition ${val ? (isTop ? 'bg-[#2563eb]/30 border-[#38bdf8] text-white font-bold' : 'bg-[#132035] border-[#263a59] text-[#cbd5e1]') : 'bg-[#080d16] border-[#1e2d44] border-dashed text-[#475569]'}">
-          <span>[${idx}]</span><span>${val || '空'}</span><span>${isTop ? '← TOP' : ''}</span>
-        </div>`;
-      }).join('');
-
-      // 8-slot SVG Circular Queue Ring
-      const cx = 130, cy = 125, r = 82;
-      let ringSvg = `<svg viewBox="0 0 260 250" class="w-full max-w-[260px] mx-auto">`;
-      ringSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1e2d44" stroke-width="2" stroke-dasharray="4 4"/>`;
-      ringSvg += `<text x="${cx}" y="${cy - 6}" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="IBM Plex Mono">N = ${vizState.cqN} / 8</text>`;
-      ringSvg += `<text x="${cx}" y="${cy + 14}" text-anchor="middle" fill="#38bdf8" font-size="10" font-family="IBM Plex Mono">head:${vizState.cqHead} tail:${vizState.cqTail}</text>`;
-      for (let k = 0; k < 8; k++) {
-        const ang = (k * 45 - 90) * Math.PI / 180;
-        const x = cx + r * Math.cos(ang);
-        const y = cy + r * Math.sin(ang);
-        const val = vizState.cqArr[k];
-        const isH = vizState.cqN > 0 && k === vizState.cqHead;
-        const isT = vizState.cqN > 0 && k === vizState.cqTail;
-        const fill = val ? (isH && isT ? '#059669' : isH ? '#2563eb' : isT ? '#d97706' : '#132035') : '#080d16';
-        const stroke = isH ? '#38bdf8' : isT ? '#fbbf24' : (val ? '#34d399' : '#243754');
-        ringSvg += `<g>
-          <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="22" fill="${fill}" stroke="${stroke}" stroke-width="${isH || isT ? 2.5 : 1.5}"/>
-          <text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="middle" fill="${val ? '#fff' : '#475569'}" font-size="13" font-weight="700" font-family="IBM Plex Mono">${val || '-'}</text>
-          <text x="${x.toFixed(1)}" y="${(y - 26).toFixed(1)}" text-anchor="middle" fill="#64748b" font-size="9" font-family="IBM Plex Mono">[${k}]${isH ? ' H' : ''}${isT ? ' T' : ''}</text>
-        </g>`;
-      }
-      ringSvg += `</svg>`;
-
-      stage.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-        <div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3.5 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-[#38bdf8]">堆疊 Stack（後進先出 LIFO）</span>
-            <span class="font-mono-code text-[11px] text-[#9aa7b8]">${vizState.stackArr.length} / 5</span>
-          </div>
-          <div class="space-y-1.5">${stHtml}</div>
-          <div class="flex gap-2 pt-1">
-            <button id="vizStackPush" class="flex-1 hw-btn hw-btn-primary py-1.5 rounded-sm text-xs font-bold">+ 推入 Push</button>
-            <button id="vizStackPop" class="flex-1 hw-btn py-1.5 rounded-sm bg-[#132035] border border-[#fb7185]/45 text-[#fda4af] text-xs font-bold">- 彈出 Pop</button>
-          </div>
-        </div>
-        <div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3.5 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-[#fbbf24]">循環隊列 Circular Queue（先進先出 FIFO）</span>
-            <span class="font-mono-code text-[10px] text-[#9aa7b8]">H=head · T=tail</span>
-          </div>
-          ${ringSvg}
-          <div class="flex gap-2">
-            <button id="vizCqEnq" class="flex-1 hw-btn hw-btn-cyan py-1.5 rounded-sm text-xs font-bold">+ 排隊 Enqueue</button>
-            <button id="vizCqDeq" class="flex-1 hw-btn py-1.5 rounded-sm bg-[#132035] border border-[#fb7185]/45 text-[#fda4af] text-xs font-bold">- 離隊 Dequeue</button>
-          </div>
-        </div>
-      </div>`;
-
-      document.getElementById('vizStackPush').onclick = () => {
-        if (vizState.stackArr.length >= 5) {
-          document.getElementById('vizNarration').textContent = '⚠ 堆疊上溢錯誤（Stack Overflow）！堆疊已滿（5/5），不能再推入項目。';
-          playError(); return;
-        }
-        const ch = String.fromCharCode(65 + (vizState.cqNextChar++ % 26));
-        vizState.stackArr.push(ch);
-        document.getElementById('vizNarration').textContent = `✓ Push("${ch}")：將 "${ch}" 推入堆疊頂端索引 [${vizState.stackArr.length - 1}]。`;
-        playSuccess(); renderStackQueueInteractive();
-      };
-      document.getElementById('vizStackPop').onclick = () => {
-        if (vizState.stackArr.length === 0) {
-          document.getElementById('vizNarration').textContent = '⚠ 堆疊下溢錯誤（Stack Underflow）！空堆疊沒有可彈出的項目。';
-          playError(); return;
-        }
-        const popped = vizState.stackArr.pop();
-        document.getElementById('vizNarration').textContent = `✓ Pop() → 彈出頂端項目 "${popped}"（後進先出）。`;
-        playSuccess(); renderStackQueueInteractive();
-      };
-      document.getElementById('vizCqEnq').onclick = () => {
-        if (vizState.cqN >= 8) {
-          document.getElementById('vizNarration').textContent = '⚠ 隊列上溢錯誤（Queue Overflow）！循環隊列已滿（N = 8）。';
-          playError(); return;
-        }
-        const ch = String.fromCharCode(65 + (vizState.cqNextChar++ % 26));
-        if (vizState.cqN === 0) { vizState.cqHead = 0; vizState.cqTail = 0; }
-        else { vizState.cqTail = (vizState.cqTail + 1) % 8; }
-        vizState.cqArr[vizState.cqTail] = ch;
-        vizState.cqN += 1;
-        document.getElementById('vizNarration').textContent = `✓ Enqueue("${ch}")：tail = (tail + 1) % 8 → ${vizState.cqTail}，寫入 cir_queue[${vizState.cqTail}] = "${ch}"（N=${vizState.cqN}）。`;
-        playSuccess(); renderStackQueueInteractive();
-      };
-      document.getElementById('vizCqDeq').onclick = () => {
-        if (vizState.cqN === 0) {
-          document.getElementById('vizNarration').textContent = '⚠ 隊列下溢錯誤（Queue Underflow）！循環隊列為空（N = 0）。';
-          playError(); return;
-        }
-        const out = vizState.cqArr[vizState.cqHead];
-        vizState.cqArr[vizState.cqHead] = '';
-        vizState.cqN -= 1;
-        if (vizState.cqN > 0) vizState.cqHead = (vizState.cqHead + 1) % 8;
-        document.getElementById('vizNarration').textContent = `✓ Dequeue() → 取出隊首 "${out}"，head 移至 ${vizState.cqHead}（N=${vizState.cqN}）。`;
-        playSuccess(); renderStackQueueInteractive();
-      };
-      document.getElementById('vizVarsBox').innerHTML = `<div>Stack: [${vizState.stackArr.join(', ')}]</div><div>Circular Queue: head=${vizState.cqHead}, tail=${vizState.cqTail}, N=${vizState.cqN}</div>`;
+    // --- SVG Drawing Helpers (Pure Vector, Zero System Emojis) ---
+    function svgFormula(text) {
+      return `<text x="460" y="54" text-anchor="middle" class="cm-formula-text" filter="url(#neonGlow)">${escapeHtml(text || '')}</text>`;
     }
 
-    function renderVizFrame(stepIdx) {
-      if (vizState.algo === 'stack_queue') return;
-      const frames = vizState.frames;
-      if (!frames.length) return;
-      vizState.step = Math.max(0, Math.min(stepIdx, frames.length - 1));
-      const f = frames[vizState.step];
-      document.getElementById('vizScrubber').max = frames.length - 1;
-      document.getElementById('vizScrubber').value = vizState.step;
-      document.getElementById('vizStepLabel').textContent = `${vizState.step + 1} / ${frames.length}`;
-      document.getElementById('vizCmpCount').textContent = f.cmp || 0;
-      document.getElementById('vizSwapCount').textContent = f.swp || 0;
-      document.getElementById('vizNarration').textContent = f.note || '';
-
-      document.querySelectorAll('#vizCodeBox .viz-code-line').forEach((el) => {
-        el.classList.toggle('active', Number(el.getAttribute('data-vcl')) === f.line);
-      });
-      document.getElementById('vizVarsBox').innerHTML = Object.entries(f.vars || {})
-        .map(([k, v]) => `<div class="flex justify-between"><span class="text-[#94a3b8]">${escapeHtml(k)}</span><span class="text-[#38bdf8] font-bold">${escapeHtml(String(v))}</span></div>`).join('');
-
-      const stage = document.getElementById('vizStage');
-      const algo = vizState.algo;
+    function drawFrameSVG(algo, fr, t) {
+      const e = easeInOutQuint(t);
+      let out = svgFormula(fr.formula);
 
       if (algo === 'binary_search') {
-        stage.innerHTML = `<div class="flex flex-wrap justify-center gap-2 py-6">
-          ${f.arr.map((val, idx) => {
-            const outOfRange = idx < f.s || idx > f.e;
-            const isMid = idx === f.mid;
-            const cls = isMid
-              ? (f.found ? 'bg-[#10b981] text-[#04140e] border-[#34d399] scale-110 shadow-lg shadow-[#10b981]/30' : 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24] scale-105')
-              : (outOfRange ? 'bg-[#0a0f18] text-[#475569] border-[#1b2430] opacity-35' : 'bg-[#132035] text-white border-[#38bdf8]/50');
-            const tags = [];
-            if (idx === f.s) tags.push('<span class="text-[#38bdf8]">S</span>');
-            if (isMid) tags.push('<span class="text-[#fbbf24]">M</span>');
-            if (idx === f.e) tags.push('<span class="text-[#c084fc]">E</span>');
-            return `<div class="flex flex-col items-center gap-1">
-              <div class="font-mono-code text-[10px] text-[#64748b]">[${idx}]</div>
-              <div class="viz-cell w-12 h-12 sm:w-14 sm:h-14 rounded-sm border-2 flex items-center justify-center font-mono-code text-base font-black ${cls}">${val}</div>
-              <div class="font-mono-code text-[11px] font-bold h-4">${tags.join('·')}</div>
-            </div>`;
-          }).join('')}
-        </div>`;
-      } else if (algo === 'search_race') {
-        const renderTrack = (label, color, cellsHtml, badge) => `<div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3 space-y-2">
-          <div class="flex justify-between items-center text-xs font-bold"><span style="color:${color}">${label}</span><span class="font-mono-code text-[#cbd5e1]">${badge}</span></div>
-          <div class="flex flex-wrap gap-1.5">${cellsHtml}</div>
-        </div>`;
-        const linCells = f.arr.map((v, i) => {
-          const active = i === f.li;
-          const past = i < f.li;
-          const cls = active ? (f.lFound ? 'bg-[#10b981] text-[#04140e] border-[#34d399]' : 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24]') : (past ? 'bg-[#0b1322] text-[#475569] border-[#1e2d44]' : 'bg-[#132035] text-white border-[#263a59]');
-          return `<div class="viz-cell w-10 h-10 rounded-sm border flex items-center justify-center font-mono-code text-xs font-bold ${cls}">${v}</div>`;
-        }).join('');
-        const binCells = f.arr.map((v, i) => {
-          const out = i < f.bs || i > f.be;
-          const isM = i === f.bMid;
-          const cls = isM ? (f.bFound ? 'bg-[#10b981] text-[#04140e] border-[#34d399]' : 'bg-[#38bdf8] text-[#041320] border-[#7dd3fc]') : (out ? 'bg-[#090e17] text-[#475569] border-[#1b2430] opacity-30' : 'bg-[#132035] text-white border-[#38bdf8]/45');
-          return `<div class="viz-cell w-10 h-10 rounded-sm border flex items-center justify-center font-mono-code text-xs font-bold ${cls}">${v}</div>`;
-        }).join('');
-        stage.innerHTML = `<div class="space-y-3">
-          ${renderTrack('賽道 1：線性檢索 Linear Search', '#fbbf24', linCells, `比較 ${f.lSteps} 次`)}
-          ${renderTrack('賽道 2：對分檢索 Binary Search', '#38bdf8', binCells, `比較 ${f.bSteps} 次`)}
-        </div>`;
-      } else if (algo === 'bubble_sort' || algo === 'selection_sort' || algo === 'insertion_sort') {
-        const maxVal = Math.max(...f.arr, 1);
-        const bars = f.arr.map((val, idx) => {
-          const h = Math.max(28, Math.round((val / maxVal) * 200));
-          let bg = '#2563eb';
-          let ring = '';
-          let tag = `[${idx}]`;
-          if (algo === 'bubble_sort') {
-            if (idx >= f.sortedFrom) bg = '#10b981';
-            if (f.hi && f.hi.includes(idx)) { bg = f.swapPair ? '#f43f5e' : '#f59e0b'; ring = 'ring-2 ring-white/60'; }
-          } else if (algo === 'selection_sort') {
-            if (idx <= f.sortedTo) bg = '#10b981';
-            if (idx === f.minIdx) { bg = '#f43f5e'; tag = 'min'; ring = 'ring-2 ring-[#fda4af]'; }
-            else if (idx === f.curJ) { bg = '#f59e0b'; tag = 'j'; }
-            else if (idx === f.curI) { bg = '#38bdf8'; tag = 'i'; }
-          } else {
-            if (idx <= f.sortedTo) bg = '#10b981';
-            if (idx === f.hole) { bg = f.inserted ? '#38bdf8' : '#f59e0b'; tag = f.inserted ? '插入' : '空位'; ring = 'ring-2 ring-white/70'; }
-            else if (idx === f.scanJ) { bg = '#f43f5e'; tag = 'j'; }
+        const arr = fr.arr, n = arr.length;
+        const boxW = 68, boxH = 68, gap = 12, totalW = n * boxW + (n - 1) * gap;
+        const x0 = (920 - totalW) / 2, baseY = 185;
+        // Manim cyan range bracket across [s .. e]
+        if (fr.s <= fr.e) {
+          const bx1 = x0 + fr.s * (boxW + gap) + 4;
+          const bx2 = x0 + fr.e * (boxW + gap) + boxW - 4;
+          out += `<path d="M ${bx1} ${baseY - 46} L ${bx1} ${baseY - 58} L ${bx2} ${baseY - 58} L ${bx2} ${baseY - 46}" fill="none" stroke="#22d3ee" stroke-width="2.2" filter="url(#neonGlow)" />`;
+          out += `<text x="${(bx1 + bx2) / 2}" y="${baseY - 66}" text-anchor="middle" class="cm-mono-text" font-size="11" fill="#22d3ee" font-weight="700">ACTIVE RANGE [${fr.s} .. ${fr.e}]</text>`;
+        }
+        arr.forEach((v, idx) => {
+          const x = x0 + idx * (boxW + gap);
+          const active = idx >= fr.s && idx <= fr.e;
+          const isMid = idx === fr.mid;
+          const isHit = isMid && fr.found;
+          const yOff = isMid ? (-14 * e) : (!active ? (8 * e) : 0);
+          const op = active ? 1 : (1 - 0.65 * e);
+          const fill = isHit ? 'url(#gEmerald)' : (isMid ? 'url(#gAmber)' : (active ? 'url(#gCyan)' : 'rgba(15,23,42,0.45)'));
+          const stroke = isHit ? '#34d399' : (isMid ? '#facc15' : (active ? '#22d3ee' : '#334155'));
+          const filt = (isMid || isHit) ? ' filter="url(#neonGlow)"' : '';
+          out += `<g opacity="${op.toFixed(3)}">
+            <rect x="${x}" y="${baseY + yOff}" width="${boxW}" height="${boxH}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="${isMid ? 2.6 : 1.6}"${filt} />
+            <text x="${x + boxW / 2}" y="${baseY + yOff + 42}" text-anchor="middle" class="cm-val-text" font-size="22">${v}</text>
+            <text x="${x + boxW / 2}" y="${baseY + boxH + 26}" text-anchor="middle" class="cm-mono-text" font-size="12" fill="#94a3b8">[${idx}]</text>
+          </g>`;
+          if (isMid) {
+            out += `<text x="${x + boxW / 2}" y="${baseY + yOff - 10}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="${isHit ? '#34d399' : '#facc15'}" filter="url(#neonGlow)">▼ MID</text>`;
           }
-          return `<div class="flex flex-col items-center justify-end gap-1.5 flex-1 max-w-[64px]">
-            <span class="font-mono-code text-xs font-black text-white">${val}</span>
-            <div class="viz-bar w-full rounded-t-sm ${ring}" style="height:${h}px;background:${bg};"></div>
-            <span class="font-mono-code text-[10px] text-[#94a3b8]">${tag}</span>
-          </div>`;
-        }).join('');
-        const keyBanner = (algo === 'insertion_sort' && f.keyVal !== null)
-          ? `<div class="text-center mb-2"><span class="inline-block px-3 py-1 rounded-sm bg-[#f59e0b]/20 border border-[#fbbf24] text-[#fde68a] font-mono-code text-xs font-bold">抽出關鍵值 key = ${f.keyVal}</span></div>` : '';
-        stage.innerHTML = `${keyBanner}<div class="flex items-end justify-center gap-2 sm:gap-3 h-[255px] px-2 pt-4">${bars}</div>`;
+        });
+        // Dual pointers ▲ S (cyan) and ▲ E (purple), auto-staggered if overlapping
+        const sameSE = fr.s === fr.e;
+        if (fr.s >= 0 && fr.s < n) {
+          const sx = x0 + fr.s * (boxW + gap) + boxW / 2;
+          out += `<text x="${sx}" y="${baseY + boxH + 48}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="#22d3ee">▲ S</text>`;
+        }
+        if (fr.e >= 0 && fr.e < n) {
+          const ex = x0 + fr.e * (boxW + gap) + boxW / 2;
+          out += `<text x="${ex}" y="${baseY + boxH + (sameSE ? 66 : 48)}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="#c084fc">▲ E</text>`;
+        }
+      } else if (algo === 'search_race') {
+        const arr = fr.arr, n = arr.length;
+        const boxW = 66, boxH = 54, gap = 12, totalW = n * boxW + (n - 1) * gap;
+        const x0 = (920 - totalW) / 2;
+        // Track 1: Linear O(N) (Top)
+        out += `<text x="${x0}" y="114" class="cm-mono-text" font-size="12" font-weight="700" fill="#facc15">LINEAR SEARCH O(N) — 已比較 ${fr.linCmp} 次 ${fr.linFound ? '✓ 命中' : ''}</text>`;
+        arr.forEach((v, idx) => {
+          const x = x0 + idx * (boxW + gap), y = 124;
+          const isCur = idx === fr.li;
+          const isHit = isCur && fr.linFound;
+          const passed = idx < fr.li;
+          const fill = isHit ? 'url(#gEmerald)' : (isCur ? 'url(#gAmber)' : (passed ? 'rgba(15,23,42,0.45)' : 'url(#gCyan)'));
+          const stroke = isHit ? '#34d399' : (isCur ? '#facc15' : (passed ? '#334155' : 'rgba(34,211,238,0.45)'));
+          out += `<rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="${isCur ? 2.4 : 1.3}" opacity="${passed ? 0.42 : 1}" ${isCur ? 'filter="url(#neonGlow)"' : ''} />
+            <text x="${x + boxW / 2}" y="${y + 33}" text-anchor="middle" class="cm-val-text" font-size="18">${v}</text>`;
+        });
+        // Track 2: Binary O(log₂ N) (Bottom)
+        out += `<text x="${x0}" y="242" class="cm-mono-text" font-size="12" font-weight="700" fill="#22d3ee">BINARY SEARCH O(log₂ N) — 已比較 ${fr.binCmp} 次 ${fr.binFound ? '✓ 命中' : ''}</text>`;
+        arr.forEach((v, idx) => {
+          const x = x0 + idx * (boxW + gap), y = 252;
+          const active = idx >= fr.bs && idx <= fr.be;
+          const isMid = idx === fr.bMid;
+          const isHit = isMid && fr.binFound;
+          const fill = isHit ? 'url(#gEmerald)' : (isMid ? 'url(#gAmber)' : (active ? 'url(#gCyan)' : 'rgba(15,23,42,0.45)'));
+          const stroke = isHit ? '#34d399' : (isMid ? '#facc15' : (active ? '#22d3ee' : '#334155'));
+          out += `<rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="${isMid ? 2.4 : 1.3}" opacity="${(active || isMid) ? 1 : 0.34}" ${isMid ? 'filter="url(#neonGlow)"' : ''} />
+            <text x="${x + boxW / 2}" y="${y + 33}" text-anchor="middle" class="cm-val-text" font-size="18">${v}</text>
+            <text x="${x + boxW / 2}" y="${y + boxH + 20}" text-anchor="middle" class="cm-mono-text" font-size="11" fill="#64748b">[${idx}]</text>`;
+        });
+      } else if (algo === 'bubble_sort' || algo === 'selection_sort') {
+        const arr = fr.arr, n = arr.length;
+        const maxV = Math.max(...arr, 10);
+        const barW = Math.min(82, Math.floor(660 / n)), gap = 18;
+        const totalW = n * barW + (n - 1) * gap, x0 = (920 - totalW) / 2, baseY = 350, maxH = 215;
+        const sw = fr.swapPair;
+        const dispArr = (sw && fr.prevArr) ? fr.prevArr : arr;
+        // Draw Bezier swap arrow above if swapping
+        if (sw) {
+          const xA = x0 + sw[0] * (barW + gap) + barW / 2;
+          const xB = x0 + sw[1] * (barW + gap) + barW / 2;
+          const ym = 92;
+          out += `<path d="M ${xA} 145 Q ${(xA + xB) / 2} ${ym} ${xB} 145" fill="none" stroke="#facc15" stroke-width="2.4" stroke-dasharray="6 4" marker-end="url(#arrGold)" filter="url(#neonGlow)" />`;
+        }
+        dispArr.forEach((v, idx) => {
+          let drawX = x0 + idx * (barW + gap);
+          let yLift = 0;
+          if (sw && idx === sw[0]) {
+            const targetX = x0 + sw[1] * (barW + gap);
+            drawX = drawX + (targetX - drawX) * e;
+            yLift = -Math.sin(t * Math.PI) * 28;
+          } else if (sw && idx === sw[1]) {
+            const targetX = x0 + sw[0] * (barW + gap);
+            drawX = drawX + (targetX - drawX) * e;
+            yLift = Math.sin(t * Math.PI) * 14;
+          }
+          const h = Math.max(38, Math.round((v / maxV) * maxH));
+          const y = baseY - h + yLift;
+          let fill = 'url(#gCyan)', stroke = '#22d3ee', glow = false;
+          if (algo === 'bubble_sort') {
+            if (sw && (idx === sw[0] || idx === sw[1])) { fill = 'url(#gRose)'; stroke = '#fb7185'; glow = true; }
+            else if (fr.cmpPair && (idx === fr.cmpPair[0] || idx === fr.cmpPair[1])) { fill = 'url(#gAmber)'; stroke = '#facc15'; glow = true; }
+            else if (idx >= fr.sortedFrom) { fill = 'url(#gEmerald)'; stroke = '#34d399'; }
+          } else {
+            if (sw && (idx === sw[0] || idx === sw[1])) { fill = 'url(#gRose)'; stroke = '#fb7185'; glow = true; }
+            else if (idx === fr.minIdx) { fill = 'url(#gAmber)'; stroke = '#facc15'; glow = true; }
+            else if (idx === fr.j) { fill = 'url(#gPurple)'; stroke = '#c084fc'; glow = true; }
+            else if (idx < fr.sortedCount) { fill = 'url(#gEmerald)'; stroke = '#34d399'; }
+          }
+          out += `<rect x="${drawX.toFixed(1)}" y="${y.toFixed(1)}" width="${barW}" height="${h}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="${glow ? 2.4 : 1.5}" ${glow ? 'filter="url(#neonGlow)"' : ''} />`;
+          out += `<text x="${(drawX + barW / 2).toFixed(1)}" y="${(y + 26).toFixed(1)}" text-anchor="middle" class="cm-val-text" font-size="18">${v}</text>`;
+          out += `<text x="${x0 + idx * (barW + gap) + barW / 2}" y="${baseY + 24}" text-anchor="middle" class="cm-mono-text" font-size="12" fill="#94a3b8">[${idx}]</text>`;
+          if (algo === 'selection_sort' && idx === fr.minIdx) {
+            out += `<text x="${x0 + idx * (barW + gap) + barW / 2}" y="${baseY + 44}" text-anchor="middle" class="cm-mono-text" font-size="11" font-weight="700" fill="#facc15">▲ min</text>`;
+          } else if (algo === 'selection_sort' && idx === fr.j) {
+            out += `<text x="${x0 + idx * (barW + gap) + barW / 2}" y="${baseY + 44}" text-anchor="middle" class="cm-mono-text" font-size="11" font-weight="700" fill="#c084fc">▲ j</text>`;
+          }
+        });
+      } else if (algo === 'insertion_sort') {
+        const arr = fr.arr, n = arr.length;
+        const maxV = Math.max(...arr, 10);
+        const barW = Math.min(82, Math.floor(660 / n)), gap = 18;
+        const totalW = n * barW + (n - 1) * gap, x0 = (920 - totalW) / 2, baseY = 356, maxH = 190;
+        // Floating key capsule on top rail
+        if (fr.key !== null && fr.hole >= 0) {
+          const kx = x0 + fr.hole * (barW + gap) + barW / 2;
+          out += `<g filter="url(#neonGlow)">
+            <rect x="${kx - 46}" y="86" width="92" height="34" rx="17" fill="url(#gAmber)" stroke="#facc15" stroke-width="2.2" />
+            <text x="${kx}" y="108" text-anchor="middle" class="cm-mono-text" font-size="13" font-weight="700" fill="#ffffff">key: ${fr.key}</text>
+          </g>`;
+        }
+        arr.forEach((v, idx) => {
+          const x = x0 + idx * (barW + gap);
+          if (idx === fr.hole) {
+            out += `<rect x="${x}" y="${baseY - 90}" width="${barW}" height="90" rx="8" fill="rgba(250,204,21,0.06)" stroke="#facc15" stroke-width="2" stroke-dasharray="6 4" />`;
+          } else {
+            const h = Math.max(38, Math.round((v / maxV) * maxH));
+            const y = baseY - h;
+            const isIns = idx === fr.insertedAt;
+            const isSorted = idx < fr.sortedCount;
+            const fill = isIns ? 'url(#gEmerald)' : (isSorted ? 'url(#gEmerald)' : 'url(#gCyan)');
+            const stroke = isIns ? '#34d399' : (isSorted ? '#34d399' : '#22d3ee');
+            out += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="${isIns ? 2.6 : 1.5}" ${isIns ? 'filter="url(#neonGlow)"' : ''} />`;
+            out += `<text x="${x + barW / 2}" y="${y + 26}" text-anchor="middle" class="cm-val-text" font-size="18">${v}</text>`;
+          }
+          out += `<text x="${x + barW / 2}" y="${baseY + 24}" text-anchor="middle" class="cm-mono-text" font-size="12" fill="#94a3b8">[${idx}]</text>`;
+        });
       } else if (algo === 'merge_lists') {
-        const boxRow = (name, arr, ptr, color) => `<div class="flex items-center gap-2 flex-wrap">
-          <span class="font-mono-code text-xs font-bold w-16" style="color:${color}">${name}</span>
-          ${arr.map((v, idx) => {
-            const cur = idx === ptr;
-            const done = ptr >= 0 && idx < ptr;
-            const cls = cur ? 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24] scale-105' : (done ? 'bg-[#090e17] text-[#475569] border-[#1b2430] opacity-40' : 'bg-[#132035] text-white border-[#263a59]');
-            return `<div class="viz-cell w-11 h-11 rounded-sm border-2 flex items-center justify-center font-mono-code text-xs font-black ${cls}">${v}</div>`;
-          }).join('')}
-        </div>`;
-        const mergedRow = `<div class="flex items-center gap-2 flex-wrap pt-2 border-t border-[#1e2d44]">
-          <span class="font-mono-code text-xs font-bold w-16 text-[#34d399]">merged</span>
-          ${f.merged.map((v, idx) => {
-            const isK = idx === f.k;
-            const cls = isK ? 'bg-[#10b981] text-[#04140e] border-[#34d399] scale-105' : (v !== '' ? 'bg-[#0d2821] text-[#a7f3d0] border-[#10b981]/50' : 'bg-[#080d16] text-[#475569] border-[#1e2d44] border-dashed');
-            return `<div class="viz-cell w-11 h-11 rounded-sm border-2 flex items-center justify-center font-mono-code text-xs font-black ${cls}">${v === '' ? '-' : v}</div>`;
-          }).join('')}
-        </div>`;
-        stage.innerHTML = `<div class="space-y-4 py-4">${boxRow('List A', f.A, f.i, '#38bdf8')}${boxRow('List B', f.B, f.j, '#c084fc')}${mergedRow}</div>`;
+        const bw = 74, bh = 54, gap = 12;
+        const ax0 = 70, bx0 = 510, topY = 120;
+        out += `<text x="${ax0}" y="108" class="cm-mono-text" font-size="12" font-weight="700" fill="#22d3ee">List A (class4A)</text>`;
+        out += `<text x="${bx0}" y="108" class="cm-mono-text" font-size="12" font-weight="700" fill="#c084fc">List B (class4B)</text>`;
+        fr.A.forEach((v, idx) => {
+          const x = ax0 + idx * (bw + gap);
+          const used = idx < fr.i;
+          const isPtr = idx === fr.i;
+          const fill = isPtr ? 'url(#gAmber)' : (used ? 'rgba(15,23,42,0.45)' : 'url(#gCyan)');
+          const stroke = isPtr ? '#facc15' : (used ? '#334155' : '#22d3ee');
+          out += `<rect x="${x}" y="${topY}" width="${bw}" height="${bh}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="${isPtr ? 2.4 : 1.4}" opacity="${used ? 0.34 : 1}" ${isPtr ? 'filter="url(#neonGlow)"' : ''} />
+            <text x="${x + bw / 2}" y="${topY + 34}" text-anchor="middle" class="cm-val-text" font-size="19">${v}</text>`;
+          if (isPtr) out += `<text x="${x + bw / 2}" y="${topY + bh + 18}" text-anchor="middle" class="cm-mono-text" font-size="11" font-weight="700" fill="#facc15">▲ i=${idx}</text>`;
+        });
+        fr.B.forEach((v, idx) => {
+          const x = bx0 + idx * (bw + gap);
+          const used = idx < fr.j;
+          const isPtr = idx === fr.j;
+          const fill = isPtr ? 'url(#gAmber)' : (used ? 'rgba(15,23,42,0.45)' : 'url(#gPurple)');
+          const stroke = isPtr ? '#facc15' : (used ? '#334155' : '#c084fc');
+          out += `<rect x="${x}" y="${topY}" width="${bw}" height="${bh}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="${isPtr ? 2.4 : 1.4}" opacity="${used ? 0.34 : 1}" ${isPtr ? 'filter="url(#neonGlow)"' : ''} />
+            <text x="${x + bw / 2}" y="${topY + 34}" text-anchor="middle" class="cm-val-text" font-size="19">${v}</text>`;
+          if (isPtr) out += `<text x="${x + bw / 2}" y="${topY + bh + 18}" text-anchor="middle" class="cm-mono-text" font-size="11" font-weight="700" fill="#facc15">▲ j=${idx}</text>`;
+        });
+        // Merged 8 slots below
+        const mW = 82, mH = 56, mGap = 12, mx0 = (920 - (8 * mW + 7 * mGap)) / 2, my = 292;
+        out += `<text x="${mx0}" y="278" class="cm-mono-text" font-size="12" font-weight="700" fill="#34d399">merged[]</text>`;
+        for (let k = 0; k < 8; k++) {
+          const x = mx0 + k * (mW + mGap);
+          const has = k < fr.merged.length;
+          out += `<rect x="${x}" y="${my}" width="${mW}" height="${mH}" rx="8" fill="${has ? 'url(#gEmerald)' : 'rgba(15,23,42,0.35)'}" stroke="${has ? '#34d399' : '#334155'}" stroke-width="${has ? 1.8 : 1.3}" ${has ? '' : 'stroke-dasharray="5 4"'} />`;
+          if (has) out += `<text x="${x + mW / 2}" y="${my + 35}" text-anchor="middle" class="cm-val-text" font-size="19">${fr.merged[k]}</text>`;
+          out += `<text x="${x + mW / 2}" y="${my + mH + 20}" text-anchor="middle" class="cm-mono-text" font-size="11" fill="#64748b">[${k}]</text>`;
+        }
+        // Glowing golden Bezier trajectory arrow from source slot to merged[k]
+        if (fr.pickFrom && fr.pickIdx >= 0) {
+          const sx = (fr.pickFrom === 'A' ? ax0 : bx0) + fr.pickIdx * (bw + gap) + bw / 2;
+          const sy = topY + bh + 4;
+          const tx = mx0 + fr.k * (mW + mGap) + mW / 2;
+          const ty = my - 4;
+          out += `<path d="M ${sx} ${sy} Q ${(sx + tx) / 2} ${(sy + ty) / 2 - 22} ${tx} ${ty}" fill="none" stroke="#facc15" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrGold)" filter="url(#neonGlow)" />`;
+        }
+      } else if (algo === 'stack_queue') {
+        // Left: Stack U-shaped vertical glass tube (max = 5)
+        const sx = 120, sy = 104, sw = 190, sh = 264;
+        out += `<text x="${sx + sw / 2}" y="90" text-anchor="middle" class="cm-mono-text" font-size="13" font-weight="700" fill="#22d3ee">STACK (LIFO · max=5)</text>`;
+        out += `<path d="M ${sx} ${sy} L ${sx} ${sy + sh} L ${sx + sw} ${sy + sh} L ${sx + sw} ${sy}" fill="rgba(12,18,36,0.45)" stroke="#22d3ee" stroke-width="3" filter="url(#neonGlow)" />`;
+        const slotH = 44, pad = 7;
+        vizState.stackArr.forEach((item, idx) => {
+          const isTop = idx === vizState.stackArr.length - 1;
+          const by = sy + sh - (idx + 1) * (slotH + pad) - 4;
+          out += `<rect x="${sx + 14}" y="${by}" width="${sw - 28}" height="${slotH}" rx="7" fill="${isTop ? 'url(#gEmerald)' : 'url(#gCyan)'}" stroke="${isTop ? '#34d399' : '#22d3ee'}" stroke-width="${isTop ? 2.4 : 1.5}" ${isTop ? 'filter="url(#neonGlow)"' : ''} />`;
+          out += `<text x="${sx + sw / 2}" y="${by + 28}" text-anchor="middle" class="cm-val-text" font-size="17">${escapeHtml(item)}</text>`;
+          if (isTop) {
+            out += `<text x="${sx + sw + 12}" y="${by + 27}" class="cm-mono-text" font-size="12" font-weight="700" fill="#34d399" filter="url(#neonGlow)">◀ TOP (${idx})</text>`;
+          }
+        });
+        // Right: Circular Queue 8-node ring (N = 8)
+        const cx = 640, cy = 236, R = 122;
+        out += `<text x="${cx}" y="90" text-anchor="middle" class="cm-mono-text" font-size="13" font-weight="700" fill="#c084fc">CIRCULAR QUEUE (FIFO · N=8)</text>`;
+        out += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(34,211,238,0.28)" stroke-width="2" stroke-dasharray="6 5" />`;
+        out += `<text x="${cx}" y="${cy - 4}" text-anchor="middle" class="cm-mono-text" font-size="14" font-weight="700" fill="#e2e8f0">N = 8 (% 8)</text>`;
+        out += `<text x="${cx}" y="${cy + 18}" text-anchor="middle" class="cm-mono-text" font-size="11" fill="#94a3b8">count = ${vizState.cqCount}/8</text>`;
+        for (let k = 0; k < 8; k++) {
+          const ang = (k / 8) * Math.PI * 2 - Math.PI / 2;
+          const nx = cx + Math.cos(ang) * R;
+          const ny = cy + Math.sin(ang) * R;
+          const val = vizState.cqArr[k];
+          const isHead = k === vizState.cqHead;
+          const isTail = k === vizState.cqTail;
+          const fill = val ? 'url(#gPurple)' : 'rgba(15,23,42,0.55)';
+          const stroke = isHead ? '#22d3ee' : (isTail ? '#facc15' : (val ? '#c084fc' : '#334155'));
+          out += `<circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="26" fill="${fill}" stroke="${stroke}" stroke-width="${(isHead || isTail) ? 2.8 : 1.5}" ${(isHead || isTail) ? 'filter="url(#neonGlow)"' : ''} />`;
+          out += `<text x="${nx.toFixed(1)}" y="${(ny + 5).toFixed(1)}" text-anchor="middle" class="cm-val-text" font-size="14">${val ? escapeHtml(val) : '·'}</text>`;
+          const lx = cx + Math.cos(ang) * (R + 40);
+          const ly = cy + Math.sin(ang) * (R + 40);
+          const tag = (isHead && isTail) ? `[${k}] H/T` : (isHead ? `[${k}] HEAD` : (isTail ? `[${k}] TAIL` : `[${k}]`));
+          const tCol = isHead ? '#22d3ee' : (isTail ? '#facc15' : '#64748b');
+          out += `<text x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}" text-anchor="middle" class="cm-mono-text" font-size="11" font-weight="700" fill="${tCol}">${tag}</text>`;
+        }
       } else if (algo === 'linked_list') {
-        // Logical chain SVG + Parallel Array Table
-        const chain = [];
-        let c = f.start, guard = 0;
-        while (c !== 10 && c >= 0 && c < f.D.length && guard < 10) { chain.push(c); c = f.NP[c]; guard++; }
-        const chainHtml = chain.map((idx, pos) => {
-          const isPrev = idx === f.prev;
-          const isCur = idx === f.cur;
-          const bCls = isPrev ? 'border-[#38bdf8] bg-[#2563eb]/25' : (isCur ? 'border-[#f43f5e] bg-[#f43f5e]/25' : 'border-[#34d399]/50 bg-[#132035]');
-          const arrow = pos < chain.length - 1 ? '<span class="text-[#38bdf8] font-black text-lg px-1">→</span>' : '<span class="text-[#64748b] font-mono-code text-xs pl-2">→ NULL(10)</span>';
-          return `<div class="inline-flex items-center">
-            <div class="px-3 py-2 rounded-sm border-2 ${bCls} text-center">
-              <div class="font-mono-code text-[10px] text-[#94a3b8]">索引 ${idx}${isPrev ? ' · prev' : ''}${isCur ? ' · cur' : ''}</div>
-              <div class="font-bold text-sm text-white">${f.D[idx]}</div>
-              <div class="font-mono-code text-[10px] text-[#fbbf24]">NP→${f.NP[idx]}</div>
-            </div>${arrow}
-          </div>`;
-        }).join('');
-        const tblHtml = `<div class="overflow-x-auto"><table class="w-full text-center font-mono-code text-xs border-collapse">
-          <tr class="text-[#94a3b8] border-b border-[#1e2d44]"><th class="py-1 px-2 text-left">索引</th>${[1,2,3,4,5].map(i=>`<th class="py-1 px-2">[${i}]</th>`).join('')}</tr>
-          <tr class="text-white border-b border-[#1e2d44]"><td class="py-1.5 px-2 text-left text-[#38bdf8]">D[]</td>${[1,2,3,4,5].map(i=>`<td class="py-1.5 px-2 ${i===f.delNode?'line-through text-[#64748b]':''}">${f.D[i]||'-'}</td>`).join('')}</tr>
-          <tr class="text-[#fbbf24]"><td class="py-1.5 px-2 text-left text-[#34d399]">NP[]</td>${[1,2,3,4,5].map(i=>`<td class="py-1.5 px-2 ${i===f.prev?'bg-[#2563eb]/30 font-black text-white rounded-sm':''}">${f.NP[i]}</td>`).join('')}</tr>
-        </table></div>`;
-        stage.innerHTML = `<div class="space-y-5 py-2">
-          <div class="text-xs font-bold text-[#38bdf8]">邏輯鏈結順序（start = ${f.start}）：</div>
-          <div class="flex flex-wrap items-center gap-y-3">${chainHtml}</div>
-          <div class="bg-[#0a1220] border border-[#1e2d44] rounded-sm p-3">${tblHtml}</div>
-        </div>`;
+        const order = fr.order, bw = 128, bh = 74, gap = 42;
+        const x0 = (920 - (order.length * bw + (order.length - 1) * gap)) / 2, baseY = 195;
+        order.forEach((nodeIdx, pos) => {
+          const x = x0 + pos * (bw + gap);
+          const isPrev = nodeIdx === fr.prev;
+          const isCur = nodeIdx === fr.current;
+          const isDel = isCur && fr.deleted;
+          const yOff = isDel ? (24 * e) : 0;
+          const op = isDel ? (1 - 0.62 * e) : 1;
+          const fill = isCur ? 'url(#gRose)' : (isPrev ? 'url(#gAmber)' : 'url(#gCyan)');
+          const stroke = isCur ? '#fb7185' : (isPrev ? '#facc15' : '#22d3ee');
+          out += `<g opacity="${op.toFixed(3)}">
+            <rect x="${x}" y="${baseY + yOff}" width="${bw}" height="${bh}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="${(isPrev || isCur) ? 2.5 : 1.6}" ${(isPrev || isCur) ? 'filter="url(#neonGlow)"' : ''} />
+            <text x="${x + bw / 2}" y="${baseY + yOff + 30}" text-anchor="middle" class="cm-val-text" font-size="18">[${nodeIdx}] ${fr.D[nodeIdx]}</text>
+            <text x="${x + bw / 2}" y="${baseY + yOff + 54}" text-anchor="middle" class="cm-mono-text" font-size="11" fill="#cbd5e1">NP → ${fr.NP[nodeIdx]}</text>
+          </g>`;
+          if (isPrev) out += `<text x="${x + bw / 2}" y="${baseY + bh + 24}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="#facc15">▲ prev</text>`;
+          if (isCur) out += `<text x="${x + bw / 2}" y="${baseY + bh + 24 + yOff}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="#fb7185">▲ current</text>`;
+          // Standard cyan arrow to next logical node (unless bypassed after delete!)
+          if (pos < order.length - 1 && !(fr.deleted && pos === 1)) {
+            const x1 = x + bw + 2, x2 = x + bw + gap - 4;
+            out += `<line x1="${x1}" y1="${baseY + bh / 2}" x2="${x2}" y2="${baseY + bh / 2}" stroke="#22d3ee" stroke-width="2.2" marker-end="url(#arrCyan)" opacity="${(fr.deleted && pos === 2) ? 0.25 : 1}" />`;
+          }
+        });
+        // High-arched glowing emerald Bezier bridge arrow when NP[prev] = NP[current] executes!
+        if (fr.deleted) {
+          const xPrev = x0 + 1 * (bw + gap) + bw / 2;
+          const xNext = x0 + 3 * (bw + gap) + bw / 2;
+          out += `<path d="M ${xPrev} ${baseY - 4} Q ${(xPrev + xNext) / 2} ${baseY - 96 * e} ${xNext} ${baseY - 4}" fill="none" stroke="#34d399" stroke-width="3.2" marker-end="url(#arrEmerald)" filter="url(#neonGlow)" />`;
+          out += `<text x="${(xPrev + xNext) / 2}" y="${baseY - 58}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="#34d399" filter="url(#neonGlow)">NP[2] = 4 (新連線)</text>`;
+        }
       } else if (algo === 'array_2d') {
-        const visSet = new Set(f.visited || []);
-        const rows = f.grid.map((r, i) => `<tr>
-          <th class="font-mono-code text-xs text-[#38bdf8] pr-2">i=${i}</th>
-          ${r.map((val, j) => {
-            const cur = i === f.curI && j === f.curJ;
-            const vis = visSet.has(`${i},${j}`);
-            const cls = cur ? 'bg-[#f59e0b] text-[#1c1002] border-[#fbbf24] scale-105 font-black' : (vis ? 'bg-[#10b981]/25 text-[#a7f3d0] border-[#10b981]/60' : 'bg-[#132035] text-white border-[#243754]');
-            return `<td class="p-1"><div class="viz-cell w-12 h-11 sm:w-14 sm:h-12 rounded-sm border-2 flex items-center justify-center font-mono-code text-sm ${cls}">${val}</div></td>`;
-          }).join('')}
-        </tr>`).join('');
-        stage.innerHTML = `<div class="flex flex-col items-center py-2 space-y-2">
-          <table class="border-collapse">
-            <tr><th></th>${[0,1,2,3,4].map(j=>`<th class="font-mono-code text-xs text-[#c084fc] pb-1">j=${j}</th>`).join('')}</tr>
-            ${rows}
-          </table>
-          <div class="font-mono-code text-xs text-[#34d399] font-bold">目前累加總和 total = ${f.total}</div>
-        </div>`;
+        const M = fr.M, rows = 3, cols = 5;
+        const cw = 94, ch = 64, gap = 12;
+        const totalW = cols * cw + (cols - 1) * gap;
+        const x0 = (920 - totalW) / 2 + 16, y0 = 112;
+        // Column headers j=0..4 (purple)
+        for (let j = 0; j < cols; j++) {
+          out += `<text x="${x0 + j * (cw + gap) + cw / 2}" y="${y0 - 14}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="#c084fc">j=${j}</text>`;
+        }
+        // Row headers i=0..2 (cyan)
+        for (let i = 0; i < rows; i++) {
+          out += `<text x="${x0 - 28}" y="${y0 + i * (ch + gap) + ch / 2 + 5}" text-anchor="middle" class="cm-mono-text" font-size="12" font-weight="700" fill="#22d3ee">i=${i}</text>`;
+        }
+        const visitedSet = new Set((fr.visited || []).map(([r, c]) => `${r},${c}`));
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            const x = x0 + j * (cw + gap), y = y0 + i * (ch + gap);
+            const isCur = fr.cur && fr.cur[0] === i && fr.cur[1] === j;
+            const isVis = visitedSet.has(`${i},${j}`);
+            const fill = isCur ? 'url(#gAmber)' : (isVis ? 'url(#gEmerald)' : 'url(#gCyan)');
+            const stroke = isCur ? '#facc15' : (isVis ? '#34d399' : 'rgba(34,211,238,0.45)');
+            out += `<rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="${isCur ? 2.6 : 1.5}" ${isCur ? 'filter="url(#neonGlow)"' : ''} />`;
+            out += `<text x="${x + cw / 2}" y="${y + 39}" text-anchor="middle" class="cm-val-text" font-size="20">${M[i][j]}</text>`;
+          }
+        }
+        // Glowing cyan dashed traversal polyline connecting visited cell centers
+        if (fr.visited && fr.visited.length > 1) {
+          const pts = fr.visited.map(([r, c]) => `${x0 + c * (cw + gap) + cw / 2},${y0 + r * (ch + gap) + ch / 2}`).join(' ');
+          out += `<polyline points="${pts}" fill="none" stroke="#22d3ee" stroke-width="2.6" stroke-dasharray="6 4" opacity="0.85" filter="url(#neonGlow)" />`;
+        }
+        out += `<text x="460" y="388" text-anchor="middle" class="cm-mono-text" font-size="15" font-weight="700" fill="#34d399" filter="url(#neonGlow)">目前累加總和 total = ${fr.total}</text>`;
       }
+
+      return out;
+    }
+
+    function renderLinkedTable(fr) {
+      const wrap = document.getElementById('cmLinkedTableWrap');
+      if (!wrap) return;
+      if (vizState.algo !== 'linked_list' || !fr) { wrap.classList.add('hidden'); return; }
+      wrap.classList.remove('hidden');
+      const idxCells = fr.D.map((_, i) => `<td class="px-3 py-1 text-center border border-cyan-400/20 text-[#94a3b8]">[${i}]</td>`).join('');
+      const dCells = fr.D.map((v, i) => `<td class="px-3 py-1 text-center border border-cyan-400/20 font-bold text-white">${v}</td>`).join('');
+      const npCells = fr.NP.map((v, i) => {
+        const hi = i === fr.modifiedIdx ? 'bg-emerald-400/25 text-emerald-300 font-bold' : 'text-cyan-200';
+        return `<td class="px-3 py-1 text-center border border-cyan-400/20 ${hi}">${v}</td>`;
+      }).join('');
+      wrap.innerHTML = `<table class="w-full font-mono-code text-xs border-collapse">
+        <tr><th class="px-2 py-1 text-left text-[#64748b] border border-cyan-400/20">Index</th>${idxCells}</tr>
+        <tr><th class="px-2 py-1 text-left text-[#22d3ee] border border-cyan-400/20">D[] 資料</th>${dCells}</tr>
+        <tr><th class="px-2 py-1 text-left text-[#facc15] border border-cyan-400/20">NP[] 指標</th>${npCells}</tr>
+      </table>`;
+    }
+
+    function renderVizFrame(stepIdx, playAudioNow = true) {
+      if (vizState.algo === 'stack_queue') {
+        renderStackQueueLive();
+        return;
+      }
+      if (!vizState.frames.length) return;
+      const idx = Math.max(0, Math.min(vizState.frames.length - 1, stepIdx));
+      vizState.step = idx;
+      const fr = vizState.frames[idx];
+
+      document.getElementById('cmStatCmp').textContent = fr.cmp ?? 0;
+      document.getElementById('cmStatSwp').textContent = fr.swp ?? 0;
+      document.getElementById('cmStatStep').textContent = `${idx + 1}/${vizState.frames.length}`;
+      document.getElementById('cmStepBadge').textContent = `STEP ${idx + 1}`;
+      document.getElementById('cmStepNote').textContent = fr.note || '';
+      const sc = document.getElementById('vizScrubber');
+      if (sc) { sc.max = Math.max(0, vizState.frames.length - 1); sc.value = idx; }
+
+      updateCmCodeAndVars(fr.line, fr.vars);
+      renderLinkedTable(fr);
+      if (playAudioNow && fr.soundVal !== undefined) playCmPitch(fr.soundVal, fr.soundKind || 'compare');
+
+      // 60fps smooth easeInOutQuint transition (380ms)
+      if (vizState.rafId) cancelAnimationFrame(vizState.rafId);
+      vizState.animT = 0;
+      vizState.animStart = performance.now();
+      const svgG = document.getElementById('cmSvgContent');
+      const tick = (now) => {
+        const t = Math.min(1, (now - vizState.animStart) / 380);
+        vizState.animT = t;
+        if (svgG) svgG.innerHTML = drawFrameSVG(vizState.algo, fr, t);
+        if (t < 1) vizState.rafId = requestAnimationFrame(tick);
+        else vizState.rafId = null;
+      };
+      vizState.rafId = requestAnimationFrame(tick);
+    }
+
+    function renderStackQueueLive() {
+      const fr = { formula: `Stack: ${vizState.stackArr.length}/5   |   Circular Queue: ${vizState.cqCount}/8` };
+      const svgG = document.getElementById('cmSvgContent');
+      if (svgG) svgG.innerHTML = drawFrameSVG('stack_queue', fr, 1);
+      document.getElementById('cmStatCmp').textContent = '-';
+      document.getElementById('cmStatSwp').textContent = '-';
+      document.getElementById('cmStatStep').textContent = 'LIVE';
+      document.getElementById('cmStepBadge').textContent = 'LIVE';
+      document.getElementById('cmStepNote').textContent = vizState.sqMsg;
+      updateCmCodeAndVars(vizState.sqLine, {
+        stack: `${vizState.stackArr.length}/5`,
+        TOP: vizState.stackArr.length - 1,
+        head: vizState.cqHead,
+        tail: vizState.cqTail,
+        queue: `${vizState.cqCount}/8`
+      });
     }
 
     function loadVisualizer(algoKey) {
       stopVizTimer();
-      vizState.algo = algoKey;
-      document.querySelectorAll('#vizAlgoTabs [data-viz]').forEach((b) => {
-        const on = b.getAttribute('data-viz') === algoKey;
-        b.className = on ? 'shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#2563eb] text-white' : 'shrink-0 px-3 py-2 rounded-sm text-xs font-bold bg-[#132035] text-[#cbd5e1] border border-[#243754]';
-      });
-      const inpWrap = document.getElementById('vizInputsWrap');
-      const playbackHidden = algoKey === 'stack_queue';
-      document.getElementById('vizScrubber').parentElement.classList.toggle('hidden', playbackHidden);
-      document.getElementById('vizPlayBtn').parentElement.classList.toggle('hidden', playbackHidden);
+      if (vizState.rafId) { cancelAnimationFrame(vizState.rafId); vizState.rafId = null; }
+      const validKey = CM_META[algoKey] ? algoKey : 'binary_search';
+      vizState.algo = validKey;
 
-      if (algoKey === 'binary_search' || algoKey === 'search_race') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">搜尋目標：</span>
-          <input id="vizTargetInp" type="number" value="80" class="w-20 rounded-sm bg-[#070b13] border border-[#243754] px-2 py-1 text-white font-mono-code" />
-          <button id="vizApplyBtn" class="hw-btn hw-btn-cyan px-3 py-1 rounded-sm text-xs font-bold">套用目標</button>`;
-        const arr = [50, 51, 64, 65, 75, 79, 80, 85, 88, 97];
-        const build = () => {
-          stopVizTimer();
-          const t = Number(document.getElementById('vizTargetInp').value);
-          vizState.frames = algoKey === 'binary_search' ? buildBinarySearchFrames(arr, t) : buildSearchRaceFrames(arr, t);
-          renderVizFrame(0);
+      // Update active tab pill
+      document.querySelectorAll('#vizAlgoTabs [data-viz]').forEach((b) => {
+        b.classList.toggle('cm-tab-active', b.getAttribute('data-viz') === validKey);
+      });
+
+      const meta = CM_META[validKey];
+      document.getElementById('cmAlgoTitle').textContent = meta.title;
+      document.getElementById('cmAlgoSub').textContent = meta.sub;
+      document.getElementById('cmLegendBar').innerHTML = meta.legend.map(([col, lbl]) =>
+        `<span class="cm-legend-pill"><span class="cm-dot" style="background:${col}"></span>${escapeHtml(lbl)}</span>`
+      ).join('');
+      document.getElementById('cmLinkedTableWrap').classList.toggle('hidden', validKey !== 'linked_list');
+      document.getElementById('cmPlaybackBar').classList.toggle('hidden', validKey === 'stack_queue');
+
+      const inpWrap = document.getElementById('cmInputsWrap');
+      inpWrap.innerHTML = '';
+
+      const baseSorted = [12, 24, 35, 47, 58, 66, 72, 80, 88, 95];
+
+      if (validKey === 'binary_search' || validKey === 'search_race') {
+        const curT = validKey === 'binary_search' ? vizState.bsTarget : vizState.raceTarget;
+        inpWrap.innerHTML = `<span class="font-mono-code text-[#94a3b8]">搜尋目標 target：</span>
+          <input id="cmTargetInput" type="number" value="${curT}" class="w-24 rounded-md bg-[#050814] border border-cyan-400/35 px-2.5 py-1 text-xs font-mono-code text-white outline-none focus:border-[#22d3ee]" />
+          <button id="cmApplyTargetBtn" type="button" class="cm-btn">套用目標</button>`;
+        const applyTarget = () => {
+          const v = parseInt(document.getElementById('cmTargetInput').value, 10);
+          if (!Number.isFinite(v)) return;
+          if (validKey === 'binary_search') { vizState.bsTarget = v; vizState.frames = buildBinarySearchFrames(baseSorted, v); }
+          else { vizState.raceTarget = v; vizState.frames = buildSearchRaceFrames(baseSorted, v); }
+          renderVizFrame(0, false);
         };
-        document.getElementById('vizApplyBtn').onclick = build;
-        build();
-      } else if (algoKey === 'bubble_sort' || algoKey === 'selection_sort' || algoKey === 'insertion_sort') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">自訂數字（逗號分隔）：</span>
-          <input id="vizArrInp" type="text" value="73, 85, 62, 96, 61, 48" class="w-48 sm:w-60 rounded-sm bg-[#070b13] border border-[#243754] px-2 py-1 text-white font-mono-code" />
-          <button id="vizApplyBtn" class="hw-btn hw-btn-cyan px-3 py-1 rounded-sm text-xs font-bold">套用數據</button>`;
-        const build = () => {
-          stopVizTimer();
-          const nums = document.getElementById('vizArrInp').value.split(',').map((x) => Number(x.trim())).filter((x) => !Number.isNaN(x)).slice(0, 10);
-          const safe = nums.length >= 2 ? nums : [73, 85, 62, 96, 61, 48];
-          vizState.frames = algoKey === 'bubble_sort' ? buildBubbleSortFrames(safe) : (algoKey === 'selection_sort' ? buildSelectionSortFrames(safe) : buildInsertionSortFrames(safe));
-          renderVizFrame(0);
+        document.getElementById('cmApplyTargetBtn').onclick = applyTarget;
+        vizState.frames = validKey === 'binary_search' ? buildBinarySearchFrames(baseSorted, curT) : buildSearchRaceFrames(baseSorted, curT);
+        renderVizFrame(0, false);
+      } else if (validKey === 'bubble_sort' || validKey === 'selection_sort' || validKey === 'insertion_sort') {
+        inpWrap.innerHTML = `<span class="font-mono-code text-[#94a3b8]">自訂數據（逗號分隔，最多 8 個）：</span>
+          <input id="cmSortInput" type="text" value="${vizState.sortInput.join(', ')}" class="flex-1 min-w-[160px] rounded-md bg-[#050814] border border-cyan-400/35 px-2.5 py-1 text-xs font-mono-code text-white outline-none focus:border-[#22d3ee]" />
+          <button id="cmApplySortBtn" type="button" class="cm-btn">套用數據</button>`;
+        const buildSort = () => {
+          const parsed = document.getElementById('cmSortInput').value.split(',').map((s) => parseInt(s.trim(), 10)).filter((n) => Number.isFinite(n)).slice(0, 8);
+          if (parsed.length >= 2) vizState.sortInput = parsed;
+          vizState.frames = validKey === 'bubble_sort'
+            ? buildBubbleSortFrames(vizState.sortInput)
+            : (validKey === 'selection_sort' ? buildSelectionSortFrames(vizState.sortInput) : buildInsertionSortFrames(vizState.sortInput));
+          renderVizFrame(0, false);
         };
-        document.getElementById('vizApplyBtn').onclick = build;
-        build();
-      } else if (algoKey === 'merge_lists') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">合併範例：合併 class4A [45, 55, 66, 82] 與 class4B [43, 69, 85, 91]</span>`;
-        vizState.frames = buildMergeFrames([45, 55, 66, 82], [43, 69, 85, 91]);
-        renderVizFrame(0);
-      } else if (algoKey === 'stack_queue') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">直接點擊下方「推入／彈出」或「排隊／離隊」即時觀察指示標與上溢／下溢！</span>`;
-        document.getElementById('vizNarration').textContent = '互動模式：點擊按鈕即時測試 LIFO 堆疊與 FIFO 循環隊列操作。';
-        renderStackQueueInteractive();
-      } else if (algoKey === 'linked_list') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">鏈表示範：平行陣列 D[] 與 NP[] 刪除節點 delete(3)</span>`;
+        document.getElementById('cmApplySortBtn').onclick = buildSort;
+        buildSort();
+      } else if (validKey === 'merge_lists') {
+        vizState.frames = buildMergeListsFrames();
+        renderVizFrame(0, false);
+      } else if (validKey === 'stack_queue') {
+        setVizCode([
+          '# 堆疊（LIFO）推入與彈出',
+          'if top == 4: print("Stack Overflow")',
+          'else: top = top + 1; S[top] = item',
+          'if top == -1: print("Stack Underflow")',
+          'else: val = S[top]; top = top - 1',
+          '# 循環隊列（FIFO, N = 8）',
+          'if count == 8: print("Queue Full")',
+          'else: CQ[tail] = x; tail = (tail + 1) % 8; count = count + 1',
+          'if count == 0: print("Queue Empty")',
+          'else: head = (head + 1) % 8; count = count - 1'
+        ]);
+        inpWrap.innerHTML = `
+          <button id="cmPushBtn" type="button" class="cm-btn cm-btn-primary">+ 推入 Push</button>
+          <button id="cmPopBtn" type="button" class="cm-btn cm-btn-rose">− 彈出 Pop</button>
+          <button id="cmEnqBtn" type="button" class="cm-btn cm-btn-purple">+ 排隊 Enqueue</button>
+          <button id="cmDeqBtn" type="button" class="cm-btn cm-btn-amber">− 離隊 Dequeue</button>`;
+        document.getElementById('cmPushBtn').onclick = () => {
+          if (vizState.stackArr.length >= 5) {
+            vizState.sqMsg = '上溢警告（Stack Overflow）：堆疊已達上限 5 項！';
+            vizState.sqLine = 2; playCmPitch(15, 'warn');
+          } else {
+            const ch = String.fromCharCode(vizState.stackNextChar);
+            vizState.stackNextChar = vizState.stackNextChar >= 90 ? 65 : vizState.stackNextChar + 1;
+            vizState.stackArr.push(ch);
+            vizState.sqMsg = `Push("${ch}") 成功：TOP 升至索引 ${vizState.stackArr.length - 1}。`;
+            vizState.sqLine = 3; playCmPitch(78, 'hit');
+          }
+          renderStackQueueLive();
+        };
+        document.getElementById('cmPopBtn').onclick = () => {
+          if (vizState.stackArr.length === 0) {
+            vizState.sqMsg = '下溢警告（Stack Underflow）：堆疊已空，無法彈出！';
+            vizState.sqLine = 4; playCmPitch(15, 'warn');
+          } else {
+            const val = vizState.stackArr.pop();
+            vizState.sqMsg = `Pop() 彈出 "${val}"：TOP 降至 ${vizState.stackArr.length - 1}。`;
+            vizState.sqLine = 5; playCmPitch(52, 'swap');
+          }
+          renderStackQueueLive();
+        };
+        document.getElementById('cmEnqBtn').onclick = () => {
+          if (vizState.cqCount >= 8) {
+            vizState.sqMsg = '隊列已滿（Queue Full）：8 個循環槽位已全部佔用！';
+            vizState.sqLine = 7; playCmPitch(15, 'warn');
+          } else {
+            const lbl = `P${vizState.cqNextId++}`;
+            vizState.cqArr[vizState.cqTail] = lbl;
+            vizState.cqTail = (vizState.cqTail + 1) % 8;
+            vizState.cqCount = vizState.cqCount + 1;
+            vizState.sqMsg = `Enqueue("${lbl}") 成功：TAIL 沿圓周推進至 (${vizState.cqTail})。`;
+            vizState.sqLine = 8; playCmPitch(85, 'hit');
+          }
+          renderStackQueueLive();
+        };
+        document.getElementById('cmDeqBtn').onclick = () => {
+          if (vizState.cqCount === 0) {
+            vizState.sqMsg = '隊列為空（Queue Empty）：沒有可離隊的元素！';
+            vizState.sqLine = 9; playCmPitch(15, 'warn');
+          } else {
+            const val = vizState.cqArr[vizState.cqHead];
+            vizState.cqArr[vizState.cqHead] = '';
+            vizState.cqHead = (vizState.cqHead + 1) % 8;
+            vizState.cqCount = vizState.cqCount - 1;
+            vizState.sqMsg = `Dequeue() 移出 "${val}"：HEAD 沿圓周推進至 (${vizState.cqHead})。`;
+            vizState.sqLine = 10; playCmPitch(46, 'swap');
+          }
+          renderStackQueueLive();
+        };
+        renderStackQueueLive();
+      } else if (validKey === 'linked_list') {
         vizState.frames = buildLinkedListFrames();
-        renderVizFrame(0);
-      } else if (algoKey === 'array_2d') {
-        inpWrap.innerHTML = `<span class="text-[#9aa7b8]">掃描次序：</span>
-          <button id="vizRowMajBtn" class="hw-btn hw-btn-primary px-3 py-1 rounded-sm text-xs font-bold">逐列（外 i 內 j）</button>
-          <button id="vizColMajBtn" class="hw-btn px-3 py-1 rounded-sm bg-[#132035] border border-[#243754] text-xs font-bold text-[#cbd5e1]">逐欄（外 j 內 i）</button>`;
-        document.getElementById('vizRowMajBtn').onclick = () => { stopVizTimer(); vizState.frames = buildArray2DFrames(true); renderVizFrame(0); };
-        document.getElementById('vizColMajBtn').onclick = () => { stopVizTimer(); vizState.frames = buildArray2DFrames(false); renderVizFrame(0); };
-        vizState.frames = buildArray2DFrames(true);
-        renderVizFrame(0);
+        renderVizFrame(0, false);
+      } else if (validKey === 'array_2d') {
+        const render2dToggle = () => {
+          inpWrap.innerHTML = `<span class="font-mono-code text-[#94a3b8]">掃描次序：</span>
+            <button id="cm2dRowBtn" type="button" class="cm-btn ${vizState.arr2dOrder === 'row' ? 'cm-btn-primary' : ''}">逐列 (外 i 內 j)</button>
+            <button id="cm2dColBtn" type="button" class="cm-btn ${vizState.arr2dOrder === 'col' ? 'cm-btn-primary' : ''}">逐欄 (外 j 內 i)</button>`;
+          document.getElementById('cm2dRowBtn').onclick = () => { vizState.arr2dOrder = 'row'; stopVizTimer(); render2dToggle(); vizState.frames = buildArray2DFrames('row'); renderVizFrame(0, false); };
+          document.getElementById('cm2dColBtn').onclick = () => { vizState.arr2dOrder = 'col'; stopVizTimer(); render2dToggle(); vizState.frames = buildArray2DFrames('col'); renderVizFrame(0, false); };
+        };
+        render2dToggle();
+        vizState.frames = buildArray2DFrames(vizState.arr2dOrder);
+        renderVizFrame(0, false);
       }
     }
+
 
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -2858,6 +3678,13 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       });
 
       // Visualizer listeners
+      const cmAudBtn = document.getElementById('cmAudioToggleBtn');
+      if (cmAudBtn) {
+        cmAudBtn.addEventListener('click', () => {
+          vizState.audioOn = !vizState.audioOn;
+          document.getElementById('cmAudioToggleLabel').textContent = vizState.audioOn ? '音高音效：開' : '音高音效：關';
+        });
+      }
       document.querySelectorAll('#vizAlgoTabs [data-viz]').forEach((b) => {
         b.addEventListener('click', () => loadVisualizer(b.getAttribute('data-viz')));
       });
