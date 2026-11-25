@@ -303,9 +303,9 @@
       </div>
 
       <div class="flex items-center gap-2 order-2 sm:order-3">
-          載入 Python...
-        </span>
         <span id="headerTeacherBadge" class="hidden items-center gap-1 h-[32px] px-2.5 rounded-md bg-[#f59e0b]/15 border border-[#f59e0b]/45 text-[#fbbf24] font-mono-code text-[11px] font-bold whitespace-nowrap">老師模式</span>
+        <button id="switchToStudentViewBtn" type="button" class="hidden hw-btn h-[32px] px-2.5 rounded-md bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/45 text-[#bae6fd] font-mono-code text-[11px] font-bold items-center gap-1 whitespace-nowrap" title="以周同學身分體驗 100% 真實學生模式">🎓 學生視角</button>
+        <button id="returnTeacherViewBtn" type="button" class="hidden hw-btn h-[32px] px-2.5 rounded-md bg-[#f59e0b]/20 hover:bg-[#f59e0b]/30 border border-[#f59e0b]/55 text-[#fde68a] font-mono-code text-[11px] font-bold items-center gap-1 whitespace-nowrap" title="返回老師模式">↩ 返回老師模式</button>
         <button id="studentProfileBtn" class="hw-btn h-[34px] px-3 rounded bg-[#0f1d30] hover:bg-[#162943] text-[#bae6fd] border border-[#2c405e] hover:border-[#38bdf8]/70 text-xs font-bold flex items-center gap-1.5 whitespace-nowrap">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#38bdf8]"></i>
           <span id="headerStudentLabel" class="max-w-[110px] truncate">登入</span>
@@ -995,8 +995,9 @@
         return;
       }
       const email = String(info.email).trim().toLowerCase();
-      const dom = getAllowedDomain().trim().toLowerCase();
-      if (dom && !email.endsWith('@' + dom)) {
+      const dom = (getAllowedDomain() || 'frcss.edu.hk').trim().toLowerCase();
+      const whitelistName = ALLOWED_STUDENT_WHITELIST[email] || '';
+      if (dom && !email.endsWith('@' + dom) && !whitelistName) {
         errEl.textContent = `請使用學校帳戶（@${dom}）登入。`;
         errEl.classList.remove('hidden');
         return;
@@ -1005,7 +1006,7 @@
       try { sessionStorage.setItem('hkdse_py_dse_id_token', response.credential || ''); } catch (e) {}
       pendingGoogleUser = {
         email,
-        name: info.name || email.split('@')[0],
+        name: whitelistName || info.name || email.split('@')[0],
         picture: info.picture || '',
         verifiedGoogle: true,
         idToken: response.credential || '',
@@ -1018,7 +1019,7 @@
       const cloud = await loadCloudProgressByEmail(email);
       const cls = isTeacherEmail ? 'TEACHER' : ((cloud && cloud._found && cloud.cls) ? cloud.cls : '');
       const no = isTeacherEmail ? '00' : ((cloud && cloud._found && cloud.no) ? cloud.no : '');
-      const displayName = info.name || ((cloud && cloud._found && cloud.name) ? cloud.name : email.split('@')[0]);
+      const displayName = whitelistName || info.name || ((cloud && cloud._found && cloud.name) ? cloud.name : email.split('@')[0]);
 
       const profile = {
         id: email,
@@ -1137,6 +1138,7 @@
 
 
     const TEACHER_EMAILS = ['cot@frcss.edu.hk'];
+    const ALLOWED_STUDENT_WHITELIST = { 'co.zoee@gmail.com': '周同學' };
     function isTeacherUser() {
       return Boolean(
         state.student &&
@@ -1152,6 +1154,11 @@
       const isT = isTeacherUser();
       const hb = document.getElementById('headerTeacherBadge');
       if (hb) { hb.classList.toggle('hidden', !isT); hb.classList.toggle('inline-flex', isT); }
+      const swStu = document.getElementById('switchToStudentViewBtn');
+      if (swStu) { swStu.classList.toggle('hidden', !isT); swStu.classList.toggle('inline-flex', isT); }
+      const retT = document.getElementById('returnTeacherViewBtn');
+      const isActingStu = Boolean(window._savedTeacherProfile && !isT);
+      if (retT) { retT.classList.toggle('hidden', !isActingStu); retT.classList.toggle('inline-flex', isActingStu); }
       ['teacherRevealDseDrBtn', 'teacherRevealDseCodeBtn'].forEach((id) => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('hidden', !isT);
@@ -1258,7 +1265,7 @@
 
 
     // === Silent Auto-Force Update (iPad Home Screen Web App) + Background Cloud Re-Sync ===
-    const APP_VERSION = '2026.11.25-03';
+    const APP_VERSION = '2026.11.25-06';
     let _lastCloudResyncTs = 0;
     async function silentCheckForNewVersion() {
       try {
@@ -2930,6 +2937,70 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         document.getElementById('loginModal').classList.remove('hidden');
       });
       document.getElementById('closeLoginModalBtn').addEventListener('click', () => document.getElementById('loginModal').classList.add('hidden'));
+      const swStuBtn = document.getElementById('switchToStudentViewBtn');
+      if (swStuBtn) {
+        swStuBtn.addEventListener('click', async () => {
+          if (!isTeacherUser()) return;
+          window._savedTeacherProfile = { ...state.student };
+          const stuProfile = {
+            id: 'co.zoee@gmail.com',
+            email: 'co.zoee@gmail.com',
+            cls: 'TEST',
+            no: '00',
+            name: '周同學',
+            picture: '',
+            verifiedGoogle: true,
+            teacherMode: false,
+            idToken: ''
+          };
+          loadProfile(stuProfile);
+          const cloud = await loadCloudProgressByEmail(stuProfile.email);
+          if (cloud) {
+            state.xp = Number(cloud.xp || 0);
+            state.penalty = Number(cloud.penalty || 0);
+            state.completed = { ...(cloud.completed || {}) };
+            if (typeof tbState !== 'undefined') {
+              tbState.done = { ...(cloud.tbDone || {}) };
+              try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
+            }
+            saveProgress();
+          }
+          if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
+          if (typeof renderSidebars === 'function') renderSidebars();
+          if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
+          if (typeof renderTextbookList === 'function') renderTextbookList();
+          if (typeof renderDseList === 'function') renderDseList();
+          if (typeof loadLevel === 'function' && typeof LEVELS !== 'undefined' && LEVELS.length) loadLevel(0);
+          syncTeacherUI();
+        });
+      }
+      const retTBtn = document.getElementById('returnTeacherViewBtn');
+      if (retTBtn) {
+        retTBtn.addEventListener('click', async () => {
+          if (!window._savedTeacherProfile) return;
+          const tProf = { ...window._savedTeacherProfile };
+          window._savedTeacherProfile = null;
+          loadProfile(tProf);
+          const cloud = await loadCloudProgressByEmail(tProf.email);
+          if (cloud) {
+            state.xp = Number(cloud.xp || 0);
+            state.penalty = Number(cloud.penalty || 0);
+            state.completed = { ...(cloud.completed || {}) };
+            if (typeof tbState !== 'undefined') {
+              tbState.done = { ...(cloud.tbDone || {}) };
+              try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
+            }
+            saveProgress();
+          }
+          if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
+          if (typeof renderSidebars === 'function') renderSidebars();
+          if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
+          if (typeof renderTextbookList === 'function') renderTextbookList();
+          if (typeof renderDseList === 'function') renderDseList();
+          if (typeof loadLevel === 'function' && typeof LEVELS !== 'undefined' && LEVELS.length) loadLevel(state.currentLevelIdx);
+          syncTeacherUI();
+        });
+      }
 
       
 
