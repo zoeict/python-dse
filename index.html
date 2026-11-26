@@ -526,6 +526,7 @@
       </div>
 
       <div class="flex items-center gap-2 order-2 sm:order-3">
+        <span id="pyodideStatusBadge" class="hidden sm:inline-flex items-center gap-1.5 h-[32px] font-mono-code text-[11px] text-[#fbbf24] px-2.5 rounded bg-[#0c1422] border border-[#f59e0b]/40 whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse"></span> Python 3 載入中...</span>
         <span id="headerTeacherBadge" class="hidden items-center gap-1 h-[32px] px-2.5 rounded-md bg-[#f59e0b]/15 border border-[#f59e0b]/45 text-[#fbbf24] font-mono-code text-[11px] font-bold whitespace-nowrap">老師模式</span>
         <button id="switchToStudentViewBtn" type="button" class="hidden hw-btn h-[32px] px-2.5 rounded-md bg-[#38bdf8]/15 hover:bg-[#38bdf8]/25 border border-[#38bdf8]/45 text-[#bae6fd] font-mono-code text-[11px] font-bold items-center gap-1 whitespace-nowrap" title="以周同學身分體驗 100% 真實學生模式">🎓 學生視角</button>
         <button id="returnTeacherViewBtn" type="button" class="hidden hw-btn h-[32px] px-2.5 rounded-md bg-[#f59e0b]/20 hover:bg-[#f59e0b]/30 border border-[#f59e0b]/55 text-[#fde68a] font-mono-code text-[11px] font-bold items-center gap-1 whitespace-nowrap" title="返回老師模式">↩ 返回老師模式</button>
@@ -709,8 +710,11 @@
           <div>
             <h2 class="font-display text-lg sm:text-xl font-bold text-white">DSE 試題（2012–2026）</h2>
           </div>
+            <div class="flex flex-wrap items-center gap-2">
+            <span id="dseSyncStatusPill" class="hidden font-mono-code text-[11px] px-2.5 py-1 rounded-sm bg-[#0b1322] border border-[#243754] text-[#7dd3fc] font-bold"></span>
           <div class="font-mono-code text-xs px-3 py-1.5 rounded-sm bg-[#080d16] border border-[#38bdf8]/40 text-[#38bdf8] font-bold">
-            完成進度：<span id="dseDoneCount">0 / 25</span>
+              完成進度：<span id="dseDoneCount">0 / 25</span>
+            </div>
           </div>
         </div>
 
@@ -1026,7 +1030,10 @@
         <div id="googleBtnWrap" class="flex justify-center py-1"></div>
         <div id="gmailFallbackNote" class="hidden bg-[#080d16] border border-[#f59e0b]/40 rounded-sm p-3 space-y-2">
           <div class="text-[11px] text-[#fde68a] font-bold">目前為預覽模式（請輸入學校 Gmail 登入並同步雲端進度）</div>
-          <input id="loginEmailInput" type="email" placeholder="例如：s240101@frcss.edu.hk" class="w-full rounded-sm bg-[#060a12] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
+          <div class="flex gap-2">
+            <input id="loginEmailInput" type="email" placeholder="例如：s240101@frcss.edu.hk" class="flex-1 rounded-sm bg-[#060a12] border border-[#243754] px-3 py-2 text-xs font-mono-code text-white outline-none focus:border-[#38bdf8]" />
+            <button id="loginFallbackBtn" type="button" class="hw-btn hw-btn-primary px-4 py-2 rounded-sm text-xs font-bold shrink-0">登入</button>
+          </div>
         </div>
       </div>
       <div id="loginCloudStatus" class="hidden text-xs font-bold text-[#38bdf8]"></div>
@@ -1045,7 +1052,7 @@
         <button id="closeSyncModalBtn" class="hw-btn p-1.5 rounded-sm bg-[#141b25] text-slate-300 border border-[#2a3647]"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <p class="text-xs text-[#cbd5e1] leading-relaxed">
-        將 <code>google_apps_script_sync.txt</code> 貼上學校 Google Sheet 的 Apps Script 並部署為 Web App 後，把獲得的網址貼入下方（或直接寫死於本 HTML 程式碼頂部的 <code>GAS_WEBAPP_URL</code> 變數再上載 GitHub Pages）。每次學生提交即自動記錄：班別、學號、題號、得分、切頁次數、離開秒數、疑似超綱語法及程式碼。
+        將 <code>gas_python_practice_sync.txt</code> 貼上學校 Google Sheet 的 Apps Script 並部署為 Web App 後，把獲得的網址貼入下方（或直接寫死於本 HTML 程式碼頂部的 <code>GAS_WEBAPP_URL</code> 變數再上載 GitHub Pages）。每次學生提交即自動記錄：班別、學號、題號、得分、切頁次數、離開秒數、疑似超綱語法及程式碼。
       </p>
       <div>
         <div class="space-y-2.5">
@@ -1075,7 +1082,7 @@
     // [老師上載 GitHub Pages 前只需在此貼上您的 Google Apps Script Web App 網址]
     // 例如：const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxwv7cWC8WvPT1zd43QVTXhTwrvEsgFh8XX_Bl6qRWTT_32Y_qQotS1WYizW4o2j6RSyg/exec";
     // =========================================================================
-    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzezFIv2KTabhEzSCCQD6TqaRYf-xnVQZjfdTRxuTbz2xKPzk-pAmE6l7Kfi1wnZM-7/exec";
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxwv7cWC8WvPT1zd43QVTXhTwrvEsgFh8XX_Bl6qRWTT_32Y_qQotS1WYizW4o2j6RSyg/exec";
     // 教師設定：貼上 Google Cloud Console 取得的 OAuth 2.0 Web Client ID 即可啟用官方「使用 Google 帳戶登入」按鈕
     const GOOGLE_CLIENT_ID = "13333491283-9l610elv8e5vqglneb26nq9risf8i11a.apps.googleusercontent.com";
     // 選填：如只限本校電郵登入可填 "frcss.edu.hk"，留空則接受任何 Google / Gmail 帳戶
@@ -1122,7 +1129,7 @@
     function getGasUrl() {
       try {
         const saved = localStorage.getItem(GAS_URL_KEY);
-        if (saved && saved.includes('AKfycbyCAlyNostT78pme5JyrPP2LO7fk1w7ng43gNyk_ah1oWv9fL25IC8VKQ9i5hJGGeTH')) {
+        if (saved && (saved.includes('AKfycbyCAlyNostT78pme5JyrPP2LO7fk1w7ng43gNyk_ah1oWv9fL25IC8VKQ9i5hJGGeTH') || saved.includes('AKfycbzezFIv2KTabhEzSCCQD6TqaRYf-xnVQZjfdTRxuTbz2xKPzk-pAmE6l7Kfi1wnZM-7') || saved.includes('AKfycbxH9ECHTX-6AmQspSoqz-XTyF50q81NGJPFUzJhOvneoPaC48okmOkAn8nNQ26OmdbV'))) {
           localStorage.removeItem(GAS_URL_KEY);
           return GAS_WEBAPP_URL;
         }
@@ -1132,27 +1139,68 @@
 
     function updateSyncTag() {}
 
+    let _dseSyncHideTimer = null;
+    function setDseSyncBanner(msg, tone = 'info', autoHideMs = 0) {
+      const el = document.getElementById('dseSyncStatusPill');
+      if (!el) return;
+      clearTimeout(_dseSyncHideTimer);
+      if (!msg) { el.classList.add('hidden'); return; }
+      const clsMap = {
+        info: 'border-[#38bdf8]/40 text-[#7dd3fc]',
+        ok: 'border-[#10b981]/45 text-[#34d399]',
+        warn: 'border-[#f59e0b]/45 text-[#fbbf24]'
+      };
+      el.className = 'font-mono-code text-[11px] px-2.5 py-1 rounded-sm bg-[#0b1322] border font-bold ' + (clsMap[tone] || clsMap.info);
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      if (autoHideMs > 0) {
+        _dseSyncHideTimer = setTimeout(() => { el.classList.add('hidden'); }, autoHideMs);
+      }
+    }
+
     async function syncToGoogleSheet(payload) {
       const url = getGasUrl();
-      if (!url) return;
+      if (!url) {
+        setDseSyncBanner('⚠ 未設定 GAS 網址', 'warn', 4000);
+        return false;
+      }
+      const dseDoneSnap = (typeof dseState !== 'undefined' && dseState.done) ? dseState.done : {};
       const enriched = {
         ...payload,
+        idToken: getTeacherIdToken(),
         email: (state.student && state.student.email) ? state.student.email : (payload.email || ''),
         progressSnapshot: {
-          xp: state.xp,
-          penalty: state.penalty,
-          completed: state.completed,
+          xp: state.sprintBest || 0,
+          sprintBest: state.sprintBest || 0,
+          penalty: state.penalty || 0,
+          completed: dseDoneSnap,
+          dseDone: dseDoneSnap,
           tbDone: (typeof tbState !== 'undefined' && tbState.done) ? tbState.done : {}
         }
       };
+      setDseSyncBanner('正在同步至 Google Sheet...', 'info');
       try {
-        await fetch(url, {
+        const resp = await fetch(url, {
           method: 'POST',
-          mode: 'no-cors',
+          redirect: 'follow',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(enriched)
         });
-      } catch (e) {}
+        if (!resp.ok) {
+          setDseSyncBanner(`⚠ 同步失敗（HTTP ${resp.status}）`, 'warn', 5000);
+          return false;
+        }
+        const data = await resp.json().catch(() => null);
+        if (data && (data.status === 'ok' || data.status === 'success')) {
+          setDseSyncBanner('✓ 已同步至 Google Sheet', 'ok', 2800);
+          return true;
+        }
+        setDseSyncBanner(`⚠ ${(data && data.message) || '雲端拒收'}`, 'warn', 5500);
+        return false;
+      } catch (e) {
+        setDseSyncBanner('⚠ 未能連線 Google Sheet', 'warn', 4500);
+        return false;
+      }
     }
 
     function sprintHash(cardId, ans) {
@@ -1184,32 +1232,101 @@
           body: JSON.stringify(payload)
         });
         if (!resp.ok) {
-          return { status: 'error', message: `雲端核對連線失敗（HTTP ${resp.status}），請稍後再試。` };
+          return { status: 'error', message: `雲端核對連線失敗（HTTP ${resp.status}），請確認 GAS 網址及部署狀態。` };
         }
-        const data = await resp.json();
-        return data || { status: 'error', message: '雲端核對回應格式異常。' };
+        const rawText = await resp.text();
+        let data = null;
+        try {
+          data = JSON.parse(rawText);
+        } catch (parseErr) {
+          if (rawText && /<html|<!doctype/i.test(rawText)) {
+            return { status: 'error', message: '雲端伺服器回傳了網頁而非 JSON：請老師確認 Google Apps Script 已部署為「誰可以存取：所有人」且網址以 /exec 結尾。' };
+          }
+          return { status: 'error', message: '雲端核對回應格式異常，請確認 GAS 已部署為最新版本。' };
+        }
+        return data || { status: 'error', message: '雲端核對回應內容為空。' };
       } catch (e) {
-        return { status: 'error', message: '未能連線至雲端核對伺服器，請檢查網絡或確認 GAS 已重新部署為最新版本。' };
+        return { status: 'error', message: '未能連線至雲端核對伺服器，請檢查網絡或確認 GAS 已部署為「所有人」。' };
       }
     }
 
-    async function loadCloudProgressByEmail(email) {
+    async function loadCloudProgressByEmail(email, opts = {}) {
       const url = getGasUrl();
       if (!url || !email) return null;
+      if (opts.showBanner) setDseSyncBanner('正在從雲端同步進度...', 'info');
+
+      const parseResp = (data) => {
+        if (data && (data.status === 'success' || data.status === 'ok' || data.ok === true)) {
+          if (data.found && data.progress) return { ...data.progress, _found: true };
+          if (data.found === false) return { _found: false, xp: 0, sprintBest: 0, penalty: 0, dseDone: {}, completed: {}, tbDone: {}, latestCode: {} };
+        }
+        return null;
+      };
+
+      const idToken = getTeacherIdToken();
+      if (idToken) {
+        try {
+          const postData = await callCloudGrader({ action: 'load_progress', idToken, targetEmail: email });
+          const parsed = parseResp(postData);
+          if (parsed) return parsed;
+        } catch (e) {}
+      }
+
       try {
-        const resp = await fetch(`${url}?action=load&email=${encodeURIComponent(email)}&t=${Date.now()}`, { method: 'GET', cache: 'no-store' });
-        if (!resp.ok) return null;
-        const data = await resp.json();
-        if (data && data.status === 'ok') {
-          if (data.found && data.progress) {
-            return { ...data.progress, _found: true };
-          }
-          if (data.found === false) {
-            return { _found: false, xp: 0, penalty: 0, completed: {}, tbDone: {} };
-          }
+        const resp = await fetch(`${url}?action=getProgress&email=${encodeURIComponent(email)}&t=${Date.now()}`, { method: 'GET', cache: 'no-store' });
+        if (resp.ok) {
+          const getData = await resp.json();
+          const parsed = parseResp(getData);
+          if (parsed) return parsed;
         }
       } catch (e) {}
+
+      if (opts.showBanner) setDseSyncBanner('⚠ 未能連線 Google Sheet', 'warn', 4500);
       return null;
+    }
+
+    function mergeCloudProgress(cloud, opts = {}) {
+      if (!cloud) return;
+      const cloudDse = cloud.dseDone || cloud.completed || {};
+      if (typeof dseState !== 'undefined') {
+        const mergedDse = { ...(dseState.done || {}) };
+        Object.keys(cloudDse).forEach((k) => { if (cloudDse[k]) mergedDse[k] = true; });
+        dseState.done = mergedDse;
+      }
+      const cloudBest = Math.max(Number(cloud.sprintBest || 0), Number(cloud.xp || 0));
+      state.sprintBest = Math.max(Number(state.sprintBest || 0), cloudBest);
+      state.penalty = Math.max(Number(state.penalty || 0), Number(cloud.penalty || 0));
+      if (typeof spSyncUI === 'function') {
+        const spEl = document.getElementById('spBest');
+        if (spEl) spEl.textContent = state.sprintBest;
+      }
+
+      const cloudCodes = cloud.latestCode || {};
+      Object.keys(cloudCodes).forEach((qid) => {
+        const codeStr = cloudCodes[qid];
+        if (!codeStr) return;
+        if (typeof loadDraft === 'function' && typeof saveDraft === 'function') {
+          if (loadDraft('dse_code', qid) === null) saveDraft('dse_code', qid, codeStr);
+        }
+      });
+
+      saveProgress();
+      if (typeof renderDseList === 'function') renderDseList();
+      if (typeof dseState !== 'undefined' && typeof loadDseQuestion === 'function') {
+        const q = (typeof DSE_PAPERS !== 'undefined') ? DSE_PAPERS.find((x) => x.id === dseState.activeId) : null;
+        if (q && q.mode === 'code') {
+          const ed = document.getElementById('dseCodeInput');
+          if (ed && (!ed.value.trim() || ed.value === (q.starter || '')) && cloudCodes[q.id]) {
+            ed.value = cloudCodes[q.id];
+            updateLineGutter(ed, document.getElementById('dseLineGutter'));
+          }
+        }
+        document.getElementById('dseStatusBadge').classList.toggle('hidden', !(dseState.done && dseState.done[dseState.activeId]));
+      }
+      if (opts.showBanner && typeof dseState !== 'undefined') {
+        const cnt = Object.keys(dseState.done || {}).length;
+        setDseSyncBanner(cloud._found ? `✓ 已同步雲端進度（${cnt} / 25）` : '✓ 已連線 Google Sheet', 'ok', 3800);
+      }
     }
 
     function decodeJwtPayload(token) {
@@ -1326,23 +1443,8 @@
       };
       loadProfile(profile);
 
-      if (cloud) {
-        state.xp = Number(cloud.xp || 0);
-        state.penalty = Number(cloud.penalty || 0);
-        state.completed = { ...(cloud.completed || {}) };
-        if (typeof tbState !== 'undefined') {
-          tbState.done = { ...(cloud.tbDone || {}) };
-          try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
-        }
-        saveProgress();
-        if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
-        if (typeof renderSidebars === 'function') renderSidebars();
-        if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
-        if (typeof renderTextbookList === 'function') renderTextbookList();
-        if (typeof renderDseList === 'function') renderDseList();
-        if (typeof loadLevel === 'function' && typeof LEVELS !== 'undefined' && LEVELS.length) loadLevel(state.currentLevelIdx);
-      }
-      try { localStorage.setItem(LAST_PROFILE_KEY, JSON.stringify(profile)); } catch (e) {}
+      if (cloud) { mergeCloudProgress(cloud, { showBanner: true }); }
+      saveProgress();
       stEl.classList.add('hidden');
       document.getElementById('loginModal').classList.add('hidden');
     }
@@ -1361,34 +1463,36 @@
       }
     });
 
-    function profileKey(id) { return `hkdse_py_practice_v1_prof_${id}`; }
+    function purgeLegacyLocalProgress() {
+      try {
+        const toRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (!k) continue;
+          if (k.startsWith('hkdse_py_practice_v1_prof_') || k.startsWith('hkdse_py_dse_draft_v1_') || k === TB_DONE_KEY) {
+            toRemove.push(k);
+          }
+        }
+        toRemove.forEach((k) => { try { localStorage.removeItem(k); } catch (e) {} });
+      } catch (e) {}
+    }
+
     function saveProgress() {
       if (!state.student) return;
       try {
         localStorage.setItem(ACTIVE_USER_KEY, JSON.stringify(state.student));
-        localStorage.setItem(profileKey(state.student.id), JSON.stringify({
-          completed: state.completed, usedSolution: state.usedSolution, attempts: state.attempts,
-          xp: state.xp, penalty: state.penalty, tabSwitches: state.tabSwitches,
-          awaySeconds: state.awaySeconds, currentLevelIdx: state.currentLevelIdx, sprintBest: state.sprintBest
-        }));
       } catch (e) {}
     }
 
     function loadProfile(stu) {
+      purgeLegacyLocalProgress();
       state.student = stu;
       state.completed = {}; state.usedSolution = {}; state.attempts = {};
       state.xp = 0; state.penalty = 0; state.tabSwitches = 0; state.awaySeconds = 0; state.currentLevelIdx = 0; state.sprintBest = 0;
-      try {
-        const raw = localStorage.getItem(profileKey(stu.id));
-        if (raw) {
-          const p = JSON.parse(raw);
-          state.completed = p.completed || {}; state.usedSolution = p.usedSolution || {}; state.attempts = p.attempts || {};
-          state.xp = Number(p.xp) || 0; state.penalty = Number(p.penalty) || 0;
-          state.tabSwitches = Number(p.tabSwitches) || 0; state.awaySeconds = Number(p.awaySeconds) || 0;
-          state.currentLevelIdx = Math.min(LEVELS.length - 1, Math.max(0, Number(p.currentLevelIdx) || 0));
-          state.sprintBest = Number(p.sprintBest) || 0;
-        }
-      } catch (e) {}
+      if (typeof dseState !== 'undefined') dseState.done = {};
+      if (typeof _memDrafts !== 'undefined') {
+        Object.keys(_memDrafts).forEach((k) => { delete _memDrafts[k]; });
+      }
       state.currentLevelIdx = 0; state.openChapters = {};
       document.getElementById('headerStudentLabel').textContent = stu.name || (stu.email ? stu.email.split('@')[0] : '已登入');
       syncTeacherUI();
@@ -1438,9 +1542,19 @@
         TEACHER_EMAILS.includes(String(state.student.email || '').trim().toLowerCase())
       );
     }
+    function isIdTokenFresh(token) {
+      if (!token) return false;
+      const info = decodeJwtPayload(token);
+      if (!info || !info.exp) return true;
+      return Math.floor(Date.now() / 1000) < (Number(info.exp) - 30);
+    }
     function getTeacherIdToken() {
-      if (state.student && state.student.idToken) return state.student.idToken;
-      try { return sessionStorage.getItem('hkdse_py_dse_id_token') || ''; } catch (e) { return ''; }
+      if (window._savedTeacherProfile && !isTeacherUser()) return '';
+      const tok = (state.student && state.student.idToken)
+        ? state.student.idToken
+        : (() => { try { return sessionStorage.getItem('hkdse_py_dse_id_token') || ''; } catch (e) { return ''; } })();
+      if (!tok || !isIdTokenFresh(tok)) return '';
+      return tok;
     }
     function syncTeacherUI() {
       const isT = isTeacherUser();
@@ -1472,17 +1586,19 @@
       const uid = (state.student && state.student.email) ? state.student.email : 'guest';
       return `${DSE_DRAFT_PREFIX}${uid}_${scope}_${id}`;
     }
+    const _memDrafts = {};
     function saveDraft(scope, id, val) {
       if (!id) return;
-      try { localStorage.setItem(dseDraftKey(scope, id), String(val ?? '')); } catch (e) {}
+      _memDrafts[dseDraftKey(scope, id)] = String(val ?? '');
     }
     function loadDraft(scope, id) {
       if (!id) return null;
-      try { return localStorage.getItem(dseDraftKey(scope, id)); } catch (e) { return null; }
+      const k = dseDraftKey(scope, id);
+      return Object.prototype.hasOwnProperty.call(_memDrafts, k) ? _memDrafts[k] : null;
     }
     function clearDraft(scope, id) {
       if (!id) return;
-      try { localStorage.removeItem(dseDraftKey(scope, id)); } catch (e) {}
+      delete _memDrafts[dseDraftKey(scope, id)];
     }
 
     // Instant Paste/Drop Blocking -> Immediate Apps Script Log
@@ -1557,7 +1673,7 @@
 
 
     // === Silent Auto-Force Update (iPad Home Screen Web App) + Background Cloud Re-Sync ===
-    const APP_VERSION = '2026.11.25-08';
+    const APP_VERSION = '2026.11.25-09';
     let _lastCloudResyncTs = 0;
     async function silentCheckForNewVersion() {
       try {
@@ -1582,19 +1698,7 @@
       if (!email) return;
       const cloud = await loadCloudProgressByEmail(email);
       if (!cloud) return;
-      state.xp = Number(cloud.xp || 0);
-      state.penalty = Number(cloud.penalty || 0);
-      state.completed = { ...(cloud.completed || {}) };
-      if (typeof tbState !== 'undefined') {
-        tbState.done = { ...(cloud.tbDone || {}) };
-        try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
-      }
-      saveProgress();
-      if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
-      if (typeof renderSidebars === 'function') renderSidebars();
-      if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
-      if (typeof renderTextbookList === 'function') renderTextbookList();
-      if (typeof renderDseList === 'function') renderDseList();
+      mergeCloudProgress(cloud);
     }
     window.addEventListener('pageshow', (e) => {
       silentCheckForNewVersion();
@@ -1662,17 +1766,17 @@ def _hkdse_check_code(code_str, forbidden_calls):
 `;
 
     async function initPyodideEngine() {
-      const statusEl = { innerHTML: '', className: '' };
+      const statusEl = document.getElementById('pyodideStatusBadge') || { innerHTML: '', className: '' };
       try {
         if (typeof loadPyodide !== 'function') throw new Error('Pyodide CDN unavailable');
         state.pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/' });
         state.pyodide.runPython(PY_AST_CHECKER);
         resetVirtualFiles();
         statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#10d981] shadow-[0_0_8px_#10d981]"></span> Python 3 就緒';
-        statusEl.className = 'hidden sm:inline-flex items-center gap-1.5 h-[34px] font-mono-code text-[11px] text-[#34d399] px-2.5 rounded bg-[#0c1422] border border-[#10b981]/40';
+        statusEl.className = 'hidden sm:inline-flex items-center gap-1.5 h-[32px] font-mono-code text-[11px] text-[#34d399] px-2.5 rounded bg-[#0c1422] border border-[#10b981]/40 whitespace-nowrap';
       } catch (err) {
-        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#f5a623]"></span> OFFLINE PREVIEW';
-        statusEl.className = 'flex items-center gap-1.5 text-[#f5a623] font-mono-code text-[10px]';
+        statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-[#f5a623]"></span> Python 離線';
+        statusEl.className = 'hidden sm:inline-flex items-center gap-1.5 h-[32px] font-mono-code text-[11px] text-[#fbbf24] px-2.5 rounded bg-[#0c1422] border border-[#f59e0b]/40 whitespace-nowrap';
       }
     }
 
@@ -1811,7 +1915,7 @@ sorted([fn for fn in os.listdir(".") if fn.endswith(".txt")])
         basic: ['運算', '交換', '布爾', '選擇'],
         loop_arr: ['循環', '陣列', '檢索'],
         '2d_sub': ['嵌套', '二維', '子程式', '範圍'],
-        ds_sort: ['堆疊', '隊列', '循環隊列', '對分檢索', '排序'],
+        ds_sort: ['堆疊', '隊列', '循環隊列', '對分檢索', '排序', '結構'],
         debug_io: ['除錯', '誤差', '字串', '編碼', '檔案']
       };
       const pool = topicVal === 'ALL' ? SPRINT_CARDS : SPRINT_CARDS.filter((c) => (topicMap[topicVal] || []).includes(c.tier));
@@ -1864,19 +1968,39 @@ sorted([fn for fn in os.listdir(".") if fn.endswith(".txt")])
       if (!sp.running || sp.paused) return;
       const dt = Math.min(0.1, Math.max(0, (ts - sp.lastTs) / 1000));
       sp.lastTs = ts;
+      const diff = (document.getElementById('spDifficulty') && document.getElementById('spDifficulty').value) || 'normal';
+      const diffCfg = {
+        easy:   { spawnSec: 6.8, baseSpeed: 10, ramp: 2 },
+        normal: { spawnSec: 5.2, baseSpeed: 16, ramp: 3 },
+        hard:   { spawnSec: 3.8, baseSpeed: 24, ramp: 4 }
+      }[diff] || { spawnSec: 5.2, baseSpeed: 16, ramp: 3 };
       sp.acc += dt;
-      if (sp.acc >= 5.2 && sp.cards.length < 10) { sp.acc = 0; spSpawn(); }
+      if (sp.acc >= diffCfg.spawnSec && sp.cards.length < 10) { sp.acc = 0; spSpawn(); }
       let over = false;
       sp.cards.filter((c) => !c.landed).sort((a, b) => b.y - a.y).forEach((item) => {
         const landedCount = sp.cards.filter((c) => c.lane === item.lane && c.landed).length;
         const floorY = 392 - (landedCount + 1) * 82;
-        item.y += (16 + Math.floor(sp.cleared / 4) * 3) * dt;
+        item.y += (diffCfg.baseSpeed + Math.floor(sp.cleared / 4) * diffCfg.ramp) * dt;
         if (item.y >= floorY) { item.y = floorY; item.landed = true; if (item.y <= 48) over = true; }
       });
       spSyncUI();
       if (over) {
         sp.running = false; playError();
-        if (sp.score > state.sprintBest) { state.sprintBest = sp.score; saveProgress(); }
+        const pb = document.getElementById('spPauseBtn');
+        if (pb) { pb.classList.add('hidden'); pb.textContent = '暫停'; }
+        if (sp.score > state.sprintBest) {
+          state.sprintBest = sp.score;
+          saveProgress();
+          if (state.student) {
+            syncToGoogleSheet({
+              cls: state.student.cls, no: state.student.no, name: state.student.name,
+              lesson: '遊戲快打', levelId: 'SPRINT-BEST', tier: '遊戲快打', passed: true,
+              xp: state.sprintBest, penalty: state.penalty, attempts: 1,
+              tabSwitches: state.tabSwitches, awaySeconds: state.awaySeconds, aiFlags: [],
+              code: `Sprint Score: ${state.sprintBest}`
+            });
+          }
+        }
         try {
           const lb = JSON.parse(localStorage.getItem(SPRINT_LB_KEY) || '[]');
           const pName = state.student ? `${state.student.cls}-${state.student.no} ${state.student.name}` : '訪客';
@@ -1919,7 +2043,7 @@ sorted([fn for fn in os.listdir(".") if fn.endswith(".txt")])
     }
 
     function switchMode(mode) {
-      if (state.mode === 'sprint' && mode !== 'sprint') { sp.paused = true; if (sp.raf) cancelAnimationFrame(sp.raf); }
+      if (state.mode === 'sprint' && mode !== 'sprint' && sp.running) { sp.paused = true; if (sp.raf) cancelAnimationFrame(sp.raf); const pb = document.getElementById('spPauseBtn'); if (pb) pb.textContent = '繼續'; }
       state.mode = mode;
       document.getElementById('sprintContainer').classList.toggle('hidden', mode !== 'sprint');
       document.getElementById('sandboxContainer').classList.toggle('hidden', mode !== 'sandbox');
@@ -2138,6 +2262,14 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           clearTimeout(tapTimer);
           if (tapCount >= 5) {
             tapCount = 0;
+            const gIn = document.getElementById('gasUrlInput');
+            const cIn = document.getElementById('googleClientIdInput');
+            const dIn = document.getElementById('allowedDomainInput');
+            const sMsg = document.getElementById('gasSaveMsg');
+            if (gIn) gIn.value = getGasUrl();
+            if (cIn) cIn.value = getGoogleClientId();
+            if (dIn) dIn.value = getAllowedDomain();
+            if (sMsg) sMsg.classList.add('hidden');
             const m = document.getElementById('teacherSyncModal');
             if (m) m.classList.remove('hidden');
           } else {
@@ -2150,7 +2282,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
     // =========================================================================
     // HKDSE PAST PAPER WORKBENCH
     // =========================================================================
-    const dseState = { paper: 'ALL', activeId: (DSE_PAPERS[0] && DSE_PAPERS[0].id) || '', done: {} };
+    const dseState = { paper: 'ALL', activeId: (DSE_PAPERS[0] && DSE_PAPERS[0].id) || '', done: {}, attempts: {} };
 
     function renderDseList() {
       const listEl = document.getElementById('dseQuestionList');
@@ -2192,6 +2324,12 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       document.getElementById('dseTitle').textContent = q.title;
       document.getElementById('dsePrompt').textContent = q.prompt;
       document.getElementById('dseFeedback').classList.add('hidden');
+      if (liveTraces.dse && liveTraces.dse.timer) {
+        clearInterval(liveTraces.dse.timer);
+        liveTraces.dse.timer = null;
+        const autoB = document.getElementById('dseTraceAutoBtn');
+        if (autoB) autoB.textContent = '▶ 自動';
+      }
       const dtw = document.getElementById('dseTraceWrap'); if (dtw) dtw.classList.add('hidden');
       document.getElementById('dseExplainText').textContent = '';
       document.getElementById('dseExplainBox').classList.add('hidden');
@@ -2233,54 +2371,94 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       const code = document.getElementById('dseCodeInput').value;
       const outEl = document.getElementById('dseOutputPre');
       const fbEl = document.getElementById('dseFeedback');
+      const runBtn = document.getElementById('dseRunBtn');
+      const chkBtn = document.getElementById('dseCheckBtn');
       fbEl.classList.add('hidden');
+
+      if (!state.pyodide) {
+        const msg = 'Python 3 引擎仍在載入中，請等待右上角顯示「Python 3 就緒」後再試。';
+        outEl.textContent = msg;
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/45 text-[#fde68a]';
+        fbEl.textContent = msg;
+        fbEl.classList.remove('hidden');
+        playError();
+        return;
+      }
+
       const astRes = checkCodeAst(code, []);
-      if (astRes.syntax_error) { outEl.textContent = astRes.syntax_error; playError(); return; }
+      if (astRes.syntax_error) {
+        outEl.textContent = astRes.syntax_error;
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+        fbEl.textContent = astRes.syntax_error + '（請確認已填妥所有 # ___ 請補全此行 ___ 並注意縮排）';
+        fbEl.classList.remove('hidden');
+        playError();
+        return;
+      }
       if (doCheck && astRes.issues.length > 0) {
         fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
         fbEl.textContent = '標準 Python 規範未通過：' + astRes.issues.join('；');
-        fbEl.classList.remove('hidden'); playError(); return;
-      }
-      const res = await runPythonCode(code, q.stdin || '');
-      outEl.textContent = res.ok ? (res.output || '（無輸出）') : `執行錯誤：${res.error}`;
-      if (!doCheck) return;
-      fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#38bdf8]/15 border border-[#38bdf8]/40 text-[#bae6fd]';
-      fbEl.textContent = '正在雲端核對 HKDSE 試題輸出...';
-      fbEl.classList.remove('hidden');
-      const cloudRes = await callCloudGrader({
-        action: 'grade',
-        kind: 'dse_code',
-        id: q.id,
-        output: res.ok ? res.output : '',
-        hasError: !res.ok
-      });
-      if (cloudRes.status !== 'ok') {
-        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
-        fbEl.textContent = cloudRes.message || '雲端核對暫時未能連線。';
-        playError(); return;
-      }
-      if (cloudRes.passed) {
-        dseState.done[q.id] = true;
-        if (cloudRes.expected) document.getElementById('dseExpectedPre').textContent = cloudRes.expected;
-        document.getElementById('dseExplainText').textContent = cloudRes.explain || '';
-        document.getElementById('dseStatusBadge').classList.remove('hidden');
-        document.getElementById('dseExplainBox').classList.remove('hidden');
-        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#10b981]/15 border border-[#10b981]/45 text-[#a7f3d0]';
-        fbEl.textContent = '✓ 完全正確！已通過 HKDSE 真題核對！';
         fbEl.classList.remove('hidden');
-        playSuccess(); renderDseList();
-        if (state.student) {
-          syncToGoogleSheet({
-            cls: state.student.cls, no: state.student.no, name: state.student.name,
-            lesson: q.paper, levelId: q.id, tier: 'DSE真題編程', passed: true,
-            xp: state.xp, penalty: state.penalty, attempts: 1,
-            tabSwitches: state.tabSwitches, awaySeconds: state.awaySeconds, aiFlags: [], code: code.slice(0, 1500)
-          });
+        playError();
+        return;
+      }
+
+      if (runBtn) runBtn.disabled = true;
+      if (chkBtn) chkBtn.disabled = true;
+      try {
+        const res = await runPythonCode(code, q.stdin || '');
+        outEl.textContent = res.ok ? (res.output || '（無輸出）') : `執行錯誤：${res.error}`;
+        if (!doCheck) return;
+        if (!res.ok) {
+          fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+          fbEl.textContent = `程式執行出錯，無法核對：${res.error}`;
+          fbEl.classList.remove('hidden');
+          playError();
+          return;
         }
-      } else {
-        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
-        fbEl.textContent = '✗ 輸出與預期不符，請檢查邏輯後再試。';
-        fbEl.classList.remove('hidden'); playError();
+        dseState.attempts[q.id] = (dseState.attempts[q.id] || 0) + 1;
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#38bdf8]/15 border border-[#38bdf8]/40 text-[#bae6fd]';
+        fbEl.textContent = '正在雲端核對 HKDSE 試題輸出...';
+        fbEl.classList.remove('hidden');
+        const cloudRes = await callCloudGrader({
+          action: 'grade',
+          kind: 'dse_code',
+          id: q.id,
+          output: res.output,
+          hasError: false
+        });
+        if (cloudRes.status !== 'ok') {
+          fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
+          fbEl.textContent = cloudRes.message || '雲端核對暫時未能連線。';
+          playError();
+          return;
+        }
+        if (cloudRes.passed) {
+          dseState.done[q.id] = true;
+          if (cloudRes.expected) document.getElementById('dseExpectedPre').textContent = cloudRes.expected;
+          document.getElementById('dseExplainText').textContent = cloudRes.explain || '';
+          document.getElementById('dseStatusBadge').classList.remove('hidden');
+          document.getElementById('dseExplainBox').classList.remove('hidden');
+          fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#10b981]/15 border border-[#10b981]/45 text-[#a7f3d0]';
+          fbEl.textContent = '✓ 完全正確！已通過 HKDSE 真題核對！';
+          fbEl.classList.remove('hidden');
+          playSuccess(); renderDseList();
+          if (state.student) {
+            syncToGoogleSheet({
+              cls: state.student.cls, no: state.student.no, name: state.student.name,
+              lesson: q.paper, levelId: q.id, tier: 'DSE真題編程', passed: true,
+              xp: state.xp, penalty: state.penalty, attempts: dseState.attempts[q.id] || 1,
+              tabSwitches: state.tabSwitches, awaySeconds: state.awaySeconds,
+              aiFlags: astRes.ai_flags || [], code: code.slice(0, 1500)
+            });
+          }
+        } else {
+          fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+          fbEl.textContent = '✗ 輸出與預期不符，請檢查邏輯後再試。';
+          fbEl.classList.remove('hidden'); playError();
+        }
+      } finally {
+        if (runBtn) runBtn.disabled = false;
+        if (chkBtn) chkBtn.disabled = false;
       }
     }
 
@@ -2290,36 +2468,51 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       const norm = (s) => String(s || '').replace(/\r\n/g, '\n').split('\n').map((x) => x.trim()).filter(Boolean).join('\n');
       const userAns = norm(document.getElementById('dseDryrunInput').value);
       const fbEl = document.getElementById('dseFeedback');
-      fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#38bdf8]/15 border border-[#38bdf8]/40 text-[#bae6fd]';
-      fbEl.textContent = '正在雲端核對 HKDSE 空運行答案...';
-      fbEl.classList.remove('hidden');
-      const cloudRes = await callCloudGrader({ action: 'grade', kind: 'dse_dryrun', id: q.id, userAns });
-      if (cloudRes.status !== 'ok') {
-        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
-        fbEl.textContent = cloudRes.message || '雲端核對暫時未能連線。';
-        playError(); return;
-      }
-      if (cloudRes.passed) {
-        dseState.done[q.id] = true;
-        document.getElementById('dseExplainText').textContent = cloudRes.explain || '';
-        document.getElementById('dseStatusBadge').classList.remove('hidden');
-        document.getElementById('dseExplainBox').classList.remove('hidden');
-        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#10b981]/15 border border-[#10b981]/45 text-[#a7f3d0]';
-        fbEl.textContent = '✓ 空運行追蹤完全正確！';
+      const drBtn = document.getElementById('dseDryrunCheckBtn');
+      if (!userAns) {
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/45 text-[#fde68a]';
+        fbEl.textContent = '請先輸入你的空運行輸出答案再提交核對。';
         fbEl.classList.remove('hidden');
-        playSuccess(); renderDseList();
-        if (state.student) {
-          syncToGoogleSheet({
-            cls: state.student.cls, no: state.student.no, name: state.student.name,
-            lesson: q.paper, levelId: q.id, tier: 'DSE真題空運行', passed: true,
-            xp: state.xp, penalty: state.penalty, attempts: 1,
-            tabSwitches: state.tabSwitches, awaySeconds: state.awaySeconds, aiFlags: [], code: `DryRun: ${userAns}`
-          });
+        playError();
+        return;
+      }
+      if (drBtn) drBtn.disabled = true;
+      try {
+        dseState.attempts[q.id] = (dseState.attempts[q.id] || 0) + 1;
+        fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#38bdf8]/15 border border-[#38bdf8]/40 text-[#bae6fd]';
+        fbEl.textContent = '正在雲端核對 HKDSE 空運行答案...';
+        fbEl.classList.remove('hidden');
+        const cloudRes = await callCloudGrader({ action: 'grade', kind: 'dse_dryrun', id: q.id, userAns });
+        if (cloudRes.status !== 'ok') {
+          fbEl.className = 'px-3.5 py-3 text-xs font-bold rounded-sm bg-[#f59e0b]/15 border border-[#f59e0b]/40 text-[#fde68a]';
+          fbEl.textContent = cloudRes.message || '雲端核對暫時未能連線。';
+          playError();
+          return;
         }
-      } else {
-        fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
-        fbEl.textContent = '✗ 輸出未完全相符，請再逐行檢查變量數值與格式！';
-        fbEl.classList.remove('hidden'); playError();
+        if (cloudRes.passed) {
+          dseState.done[q.id] = true;
+          document.getElementById('dseExplainText').textContent = cloudRes.explain || '';
+          document.getElementById('dseStatusBadge').classList.remove('hidden');
+          document.getElementById('dseExplainBox').classList.remove('hidden');
+          fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#10b981]/15 border border-[#10b981]/45 text-[#a7f3d0]';
+          fbEl.textContent = '✓ 空運行追蹤完全正確！';
+          fbEl.classList.remove('hidden');
+          playSuccess(); renderDseList();
+          if (state.student) {
+            syncToGoogleSheet({
+              cls: state.student.cls, no: state.student.no, name: state.student.name,
+              lesson: q.paper, levelId: q.id, tier: 'DSE真題空運行', passed: true,
+              xp: state.xp, penalty: state.penalty, attempts: dseState.attempts[q.id] || 1,
+              tabSwitches: state.tabSwitches, awaySeconds: state.awaySeconds, aiFlags: [], code: `DryRun: ${userAns}`
+            });
+          }
+        } else {
+          fbEl.className = 'px-3.5 py-3 text-xs sm:text-sm font-bold rounded-sm bg-[#f43f5e]/15 border border-[#f43f5e]/45 text-[#fecdd3]';
+          fbEl.textContent = '✗ 輸出未完全相符，請再逐行檢查變量數值與格式！';
+          fbEl.classList.remove('hidden'); playError();
+        }
+      } finally {
+        if (drBtn) drBtn.disabled = false;
       }
     }
 
@@ -3570,6 +3763,22 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         };
         dseEd.addEventListener('paste', blockDsePaste);
         dseEd.addEventListener('drop', blockDsePaste);
+        dseEd.addEventListener('keydown', (e) => {
+          if (e.key !== 'Tab') return;
+          e.preventDefault();
+          const s = dseEd.selectionStart || 0, en = dseEd.selectionEnd || 0;
+          if (e.shiftKey) {
+            const ls = dseEd.value.lastIndexOf('\n', s - 1) + 1;
+            if (dseEd.value.slice(ls, ls + 4) === '    ') {
+              dseEd.value = dseEd.value.slice(0, ls) + dseEd.value.slice(ls + 4);
+              dseEd.selectionStart = dseEd.selectionEnd = Math.max(ls, s - 4);
+            }
+          } else {
+            dseEd.value = dseEd.value.slice(0, s) + '    ' + dseEd.value.slice(en);
+            dseEd.selectionStart = dseEd.selectionEnd = s + 4;
+          }
+          dseEd.dispatchEvent(new Event('input'));
+        });
       }
       const dseDrIn = document.getElementById('dseDryrunInput');
       if (dseDrIn) {
@@ -3634,7 +3843,11 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
             }
           } else {
             lastTeacherDseSol = '';
-            pre.textContent = res.message || '未能載入參考答案，請重新登入老師 Google 帳戶。';
+            pre.textContent = res.message || '未能載入參考答案，請按右上角重新登入老師 Google 帳戶。';
+            if (res.expired || !getTeacherIdToken()) {
+              updateGmailModalUI();
+              document.getElementById('loginModal').classList.remove('hidden');
+            }
           }
         });
       }
@@ -3660,8 +3873,12 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           } else {
             const fb = document.getElementById('dseFeedback');
             fb.className = 'px-3.5 py-2.5 text-xs font-bold rounded-sm bg-[#f5a623]/15 border border-[#f5a623]/40 text-[#fde68a]';
-            fb.textContent = res.message || '未能載入參考答案，請重新登入老師 Google 帳戶。';
+            fb.textContent = res.message || '未能載入參考答案，請按右上角重新登入老師 Google 帳戶。';
             fb.classList.remove('hidden');
+            if (res.expired || !getTeacherIdToken()) {
+              updateGmailModalUI();
+              document.getElementById('loginModal').classList.remove('hidden');
+            }
           }
         });
       }
@@ -3697,9 +3914,21 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           fb.classList.remove('hidden');
           return;
         }
+        if (liveTraces.dse && liveTraces.dse.timer) {
+          clearInterval(liveTraces.dse.timer);
+          liveTraces.dse.timer = null;
+          const autoB = document.getElementById('dseTraceAutoBtn');
+          if (autoB) autoB.textContent = '▶ 自動';
+        }
         const res = await runLiveTrace(codeStr, q.stdin || '');
         liveTraces.dse = { codeLines: codeStr.split('\n'), steps: res.steps || [], idx: 0, timer: null };
         document.getElementById('dseTraceWrap').classList.remove('hidden');
+        if (res.error && (!res.steps || !res.steps.length)) {
+          document.getElementById('dseTraceCanvas').innerHTML = `<div class="text-xs font-mono-code text-[#b91c1c] font-bold">${escapeHtml(res.error)}</div>`;
+          document.getElementById('dseTraceNote').textContent = '追蹤中止';
+          document.getElementById('dseTraceCounter').textContent = 'STEP 0 / 0';
+          return;
+        }
         renderLiveTracePanel('dse');
       });
 
@@ -3718,8 +3947,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       document.getElementById('vizNextBtn').addEventListener('click', () => { stopVizTimer(); renderVizFrame(vizState.step + 1); });
       document.getElementById('vizResetBtn').addEventListener('click', () => { stopVizTimer(); renderVizFrame(0); });
       document.getElementById('vizScrubber').addEventListener('input', (e) => { stopVizTimer(); renderVizFrame(Number(e.target.value)); });
-      document.getElementById('vizPlayBtn').addEventListener('click', () => {
-        if (vizState.timer) { stopVizTimer(); return; }
+      const startVizAuto = () => {
         if (vizState.step >= vizState.frames.length - 1) renderVizFrame(0);
         document.getElementById('vizPlayBtn').textContent = '⏸ 暫停';
         const ms = Number(document.getElementById('vizSpeedSelect').value) || 700;
@@ -3727,6 +3955,13 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           if (vizState.step >= vizState.frames.length - 1) { stopVizTimer(); return; }
           renderVizFrame(vizState.step + 1);
         }, ms);
+      };
+      document.getElementById('vizPlayBtn').addEventListener('click', () => {
+        if (vizState.timer) { stopVizTimer(); return; }
+        startVizAuto();
+      });
+      document.getElementById('vizSpeedSelect').addEventListener('change', () => {
+        if (vizState.timer) { stopVizTimer(); startVizAuto(); }
       });
 
       // Init iPad touch toolbars & hidden 5-tap teacher gesture
@@ -3776,6 +4011,22 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       sbInput.addEventListener('scroll', () => {
         if (sbGutter) sbGutter.scrollTop = sbInput.scrollTop;
       });
+      sbInput.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab') return;
+        e.preventDefault();
+        const s = sbInput.selectionStart || 0, en = sbInput.selectionEnd || 0;
+        if (e.shiftKey) {
+          const ls = sbInput.value.lastIndexOf('\n', s - 1) + 1;
+          if (sbInput.value.slice(ls, ls + 4) === '    ') {
+            sbInput.value = sbInput.value.slice(0, ls) + sbInput.value.slice(ls + 4);
+            sbInput.selectionStart = sbInput.selectionEnd = Math.max(ls, s - 4);
+          }
+        } else {
+          sbInput.value = sbInput.value.slice(0, s) + '    ' + sbInput.value.slice(en);
+          sbInput.selectionStart = sbInput.selectionEnd = s + 4;
+        }
+        sbInput.dispatchEvent(new Event('input'));
+      });
       document.getElementById('sbRunBtn').addEventListener('click', async () => {
         const res = await runPythonCode(sbInput.value, document.getElementById('sbStdin').value.replace(/\\n/g, '\n'));
         document.getElementById('sbOutput').textContent = res.ok ? (res.output || '（執行成功）') : `錯誤：${res.error}`;
@@ -3784,7 +4035,13 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       document.getElementById('sbResetFilesBtn').addEventListener('click', resetVirtualFiles);
 
       // Modals & Mobile Drawer
-          document.getElementById('soundToggleBtn').addEventListener('click', (e) => { state.soundOn = !state.soundOn; e.currentTarget.classList.toggle('text-[#10d981]', state.soundOn); });
+          document.getElementById('soundToggleBtn').addEventListener('click', (e) => {
+        state.soundOn = !state.soundOn;
+        e.currentTarget.classList.toggle('text-[#34d399]', state.soundOn);
+        e.currentTarget.classList.toggle('text-[#64748b]', !state.soundOn);
+        e.currentTarget.classList.toggle('opacity-60', !state.soundOn);
+        e.currentTarget.title = state.soundOn ? '音效：開（點擊靜音）' : '音效：關（點擊開啟）';
+      });
 
       document.getElementById('studentProfileBtn').addEventListener('click', () => {
         document.getElementById('loginErrorMsg').classList.add('hidden');
@@ -3811,16 +4068,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           };
           loadProfile(stuProfile);
           const cloud = await loadCloudProgressByEmail(stuProfile.email);
-          if (cloud) {
-            state.xp = Number(cloud.xp || 0);
-            state.penalty = Number(cloud.penalty || 0);
-            state.completed = { ...(cloud.completed || {}) };
-            if (typeof tbState !== 'undefined') {
-              tbState.done = { ...(cloud.tbDone || {}) };
-              try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
-            }
-            saveProgress();
-          }
+          if (cloud) { mergeCloudProgress(cloud, { showBanner: true }); }
           if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
           if (typeof renderSidebars === 'function') renderSidebars();
           if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
@@ -3838,16 +4086,7 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
           window._savedTeacherProfile = null;
           loadProfile(tProf);
           const cloud = await loadCloudProgressByEmail(tProf.email);
-          if (cloud) {
-            state.xp = Number(cloud.xp || 0);
-            state.penalty = Number(cloud.penalty || 0);
-            state.completed = { ...(cloud.completed || {}) };
-            if (typeof tbState !== 'undefined') {
-              tbState.done = { ...(cloud.tbDone || {}) };
-              try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
-            }
-            saveProgress();
-          }
+          if (cloud) { mergeCloudProgress(cloud, { showBanner: true }); }
           if (typeof renderProgressWidgets === 'function') renderProgressWidgets();
           if (typeof renderSidebars === 'function') renderSidebars();
           if (typeof renderHomeRoadmap === 'function') renderHomeRoadmap();
@@ -3860,11 +4099,61 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
 
       
 
+      const handleFallbackLogin = async () => {
+        const inp = document.getElementById('loginEmailInput');
+        const errEl = document.getElementById('loginErrorMsg');
+        const stEl = document.getElementById('loginCloudStatus');
+        if (!inp) return;
+        errEl.classList.add('hidden');
+        const email = String(inp.value || '').trim().toLowerCase();
+        if (!email || !email.includes('@')) {
+          errEl.textContent = '請輸入有效的學校電郵地址。';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        const dom = (getAllowedDomain() || 'frcss.edu.hk').trim().toLowerCase();
+        const whitelistName = ALLOWED_STUDENT_WHITELIST[email] || '';
+        if (dom && !email.endsWith('@' + dom) && !whitelistName) {
+          errEl.textContent = `請使用學校帳戶（@${dom}）登入。`;
+          errEl.classList.remove('hidden');
+          return;
+        }
+        stEl.textContent = '正在載入雲端進度...';
+        stEl.classList.remove('hidden');
+        const cloud = await loadCloudProgressByEmail(email);
+        const profile = {
+          id: email,
+          email,
+          cls: (cloud && cloud._found && cloud.cls) ? cloud.cls : '',
+          no: (cloud && cloud._found && cloud.no) ? cloud.no : '',
+          name: whitelistName || ((cloud && cloud._found && cloud.name) ? cloud.name : email.split('@')[0]),
+          picture: '',
+          verifiedGoogle: false,
+          teacherMode: false,
+          idToken: ''
+        };
+        loadProfile(profile);
+        saveProgress();
+        if (cloud) mergeCloudProgress(cloud, { showBanner: true });
+        stEl.classList.add('hidden');
+        document.getElementById('loginModal').classList.add('hidden');
+      };
+      const fbLoginBtn = document.getElementById('loginFallbackBtn');
+      if (fbLoginBtn) fbLoginBtn.addEventListener('click', handleFallbackLogin);
+      const fbLoginInp = document.getElementById('loginEmailInput');
+      if (fbLoginInp) fbLoginInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleFallbackLogin(); } });
+
       document.getElementById('gmailSignOutBtn').addEventListener('click', () => {
         pendingGoogleUser = null;
+        window._savedTeacherProfile = null;
         try { localStorage.removeItem(ACTIVE_USER_KEY); } catch (e) {}
+        try { sessionStorage.removeItem('hkdse_py_dse_id_token'); } catch (e) {}
         state.student = null;
+        dseState.done = {};
         document.getElementById('headerStudentLabel').textContent = 'Gmail 登入';
+        syncTeacherUI();
+        renderDseList();
+        loadDseQuestion(dseState.activeId);
         updateGmailModalUI();
       });
 
@@ -3873,13 +4162,21 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
         const u = document.getElementById('gasUrlInput').value.trim();
         const cid = document.getElementById('googleClientIdInput').value.trim();
         const dom = document.getElementById('allowedDomainInput').value.trim();
+        const msg = document.getElementById('gasSaveMsg');
+        if (u && (!/^https:\/\/script\.google\.com\/macros\/s\//.test(u) || !u.endsWith('/exec'))) {
+          msg.className = 'text-xs font-bold text-[#fda4af]';
+          msg.textContent = '⚠ 網址格式不正確，須為 https://script.google.com/macros/s/.../exec';
+          msg.classList.remove('hidden');
+          playError();
+          return;
+        }
         try {
           if (u) localStorage.setItem(GAS_URL_KEY, u); else localStorage.removeItem(GAS_URL_KEY);
           if (cid) localStorage.setItem(GOOGLE_CID_KEY, cid); else localStorage.removeItem(GOOGLE_CID_KEY);
           if (dom) localStorage.setItem(ALLOWED_DOM_KEY, dom); else localStorage.removeItem(ALLOWED_DOM_KEY);
         } catch (e) {}
         updateSyncTag();
-        const msg = document.getElementById('gasSaveMsg');
+        msg.className = 'text-xs font-bold text-[#10d981]';
         msg.textContent = '✓ 已儲存雲端同步與 Gmail 登入設定！';
         msg.classList.remove('hidden');
         playSuccess();
@@ -3890,16 +4187,9 @@ json.dumps({"steps": _steps, "error": _err, "finalOut": _buf.getvalue().strip()}
       try { saved = JSON.parse(localStorage.getItem(ACTIVE_USER_KEY) || 'null'); } catch (e) {}
       if (saved && saved.id && saved.email) {
         loadProfile(saved);
-        loadCloudProgressByEmail(saved.email).then((cloud) => {
+        loadCloudProgressByEmail(saved.email, { showBanner: true }).then((cloud) => {
           if (!cloud) return;
-          state.xp = Number(cloud.xp || 0);
-          state.penalty = Number(cloud.penalty || 0);
-          state.completed = { ...(cloud.completed || {}) };
-          if (typeof tbState !== 'undefined') {
-            tbState.done = { ...(cloud.tbDone || {}) };
-            try { localStorage.setItem(TB_DONE_KEY, JSON.stringify(tbState.done)); } catch (e) {}
-          }
-          saveProgress(); renderProgressWidgets(); renderSidebars(); renderHomeRoadmap();
+          mergeCloudProgress(cloud, { showBanner: true });
         });
       } else {
         document.getElementById('headerStudentLabel').textContent = 'Gmail 登入';
